@@ -1,0 +1,18 @@
+{
+  "name": "little-cosmos",
+  "version": "1.0.0",
+  "private": true,
+  "description": "《微光星球》LITTLE COSMOS — 3D 微缩星球模拟独立游戏（网页可玩垂直切片）",
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c rollup.config.mjs",
+    "start": "node tools/serve.mjs"
+  },
+  "dependencies": {
+    "three": "0.170.0"
+  },
+  "devDependencies": {
+    "rollup": "4.21.2",
+    "@rollup/plugin-node-resolve": "15.2.3"
+  }
+}

@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>微光星球 · LITTLE COSMOS</title>
+<meta name="theme-color" content="#08100f" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<canvas id="scene"></canvas>
+<div id="grain"></div>
+<div id="letterbox-top" class="letterbox"></div>
+<div id="letterbox-bottom" class="letterbox"></div>
+<div id="atmos-overlay"></div>
+<div id="fade-overlay"></div>
+
+<!-- ================= HUD ================= -->
+<div id="hud" class="hidden">
+  <div id="hud-top-left" class="hud-corner">
+    <div id="planet-card">
+      <div class="pc-code" id="pc-code">V-01</div>
+      <div class="pc-main">
+        <div class="pc-name" id="pc-name">蒙昧之绿</div>
+        <div class="pc-latin" id="pc-latin">VERDANT</div>
+      </div>
+      <div class="pc-sub" id="pc-sub">重力 7.4 · 昼</div>
+    </div>
+    <div id="objective">
+      <div class="obj-label"><span class="diamond"></span>当前目标</div>
+      <div class="obj-text" id="obj-text">在苔原上采集 铁素矿</div>
+      <div class="obj-progress"><div class="bar"><i id="obj-bar"></i></div><span id="obj-count">0 / 5</span></div>
+    </div>
+  </div>
+
+  <div id="hud-top-right" class="hud-corner">
+    <div id="minimap-wrap">
+      <canvas id="minimap" width="220" height="220"></canvas>
+      <div class="mm-ring"></div>
+      <div class="mm-n">N</div>
+      <div class="mm-label" id="mm-label">0 m</div>
+    </div>
+  </div>
+
+  <div id="hud-bottom-right" class="hud-corner">
+    <div id="vitals">
+      <div class="vital">
+        <div class="vital-label"><span>生命</span><span id="hp-val">100</span></div>
+        <div class="vital-bar hp"><i id="hp-bar"></i></div>
+      </div>
+      <div class="vital">
+        <div class="vital-label"><span>护盾</span><span id="sh-val">100</span></div>
+        <div class="vital-bar sh"><i id="sh-bar"></i></div>
+      </div>
+      <div class="vital">
+        <div class="vital-label"><span>能量</span><span id="en-val">100</span></div>
+        <div class="vital-bar en"><i id="en-bar"></i></div>
+      </div>
+    </div>
+    <div id="weapon-card">
+      <div class="wp-icon">⌖</div>
+      <div class="wp-info">
+        <div class="wp-name">能量手枪 <span class="wp-lv">MK.I</span></div>
+        <div class="wp-mode" id="wp-mode">● 单发</div>
+      </div>
+      <div class="wp-bars"><i id="wp-fill"></i></div>
+    </div>
+  </div>
+
+  <div id="hud-bottom-left" class="hud-corner">
+    <div id="resources">
+      <div class="res" data-type="ferrite"><span class="res-i">◆</span><span class="res-n" id="res-ferrite">0</span></div>
+      <div class="res" data-type="silica"><span class="res-i">◈</span><span class="res-n" id="res-silica">0</span></div>
+      <div class="res" data-type="bio"><span class="res-i">❋</span><span class="res-n" id="res-bio">0</span></div>
+      <div class="res" data-type="lumen"><span class="res-i">✦</span><span class="res-n" id="res-lumen">0</span></div>
+    </div>
+  </div>
+
+  <div id="crosshair">
+    <svg viewBox="0 0 64 64" width="64" height="64">
+      <circle cx="32" cy="32" r="13" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 4" opacity="0.55"/>
+      <path d="M32 20 v-6 M32 44 v6 M20 32 h-6 M44 32 h6" stroke="currentColor" stroke-width="1.2" opacity="0.8"/>
+      <circle cx="32" cy="32" r="1.6" fill="currentColor"/>
+    </svg>
+  </div>
+
+  <div id="prompt" class="hidden"><span class="key">E</span><span id="prompt-text">采集</span></div>
+  <div id="build-bar" class="hidden"></div>
+  <div id="toasts"></div>
+  <div id="dialogue" class="hidden">
+    <div class="dlg-speaker" id="dlg-speaker">航行日志</div>
+    <div class="dlg-text" id="dlg-text"></div>
+  </div>
+  <div id="planet-marker" class="hidden"><span class="pm-name"></span><span class="pm-dist"></span></div>
+
+  <div id="space-hud" class="hidden">
+    <div id="space-readout">
+      <div class="sr-item"><span class="sr-k">速度</span><span class="sr-v" id="sr-speed">0</span><span class="sr-u">m/s</span></div>
+      <div class="sr-item"><span class="sr-k">推进</span><span class="sr-v" id="sr-thr">0%</span></div>
+      <div class="sr-item"><span class="sr-k">燃料</span><span class="sr-v" id="sr-fuel">100%</span></div>
+      <div class="sr-item"><span class="sr-k">船体</span><span class="sr-v" id="sr-hull">100%</span></div>
+    </div>
+    <div id="nav-list" class="hidden"></div>
+    <div id="space-hint">W/S 转向 · E 加速 · C 减速 · Shift 曲率引擎 · 靠近星球后按 F 降落</div>
+  </div>
+
+  <div id="crosshair-space" class="hidden"></div>
+</div>
+
+<!-- ================= 驾驶舱 ================= -->
+<div id="cockpit" class="hidden">
+  <div class="cockpit-frame">
+    <div class="cp-top"></div>
+    <div class="cp-pillar left"></div>
+    <div class="cp-pillar right"></div>
+    <div class="cp-bottom"></div>
+    <div class="cp-panel">
+      <div class="cp-title">LITTLE COSMOS · 航行终端</div>
+      <div class="cp-row"><span>目标星球</span><b id="cp-target">选择目的地</b></div>
+      <div class="cp-row"><span>推进器</span><b id="cp-thrust">待机</b></div>
+      <div class="cp-row"><span>船体完整度</span><b>100%</b></div>
+      <div class="cp-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 主菜单 ================= -->
+<div id="menu">
+  <div class="menu-bg"></div>
+  <div class="menu-grid"></div>
+  <div class="menu-inner">
+    <div class="title-block">
+      <div class="kicker"><span></span>3D 微缩宇宙探索 · VERTICAL SLICE</div>
+      <h1 class="title-cn">微光星球</h1>
+      <div class="title-en">L I T T L E &nbsp; C O S M O S</div>
+      <p class="tagline">驾驶你的小火箭，在苔原、沙海与荧光湿地之间往返。<br/>采集、建造、认识陌生的生命——每一颗星球都是一座可以走进去的微缩景观。</p>
+    </div>
+    <div class="menu-actions">
+      <button id="btn-start" class="mbtn primary"><span class="mb-i">▷</span><span class="mb-t">开始探索</span><span class="mb-s">ENTER THE COSMOS</span></button>
+      <button id="btn-continue" class="mbtn hidden"><span class="mb-i">↺</span><span class="mb-t">继续航行</span><span class="mb-s">RESUME EXPEDITION</span></button>
+      <button id="btn-controls" class="mbtn ghost"><span class="mb-i">⌨</span><span class="mb-t">操作说明</span></button>
+      <div class="settings">
+        <label>画质
+          <select id="set-quality">
+            <option value="high">高 · 电影级</option>
+            <option value="low">中 · 流畅</option>
+          </select>
+        </label>
+        <label>音乐 <input id="set-music" type="range" min="0" max="1" step="0.05" value="0.5"/></label>
+        <label>音效 <input id="set-sfx" type="range" min="0" max="1" step="0.05" value="0.8"/></label>
+      </div>
+    </div>
+  </div>
+  <div class="menu-planets">
+    <div class="mp" data-planet="verdant">
+      <div class="mp-orb v"></div>
+      <div class="mp-txt"><b>蒙昧之绿</b><span>VERDANT</span></div>
+    </div>
+    <div class="mp" data-planet="emer">
+      <div class="mp-orb e"></div>
+      <div class="mp-txt"><b>沙漠谜境</b><span>EMER</span></div>
+    </div>
+    <div class="mp" data-planet="lumina">
+      <div class="mp-orb l"></div>
+      <div class="mp-txt"><b>幽蓝之心</b><span>LUMINA</span></div>
+    </div>
+  </div>
+  <div class="menu-footer">建议佩戴耳机 · WASD 移动 · 鼠标观察 · 按 E 交互</div>
+</div>
+
+<!-- ================= 暂停 ================= -->
+<div id="pause" class="hidden">
+  <div class="pause-card">
+    <div class="p-kicker">PAUSED</div>
+    <h2>暂停</h2>
+    <button id="btn-resume" class="mbtn primary"><span class="mb-t">继续</span></button>
+    <button id="btn-save" class="mbtn ghost"><span class="mb-t">保存进度</span></button>
+    <button id="btn-menu" class="mbtn ghost"><span class="mb-t">返回主菜单</span></button>
+    <div class="settings">
+      <label>音乐 <input id="set-music2" type="range" min="0" max="1" step="0.05" value="0.5"/></label>
+      <label>音效 <input id="set-sfx2" type="range" min="0" max="1" step="0.05" value="0.8"/></label>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 操作说明 ================= -->
+<div id="controls-modal" class="hidden">
+  <div class="cm-card">
+    <h3>操作说明</h3>
+    <div class="cm-grid">
+      <div><kbd>W A S D</kbd> 移动</div>
+      <div><kbd>Shift</kbd> 奔跑 / 太空曲率加速</div>
+      <div><kbd>Space</kbd> 跳跃</div>
+      <div><kbd>鼠标</kbd> 旋转视角</div>
+      <div><kbd>左键</kbd> 射击</div>
+      <div><kbd>右键 / F</kbd> 瞄准</div>
+      <div><kbd>E</kbd> 交互 / 采集 / 登船</div>
+      <div><kbd>Q</kbd> 切换射击模式</div>
+      <div><kbd>B</kbd> 建造模式（再按退出）</div>
+      <div><kbd>R</kbd> 旋转建筑预览</div>
+      <div><kbd>V</kbd> 扫描环境</div>
+      <div><kbd>Esc</kbd> 暂停</div>
+      <div><kbd>太空：W/S</kbd> 俯仰 · <kbd>A/D</kbd> 偏航</div>
+      <div><kbd>太空：E/C</kbd> 加速 / 减速 · <kbd>F</kbd> 降落</div>
+    </div>
+    <button id="btn-close-controls" class="mbtn primary"><span class="mb-t">明白了</span></button>
+  </div>
+</div>
+
+<!-- ================= 移动端 ================= -->
+<div id="touch-ui" class="hidden">
+  <div id="touch-layer"></div>
+  <div id="joy-base"><div id="joy-knob"></div></div>
+  <div class="tbtn" id="t-jump">跳</div>
+  <div class="tbtn" id="t-fire">◉</div>
+  <div class="tbtn small" id="t-interact">E</div>
+  <div class="tbtn small" id="t-build">建</div>
+</div>
+
+<div id="loading">
+  <div class="ld-inner">
+    <div class="ld-title">微光星球</div>
+    <div class="ld-en">LITTLE COSMOS</div>
+    <div class="ld-bar"><i id="ld-fill"></i></div>
+    <div class="ld-tip" id="ld-tip">正在生成星球的形态…</div>
+  </div>
+</div>
+
+<div id="error-box" class="hidden"></div>
+
+<script src="game.bundle.js"></script>
+</body>
+</html>

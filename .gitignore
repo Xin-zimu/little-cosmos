@@ -1,0 +1,19 @@
+# 依赖
+node_modules/
+
+# 构建缓存与临时目录
+.rollup.cache/
+dist/
+_edge/
+
+# 截图 / 调试产物（保留 screenshots/ 内的 12 张精选图）
+screenshots/_*.png
+screenshots/_*/
+*.log
+
+# 编辑器与系统文件
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
