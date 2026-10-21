@@ -68,6 +68,11 @@ export class Vegetation {
     this.colliders = [];
     this.shade = Array.from({ length: 40 }, () => new THREE.Vector4(0, 0, 0, 0));
     this.build();
+    // BUG-29：植被是弹道遮挡体（树干/岩石/晶簇都会挡住射线）
+    this.group.traverse((o) => {
+      if (o.isMesh) o.userData.occluder = true;
+      else if (o.isInstancedMesh) o.userData.occluder = true;
+    });
   }
 
   _sample(count, radius, minR = 0, filter) {

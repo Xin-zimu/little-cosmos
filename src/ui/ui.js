@@ -5,6 +5,9 @@ import { PLANET_INFO } from '../world/themes.js';
 
 const $ = (id) => document.getElementById(id);
 
+// BUG-10：未扫描时仍然显示的小地图标记半径（米）
+const SCAN_NEAR_RADIUS = 28;
+
 export class UI {
   constructor(game) {
     this.game = game;
@@ -43,7 +46,18 @@ export class UI {
     $('btn-controls').onclick = () => this.el.controls.classList.remove('hidden');
     $('btn-close-controls').onclick = () => this.el.controls.classList.add('hidden');
     $('btn-resume').onclick = () => g.resume();
-    $('btn-save').onclick = () => { g.save(); this.toast('进度已保存', 'ok'); };
+    // BUG-01：只有真正写入成功才提示已保存；失败时保留当前状态并给出重试指引
+    // BUG-01：失败时提供重试与导出出口，且绝不谎报成功
+    $('btn-save').onclick = () => {
+      const res = g.save();
+      if (res && res.ok) { this.toast('进度已保存', 'ok'); return; }
+      this.toast('保存失败：浏览器存储不可用或已满', 'warn');
+      this.game.audio?.play('uiError');
+      // 本次进度仍保留在内存中，可以直接导出为文件
+      const name = g.exportSave ? g.exportSave(res && res.data) : null;
+      if (name) this.toast('已导出存档文件：' + name, 'info');
+      else this.toast('导出也失败，请清理浏览器存储后重试', 'warn');
+    };
     $('btn-menu').onclick = () => g.toMenu();
     $('set-quality').onchange = (e) => g.setQuality(e.target.value);
     const m1 = $('set-music'), s1 = $('set-sfx'), m2 = $('set-music2'), s2 = $('set-sfx2');
@@ -55,50 +69,101 @@ export class UI {
     m1.oninput = m2.oninput = (e) => setVol('music', +e.target.value);
     s1.oninput = s2.oninput = (e) => setVol('sfx', +e.target.value);
     // 移动端按钮
+    // BUG-11：统一处理 end / cancel / 失焦，任何中断都要释放持续按压状态；
+    // 同时使用 Pointer Events 并用 pointer capture 兜住滑出按钮的情形。
     const touch = g.input.touch;
-    const bindTouch = (id, fn) => {
+    const bindHold = (id, onStart, onEnd) => {
       const el = $(id);
-      el.addEventListener('touchstart', (e) => { e.preventDefault(); fn(true); }, { passive: false });
-      el.addEventListener('touchend', (e) => { e.preventDefault(); fn(false); }, { passive: false });
+      if (!el) return;
+      let active = false;
+      const start = (e) => {
+        e.preventDefault();
+        if (active) return;
+        active = true;
+        el.classList.add('pressed');
+        onStart && onStart();
+      };
+      const end = (e) => {
+        if (e) e.preventDefault();
+        if (!active) return;
+        active = false;
+        el.classList.remove('pressed');
+        onEnd && onEnd();
+      };
+      el.addEventListener('touchstart', start, { passive: false });
+      el.addEventListener('touchend', end, { passive: false });
+      el.addEventListener('touchcancel', end, { passive: false });
+      el.addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse') { e.preventDefault(); start(e); } });
+      el.addEventListener('pointerup', (e) => { if (e.pointerType === 'mouse') end(e); });
+      el.addEventListener('pointercancel', end);
+      el.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && e.buttons === 0) end(null); });
+      // 统一的复位钩子：失焦/暂停/模式切换时清掉按压视觉
+      g.input.resetHooks.push(() => { active = false; el.classList.remove('pressed'); });
     };
-    bindTouch('t-jump', (d) => { if (d) touch.jump = true; });
-    bindTouch('t-fire', (d) => { touch.fire = d; });
-    bindTouch('t-interact', (d) => { if (d) g.input.justPressed.add('KeyE'); });
-    bindTouch('t-build', (d) => { if (d) g.input.justPressed.add('KeyB'); });
-    // 摇杆
+    const bindTap = (id, fn) => bindHold(id, fn, null);
+    bindTap('t-jump', () => { touch.jump = true; });
+    bindHold('t-fire', () => { touch.fire = true; }, () => { touch.fire = false; });
+    bindTap('t-interact', () => { g.input.justPressed.add('KeyE'); });
+    bindTap('t-build', () => { g.input.justPressed.add('KeyB'); });
+    // BUG-09：补齐扫描、切枪、旋转预览与暂停入口
+    bindTap('t-scan', () => { g.input.justPressed.add('KeyV'); });
+    bindTap('t-mode', () => { g.input.justPressed.add('KeyQ'); });
+    bindTap('t-rotate', () => { g.input.justPressed.add('KeyR'); });
+    // BUG-09：暂停按钮直接切换（暂停中游戏循环不消费输入，不能只写 justPressed）
+    bindTap('t-pause', () => {
+      if (g.paused) g.resume();
+      else if (g.mode !== 'menu' && g.mode !== 'intro') g.pause();
+    });
+    bindHold('t-thrust', () => { touch.throttle = 1; }, () => { if (touch.throttle > 0) touch.throttle = 0; });
+    bindHold('t-brake', () => { touch.throttle = -1; }, () => { if (touch.throttle < 0) touch.throttle = 0; });
+    bindHold('t-warp', () => { touch.warp = true; }, () => { touch.warp = false; });
+    bindTap('t-land', () => { touch.land = true; });
+    // 摇杆（BUG-08：摇杆值写进统一输入层，地面/太空/驾驶舱都读同一份）
     const base = $('joy-base'), knob = $('joy-knob');
     let jid = null;
     const rect = () => base.getBoundingClientRect();
+    const setStick = (cx, cy) => {
+      const r = rect();
+      let dx = (cx - (r.left + r.width / 2)) / (r.width / 2);
+      let dy = (cy - (r.top + r.height / 2)) / (r.height / 2);
+      const len = Math.hypot(dx, dy);
+      if (len > 1) { dx /= len; dy /= len; }
+      touch.move.x = dx; touch.move.y = dy;
+      knob.style.transform = `translate(${dx * 36}px, ${dy * 36}px)`;
+    };
+    const releaseStick = () => {
+      jid = null; touch.move.x = touch.move.y = 0; knob.style.transform = '';
+    };
     base.addEventListener('touchstart', (e) => {
-      e.preventDefault(); const t = e.changedTouches[0]; jid = t.identifier;
+      e.preventDefault();
+      const t = e.changedTouches[0];
+      jid = t.identifier;
+      setStick(t.clientX, t.clientY);
     }, { passive: false });
     window.addEventListener('touchmove', (e) => {
       for (const t of e.changedTouches) {
         if (t.identifier !== jid) continue;
-        const r = rect();
-        let dx = (t.clientX - (r.left + r.width / 2)) / (r.width / 2);
-        let dy = (t.clientY - (r.top + r.height / 2)) / (r.height / 2);
-        const len = Math.hypot(dx, dy);
-        if (len > 1) { dx /= len; dy /= len; }
-        touch.move.x = dx; touch.move.y = dy;
-        knob.style.transform = `translate(${dx * 36}px, ${dy * 36}px)`;
+        setStick(t.clientX, t.clientY);
       }
     }, { passive: true });
+    // BUG-11：触摸中断同样要松杆
     const endJoy = (e) => {
-      for (const t of e.changedTouches) {
-        if (t.identifier === jid) { jid = null; touch.move.x = touch.move.y = 0; knob.style.transform = ''; }
-      }
+      for (const t of e.changedTouches) if (t.identifier === jid) releaseStick();
+      if (e.type === 'touchcancel') releaseStick();
     };
     window.addEventListener('touchend', endJoy);
     window.addEventListener('touchcancel', endJoy);
+    g.input.resetHooks.push(() => { releaseStick(); });
     // 触屏设备：显示虚拟摇杆与按钮（必须在绑定之后切换，否则拿不到元素）
     const enableTouchUI = () => {
       const coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
       const small = Math.min(window.innerWidth, window.innerHeight) < 820;
       const hasTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+      // BUG-10：与输入层一致——用实际指针类型判断，不再把“有触屏”当成“只用触屏”
       const on = hasTouch && (coarse || small);
       this.el.touchUi.classList.toggle('hidden', !on);
       document.body.classList.toggle('is-touch', on);
+      this.touchEnabled = on;
       return on;
     };
     this.touchEnabled = enableTouchUI();
@@ -174,13 +239,23 @@ export class UI {
     this.game.dialogueBusy = true;
   }
 
+  // BUG-48：无目标时清空/隐藏进度区；设新目标时统一初始化文本与进度
   setObjective(obj) {
     this.objective = obj;
-    if (!obj) { this.el.objText.textContent = '自由探索'; this.level = null; }
-    else {
-      this.el.objText.textContent = obj.text;
-      this.level = { done: 0, need: obj.need };
+    const prog = this.el.objBar?.parentElement?.parentElement;
+    if (!obj) {
+      this.el.objText.textContent = '自由探索';
+      this.level = null;
+      if (this.el.objBar) this.el.objBar.style.width = '0%';
+      if (this.el.objCount) this.el.objCount.textContent = '';
+      if (prog) prog.style.display = 'none';
+      return;
     }
+    this.el.objText.textContent = obj.text;
+    this.level = { done: 0, need: obj.need };
+    if (prog) prog.style.display = '';
+    if (this.el.objBar) this.el.objBar.style.width = '0%';
+    if (this.el.objCount) this.el.objCount.textContent = `0 / ${obj.need}`;
   }
 
   updateObjectiveProgress(done, need) {
@@ -210,6 +285,11 @@ export class UI {
         n.classList.toggle('active', n.dataset.type === type);
         n.classList.toggle('disabled', !this.game.building.canAfford(n.dataset.type));
       });
+      // BUG-07：建造模式下选中项自动滚入可视区
+      const active = this.el.buildBar.querySelector('.bb-item.active');
+      if (active && active.scrollIntoView) {
+        try { active.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch {}
+      }
     } else {
       this.el.buildBar.classList.add('hidden');
     }
@@ -231,6 +311,11 @@ export class UI {
   setSpaceHud(on) {
     this.el.spaceHud.classList.toggle('hidden', !on);
     document.body.classList.toggle('in-space', on);
+    // BUG-08 / BUG-09：太空与地表的触屏按钮互斥显示
+    document.querySelectorAll('#touch-ui .space-only').forEach((n) => n.classList.toggle('hidden', !on));
+    ['t-jump', 't-fire', 't-interact', 't-build', 't-scan', 't-mode', 't-rotate'].forEach((id) => {
+      const n = $(id); if (n) n.classList.toggle('hidden', !!on);
+    });
     if (on) {
       this.el.navList.classList.remove('hidden');
       this.el.navList.innerHTML = ['verdant', 'emer', 'lumina'].map((id) => {
@@ -311,18 +396,27 @@ export class UI {
     const scale = (N / 2) / 110; // 显示半径 110m
     const px = game.player.pos.x, pz = game.player.pos.z;
     const ox = this.mmExt;
-    const sx = (this.mmBase.width) / (2 * ox);
+    // BUG-06：mmBase 是 128px 画布，覆盖 ±ox 米。sx 是"米 → 画布像素"的换算，
+    // 只能用于源矩形；目标矩形必须用世界尺度（米 × scale），否则底图会缩成
+    // 128 * (128/520) ≈ 31.5px，而正确尺寸是 2*ox*scale = 520px。
     const yaw = game.player.camYaw;
     ctx.translate(N / 2, N / 2);
     ctx.rotate(yaw);
-    ctx.drawImage(this.mmBase, -(px + ox) * sx * scale, -(pz + ox) * sx * scale, this.mmBase.width * sx * scale, this.mmBase.height * sx * scale);
+    ctx.drawImage(this.mmBase, -(px + ox) * scale, -(pz + ox) * scale, 2 * ox * scale, 2 * ox * scale);
+    // BUG-10：扫描（V）真正控制标记可见性。
+    // 扫描前只显示近距离资源；扫描后在限定时间/半径内显示全部节点与生物。
+    const scanT = game.scanActiveT || 0;
+    const scanning = scanT > 0 && game.scanOrigin;
+    const insideScan = (x, z) => scanning && Math.hypot(x - game.scanOrigin.x, z - game.scanOrigin.z) <= (game.scanRadius || 0);
     // 资源点
     for (const nd of game.resources.nodes) {
       if (nd.harvested) continue;
       const rx = (nd.pos.x - px) * scale, rz = (nd.pos.z - pz) * scale;
       if (Math.hypot(rx, rz) > N / 2 - 6) continue;
+      const dist = Math.hypot(nd.pos.x - px, nd.pos.z - pz);
+      if (!insideScan(nd.pos.x, nd.pos.z) && dist > SCAN_NEAR_RADIUS) continue;
       ctx.fillStyle = nd.type === 'ferrite' ? '#ffb27a' : nd.type === 'silica' ? '#f2e08a' : nd.type === 'lumen' ? '#8fe6ff' : '#9dffcc';
-      ctx.globalAlpha = 0.85;
+      ctx.globalAlpha = insideScan(nd.pos.x, nd.pos.z) ? 0.95 : 0.5;
       ctx.beginPath(); ctx.arc(rx, rz, 1.8, 0, Math.PI * 2); ctx.fill();
     }
     ctx.globalAlpha = 1;
@@ -338,12 +432,24 @@ export class UI {
     const rx = (rp.x - px) * scale, rz = (rp.z - pz) * scale;
     ctx.fillStyle = '#ffffff';
     ctx.beginPath(); ctx.moveTo(rx, rz - 5); ctx.lineTo(rx + 3.5, rz + 3); ctx.lineTo(rx, rz + 1.5); ctx.lineTo(rx - 3.5, rz + 3); ctx.closePath(); ctx.fill();
-    // 生物
+    // 生物（同样受扫描范围限制）
     for (const c of game.ecosystem.list) {
       if (c.dead) continue;
+      const inScan = insideScan(c.pos.x, c.pos.z);
+      const dist = Math.hypot(c.pos.x - px, c.pos.z - pz);
+      if (!inScan && dist > SCAN_NEAR_RADIUS) continue;
       const cx = (c.pos.x - px) * scale, cz = (c.pos.z - pz) * scale;
       ctx.fillStyle = c.def.hostile ? 'rgba(255,110,90,0.9)' : 'rgba(200,255,240,0.55)';
       ctx.beginPath(); ctx.arc(cx, cz, c.def.hostile ? 2.2 : 1.4, 0, Math.PI * 2); ctx.fill();
+    }
+    // 扫描波纹
+    if (scanning) {
+      const r = (game.scanRadius || 0) * scale;
+      ctx.strokeStyle = game.palette.accent;
+      ctx.globalAlpha = 0.25 + 0.35 * Math.min(1, scanT / 4);
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc((game.scanOrigin.x - px) * scale, (game.scanOrigin.z - pz) * scale, r, 0, Math.PI * 2); ctx.stroke();
+      ctx.globalAlpha = 1;
     }
     ctx.restore();
     // 玩家箭头

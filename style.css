@@ -199,9 +199,15 @@ body.aiming #crosshair svg { transform: scale(0.8); }
   position: absolute; left: 50%; bottom: 30px; transform: translateX(-50%);
   display: flex; gap: 8px; padding: 8px; background: var(--glass); border: 1px solid var(--glass-line);
   backdrop-filter: blur(12px);
+  /* BUG-07：容器约束在视口内，并允许横向滚动，避免超出屏幕无法选择 */
+  max-width: calc(100vw - 24px);
+  overflow-x: auto; overflow-y: hidden;
+  -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain;
+  scrollbar-width: thin; touch-action: pan-x;
+  pointer-events: auto;
 }
 .bb-item {
-  width: 92px; padding: 8px 8px 7px; border: 1px solid transparent; cursor: pointer; pointer-events: auto;
+  width: 92px; flex: 0 0 auto; padding: 8px 8px 7px; border: 1px solid transparent; cursor: pointer; pointer-events: auto;
   background: rgba(255,255,255,0.03); transition: all .2s var(--ease); text-align: left;
 }
 .bb-item:hover { background: rgba(127,240,200,0.08); }
@@ -355,8 +361,10 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 10px;
 kbd { font-family: var(--font-mono); font-size: 10px; color: var(--fg); border: 1px solid var(--glass-line); padding: 2px 6px; margin-right: 4px; background: rgba(255,255,255,.04); }
 
 /* ============================ 移动端 ============================ */
+/* BUG-06：虚拟控件在 HUD（z-index:10）之上，但自身不再铺满屏幕拦截事件；
+   观察手势挂在 canvas 上，"空白区"本身就是可拖拽的观察区。 */
 #touch-ui { position: fixed; inset: 0; z-index: 15; pointer-events: none; }
-#touch-layer { position: absolute; inset: 0; pointer-events: auto; }
+#touch-ui > * { pointer-events: auto; }
 #joy-base {
   position: absolute; left: 34px; bottom: 120px; width: 120px; height: 120px; border-radius: 50%;
   border: 1px solid rgba(234,242,239,.25); background: rgba(255,255,255,.04); pointer-events: auto;
@@ -366,15 +374,28 @@ kbd { font-family: var(--font-mono); font-size: 10px; color: var(--fg); border: 
   background: rgba(127,240,200,.35); border: 1px solid rgba(127,240,200,.7); box-shadow: 0 0 18px rgba(127,240,200,.4);
 }
 .tbtn {
-  position: absolute; right: 36px; bottom: 200px; width: 74px; height: 74px; border-radius: 50%;
+  position: absolute; right: 22px; bottom: 76px; width: 74px; height: 74px; border-radius: 50%;
   display: grid; place-items: center; font-family: var(--font-cn); font-size: 15px; color: var(--fg);
-  background: rgba(255,255,255,.06); border: 1px solid rgba(234,242,239,.25); pointer-events: auto;
+  background: rgba(10,24,24,.55); border: 1px solid rgba(234,242,239,.3); pointer-events: auto;
+  backdrop-filter: blur(6px); touch-action: none;
 }
 .tbtn.small { width: 56px; height: 56px; font-size: 13px; }
-#t-jump { right: 36px; bottom: 290px; }
-#t-fire { right: 120px; bottom: 120px; background: rgba(255,127,110,.12); border-color: rgba(255,127,110,.5); }
-#t-interact { right: 130px; bottom: 240px; }
-#t-build { right: 40px; bottom: 120px; }
+/* BUG-06 / BUG-07：拇指区三分层——观察区>操作按钮>摇杆，
+   建造条单独占据按钮上方的一条带，永不与摇杆/按钮重叠。 */
+#t-jump { right: 108px; bottom: 22px; }
+#t-fire { right: 22px; bottom: 76px; background: rgba(255,127,110,.14); border-color: rgba(255,127,110,.55); }
+#t-interact { right: 22px; bottom: 166px; }
+#t-build { right: 92px; bottom: 164px; }
+#t-rotate { right: 162px; bottom: 164px; }
+#t-scan { right: 22px; bottom: 234px; }
+#t-mode { right: 92px; bottom: 232px; }
+#t-pause { left: 20px; bottom: 158px; }
+.tbtn.pressed { background: rgba(127,240,200,.24); border-color: var(--accent); }
+/* 太空专用按钮 */
+#t-thrust { right: 22px; bottom: 76px; }
+#t-brake { right: 108px; bottom: 22px; }
+#t-warp { right: 92px; bottom: 164px; }
+#t-land { right: 22px; bottom: 166px; background: rgba(127,240,200,.14); border-color: rgba(127,240,200,.55); }
 
 /* ============================ 加载 ============================ */
 #loading { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: #05090a; transition: opacity 1s var(--ease); }
@@ -473,6 +494,8 @@ body.is-touch .dlg-text { font-size: 11px; line-height: 1.55; }
 body.is-touch .dlg-speaker { font-size: 8px; }
 body.is-touch #toasts { top: 200px; bottom: auto; left: 50%; }
 body.is-touch #prompt { top: 40%; font-size: 11px; padding: 5px 10px 5px 6px; }
-body.is-touch #build-bar { bottom: 180px; left: 50%; }
+/* BUG-07：建造条落在按钮带上方，且两端留出摇杆宽度，避免任何重叠 */
+body.is-touch #build-bar { bottom: 296px; left: 50%; max-width: calc(100vw - 20px); }
+body.is-touch #joy-base { left: 20px; bottom: 22px; }
 body.is-touch #planet-marker { top: 34%; }
 body.is-touch #crosshair { transform: translate(-50%, -50%) scale(.7); }

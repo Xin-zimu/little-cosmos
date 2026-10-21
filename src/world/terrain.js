@@ -324,6 +324,8 @@ export class Terrain {
     const near = new THREE.Mesh(geoNear, matNear);
     near.frustumCulled = false;
     near.name = 'terrain-near';
+    // BUG-29：地形是弹道遮挡体（不可伤害，但会挡住射线）
+    near.userData.occluder = true;
     this.group.add(near);
     this.meshes.push(near);
     this.near = near;
@@ -363,6 +365,7 @@ export class Terrain {
       const mesh = new THREE.Mesh(geo, mat);
       mesh.frustumCulled = false;
       mesh.name = 'terrain-ring' + ri;
+      mesh.userData.occluder = true;
       this.group.add(mesh);
       this.meshes.push(mesh);
       this.rings.push({ mesh, L: r.L, outer: r.outer });
@@ -370,16 +373,11 @@ export class Terrain {
   }
 
   update(camera, time) {
-    // 近网格跟随相机（按格对齐避免顶点抖动）
-    const step = (this.extent * 2) / 512;
-    const cx = Math.round(camera.position.x / step) * step;
-    const cz = Math.round(camera.position.z / step) * step;
-    this.near.position.set(cx, 0, cz);
-    for (const r of this.rings) {
-      const s = (r.outer * 2) / r.L;
-      // 环网格固定在原点（格点在绝对世界中稳定），避免重采样造成接缝闪烁
-      r.mesh.position.set(0, 0, 0);
-    }
+    // 所有地形网格的顶点都使用绝对世界坐标（见 _grid，x/z 覆盖 ±extent），
+    // 因此网格必须固定在原点。原先按相机吸附值平移近景网格，会让渲染地形
+    // 与 terrain.height() 的碰撞/摆放高度错开最多半个格距（≈0.6m），
+    // 表现为角色下沉/悬浮，并在近远景衔接处露缝。
+    // 世界尺度的细节层次由 shader 里的 uTerrainCenter 负责，不需要移动网格。
     this.materials.forEach((m) => {
       m.uniforms.uTime.value = time;
       m.uniforms.uTerrainCenter.value.copy(camera.position);

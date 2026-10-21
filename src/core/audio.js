@@ -53,8 +53,11 @@ export class AudioEngine {
     this.musicBus.gain.value = this.musicVol;
     this.musicBus.connect(this.compressor);
     this.musicBus.connect(this.reverb);
+    // BUG-46：环境声与引擎声都按音效滑块缩放。
+    // ambBus 的自身增益就是 0.8 * sfxVol，因此“音效=0”时环境声确实为 0。
     this.ambBus = ctx.createGain();
-    this.ambBus.gain.value = 0.8;
+    this.ambGainBase = 0.8;
+    this.ambBus.gain.value = this.ambGainBase * this.sfxVol;
     this.ambBus.connect(this.compressor);
     this.ambBus.connect(this.reverb);
 
@@ -407,8 +410,9 @@ export class AudioEngine {
     // 引擎层（飞行时启用）
     const eo = ctx.createOscillator(); eo.type = 'sawtooth'; eo.frequency.value = 60;
     const elp = ctx.createBiquadFilter(); elp.type = 'lowpass'; elp.frequency.value = 300;
+    // BUG-46：引擎层同样接入受控音效总线，不再直连 master 绕过音效滑块
     const eg = ctx.createGain(); eg.gain.value = 0;
-    eo.connect(elp).connect(eg).connect(this.master);
+    eo.connect(elp).connect(eg).connect(this.sfxBus);
     eo.start();
     this.engineLayer = { o: eo, lp: elp, g: eg };
     this.setPlanet('verdant');
@@ -431,13 +435,18 @@ export class AudioEngine {
     this.layers.crickets.gain.setTargetAtTime(id === 'verdant' ? 0.02 : 0.0, t, 2);
   }
 
+  // BUG-45：level<=0 时会把引擎层真正关掉（并让气动层回到基础值）
   setEngine(level, speed = 0) {
-    if (!this.started) return;
+    if (!this.started || !this.engineLayer) return;
     const t = this.ctx.currentTime;
-    this.engineLayer.g.gain.setTargetAtTime(level * 0.22, t, 0.4);
+    const target = Math.max(0, level) * 0.22;
+    this.engineLayer.g.gain.cancelScheduledValues(t);
+    this.engineLayer.g.gain.setTargetAtTime(target, t, target === 0 ? 0.25 : 0.4);
     this.engineLayer.o.frequency.setTargetAtTime(52 + speed * 26, t, 0.4);
     this.engineLayer.lp.frequency.setTargetAtTime(200 + speed * 900, t, 0.4);
-    this.layers.air.gain.setTargetAtTime(0.006 + speed * 0.06, t, 0.5);
+    // 气动噪声只在飞行时有额外增益，回到地面要收回基础值
+    const airBase = { verdant: 0.012, emer: 0.035, lumina: 0.006 }[this.planet] ?? 0.012;
+    this.layers.air.gain.setTargetAtTime(airBase + Math.max(0, speed) * 0.06, t, 0.5);
   }
 
   // ---------------- 生成式氛围音乐 ----------------
@@ -457,6 +466,11 @@ export class AudioEngine {
     if (!this.ctx || !this.started) return;
     const ctx = this.ctx;
     const beat = 60 / this.bpm;
+    // BUG-47：暂停期间 AudioContext 时间照常推进，恢复后不能把已经过去的音符
+    // 全部补排一遍。落后超过 2 拍时直接对齐到当前时间。
+    if (this.nextNoteTime < ctx.currentTime - beat * 2) {
+      this.nextNoteTime = ctx.currentTime + 0.06;
+    }
     if (ctx.currentTime < this.nextNoteTime) return;
     const t = this.nextNoteTime;
     this.musicStep++;
@@ -540,5 +554,10 @@ export class AudioEngine {
   }
 
   setMusicVolume(v) { this.musicVol = v; if (this.musicBus) this.musicBus.gain.value = v; }
-  setSfxVolume(v) { this.sfxVol = v; if (this.sfxBus) this.sfxBus.gain.value = v; }
+  // BUG-46：音效滑块同时控制音效总线、环境声与引擎层
+  setSfxVolume(v) {
+    this.sfxVol = v;
+    if (this.sfxBus) this.sfxBus.gain.value = v;
+    if (this.ambBus) this.ambBus.gain.value = (this.ambGainBase ?? 0.8) * v;
+  }
 }

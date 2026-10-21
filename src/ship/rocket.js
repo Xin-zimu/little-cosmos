@@ -227,7 +227,13 @@ export class Rocket {
     this.group.add(this.lamp);
     this.lampOn = false;
 
-    this.group.traverse((o) => { if (o.isMesh) { o.castShadow = o.castShadow !== false; } });
+    this.group.traverse((o) => {
+      if (o.isMesh) {
+        o.castShadow = o.castShadow !== false;
+        // BUG-29：飞船船体是弹道遮挡体
+        o.userData.occluder = true;
+      }
+    });
     this.group.position.set(0, 0, 0);
     this.root = this.group;
   }

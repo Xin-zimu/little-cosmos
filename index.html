@@ -208,13 +208,23 @@
 </div>
 
 <!-- ================= 移动端 ================= -->
+<!-- BUG-06：不再用铺满屏幕的 #touch-layer 拦截事件；观察手势直接挂在 canvas 上。
+     BUG-09：补齐暂停/保存入口与其余常用命令的触屏映射。 -->
 <div id="touch-ui" class="hidden">
-  <div id="touch-layer"></div>
   <div id="joy-base"><div id="joy-knob"></div></div>
   <div class="tbtn" id="t-jump">跳</div>
   <div class="tbtn" id="t-fire">◉</div>
   <div class="tbtn small" id="t-interact">E</div>
   <div class="tbtn small" id="t-build">建</div>
+  <div class="tbtn small" id="t-scan">扫</div>
+  <div class="tbtn small" id="t-mode">枪</div>
+  <div class="tbtn small" id="t-rotate">旋</div>
+  <div class="tbtn small" id="t-pause">Ⅱ</div>
+  <!-- 太空专用：油门 / 曲率 / 降落 -->
+  <div class="tbtn small space-only hidden" id="t-thrust">推</div>
+  <div class="tbtn small space-only hidden" id="t-brake">减</div>
+  <div class="tbtn small space-only hidden" id="t-warp">曲</div>
+  <div class="tbtn small space-only hidden" id="t-land">降</div>
 </div>
 
 <div id="loading">

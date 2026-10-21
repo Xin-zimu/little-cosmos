@@ -14,6 +14,12 @@ function dirFrom(yaw, pitch) {
   const cp = Math.cos(pitch);
   return new THREE.Vector3(Math.sin(yaw) * cp, Math.sin(pitch), Math.cos(yaw) * cp);
 }
+// 用偏航构造横轴，避免把机头方向当成相机上轴；俯仰接近竖直也不切换参考轴。
+function cameraBasis(yaw, pitch) {
+  const forward = dirFrom(yaw, pitch);
+  const right = V3(Math.cos(yaw), 0, -Math.sin(yaw));
+  return { forward, right, up: new THREE.Vector3().crossVectors(forward, right).normalize() };
+}
 // 让机头（局部 +Y）对准 dir，并绕机头滚转
 function quatFor(dir, roll, out = new THREE.Quaternion()) {
   out.setFromUnitVectors(NOSE, dir);
@@ -65,7 +71,28 @@ export class FlightSystem {
   setPhase(p) {
     this.phase = p;
     this.phaseT = 0;
+    // BUG-45：飞行阶段切换时统一设置引擎层目标音量，
+    // 只要不是太空/逼近/再入，引擎声一律淡出为 0。
+    const engineOn = p === 'space' || p === 'approach' || p === 'reentry' || p === 'launch' || p === 'atmos' || p === 'landing';
+    if (!engineOn) this.game.audio?.setEngine(0, 0);
+    if (p === 'landing') this.landStartY = this.ship.group.position.y;
+    if (p === 'exit') {
+      this.exitCamStart = this.game.camera.position.clone();
+      this.exitLookStart = this.game.cameraLookTarget.clone();
+    }
     this.game.onFlightPhase?.(p);
+  }
+
+  // 平移随飞船立即跟进，仅平滑相对偏移，防止高速航行时镜头落后数百米。
+  followCamera(desired, dt, speed, reset = false) {
+    const camera = this.game.camera;
+    const pos = this.ship.group.position;
+    if (reset) camera.position.copy(desired);
+    else {
+      if (this.cameraShipPos) camera.position.add(pos.clone().sub(this.cameraShipPos));
+      camera.position.lerp(desired, 1 - Math.exp(-speed * dt));
+    }
+    this.cameraShipPos = pos.clone();
   }
 
   beginBoard() {
@@ -79,7 +106,7 @@ export class FlightSystem {
     this.ship.openDoor(true);
     this.game.audio?.play('door');
     this.camStart = this.game.camera.position.clone();
-    this.camStartLook = this.game.cameraLookTarget || this.game.player.pos.clone();
+    this.camStartLook = this.game.camera.getWorldDirection(V3()).multiplyScalar(5).add(this.camStart);
   }
 
   beginLaunch(destId) {
@@ -87,6 +114,8 @@ export class FlightSystem {
     this.setPhase('launch');
     this.launchYaw = this.ship.group.rotation.y;
     this.originPos = this.ship.group.position.clone();
+    this.cameraShipPos = this.originPos.clone();
+    this.launchCamRotation = this.game.camera.quaternion.clone();
     this.game.audio?.play('thruster', { vol: 1.0 });
     this.smokeBurst = 0;
     this.ship.lampOn = true;
@@ -110,13 +139,26 @@ export class FlightSystem {
     s.throttle = 0.0;
     s.speed = 0;
     s.warp = 0;
-    this.spaceCamInit = true;
+    this.autoThrottle = undefined;
     this.hoverTarget = null;
+    // 场景切换所在帧就同步网格和镜头，不能渲染一帧旧地表坐标。
+    const { forward, right, up } = cameraBasis(s.yaw, s.pitch);
+    this.ship.group.position.copy(s.pos);
+    this.ship.group.quaternion.copy(quatFor(forward, 0));
+    const desired = s.pos.clone().addScaledVector(forward, -13).addScaledVector(up, 4.2).addScaledVector(right, 17);
+    this.followCamera(desired, 0, 5, true);
+    this.game.cameraLookTarget.copy(s.pos).addScaledVector(forward, 9).addScaledVector(up, 1.6);
+    this.game.camera.up.copy(up);
+    this.game.camera.lookAt(this.game.cameraLookTarget);
+    this.game.spaceSystem.follow(this.game.camera, this.t);
   }
 
   requestLanding(id) {
     if (this.phase !== 'space') return;
     this.targetPlanet = id;
+    this.reentrySwapped = false;
+    this.touchedDown = false;
+    this.doorSnd = false;
     this.approachFrom = null;
     this.approachT = 0;
     this.setPhase('approach');
@@ -169,13 +211,24 @@ export class FlightSystem {
       p.pos.lerp(this.ship.group.position.clone().add(V3(0, 0.9, -0.1)), k);
       p.astronaut.root.visible = k < 0.6;
     }
+    p.object.position.copy(p.pos);
+    p.object.rotation.set(0, p.yaw, 0);
+    p.astronaut.update(dt, { speed: t < 1.8 ? 1 : 0 });
     // 相机：推进到舷窗高度与方向
     const ship = this.ship.group;
-    const camTarget = ship.position.clone().add(V3(0, 1.55, 2.9).applyAxisAngle(V3(0, 1, 0), ship.rotation.y));
-    const lookTarget = ship.position.clone().add(V3(0, 1.25, -0.4));
+    const camTarget = ship.position.clone().add(V3(0, 2.35, 0.85).applyAxisAngle(V3(0, 1, 0), ship.rotation.y));
+    const lookTarget = ship.position.clone().add(V3(0, 2.1, 6.5).applyAxisAngle(V3(0, 1, 0), ship.rotation.y));
     const k = smoothstep(0.2, 2.2, t);
-    this.game.camera.position.lerpVectors(this.camStart, camTarget, k);
+    // 绕船体外侧进入舷窗，避免从人物镜头直线穿过机身。
+    const startOffset = this.camStart.clone().sub(ship.position);
+    const startAngle = Math.atan2(startOffset.x, startOffset.z);
+    const angleDelta = Math.atan2(Math.sin(ship.rotation.y - startAngle), Math.cos(ship.rotation.y - startAngle));
+    const angle = startAngle + angleDelta * k;
+    const radius = lerp(Math.max(0.85, Math.hypot(startOffset.x, startOffset.z)), 0.85, k);
+    this.game.camera.position.set(ship.position.x + Math.sin(angle) * radius,
+      lerp(this.camStart.y, camTarget.y, k), ship.position.z + Math.cos(angle) * radius);
     this.game.cameraLookTarget = this.camStartLook.clone().lerp(lookTarget, k);
+    this.game.camera.up.set(0, 1, 0);
     this.game.camera.lookAt(this.game.cameraLookTarget);
     this.game.fovCurrent = lerp(55, 46, k);
     this.ship.openDoor(true);
@@ -225,10 +278,11 @@ export class FlightSystem {
     const back = clamp(t / 6, 0, 1);
     const camTarget = shipObj.position.clone().add(V3(lerp(5.5, 14, back), lerp(2.2, -1.5, back), lerp(7.5, -16, back)));
     const lookAt = shipObj.position.clone().add(V3(0, lerp(1.4, 6, back), 0));
-    this.game.camera.position.lerp(camTarget, 1 - Math.exp(-3 * dt));
-    if (t < 0.05) this.game.camera.position.copy(camTarget);
+    this.followCamera(camTarget, dt, 3);
     this.game.cameraLookTarget = lookAt;
+    this.game.camera.up.set(0, 1, 0);
     this.game.camera.lookAt(lookAt);
+    this.game.camera.quaternion.slerpQuaternions(this.launchCamRotation, this.game.camera.quaternion.clone(), smoothstep(0, 0.8, t));
     this.game.fovCurrent = lerp(46, 64, smoothstep(0, 5, t));
     // 云层包裹感
     this.game.atmosOverlay = clamp(smoothstep(3.6, 5.2, t) * (1 - smoothstep(5.6, 7.2, t)), 0, 1);
@@ -244,16 +298,16 @@ export class FlightSystem {
   updateSpace(dt, input) {
     const s = this.shipState;
     const game = this.game;
-    // 输入
+    // 输入（BUG-08：摇杆在统一输入层已折算进 forward/strafe，这里直接复用）
     const yawIn = -(input.mouseDX || 0) * 0.0022 - (input.strafe || 0) * dt * 0.6;
-    const pitchIn = -(input.mouseDY || 0) * 0.0022 + (input.forward || 0) * dt * 0.35;
+    const pitchIn = -(input.mouseDY || 0) * 0.0022 - (input.forward || 0) * dt * 0.35;
     s.yaw += yawIn;
     s.pitch = clamp(s.pitch + pitchIn, -1.2, 1.2);
     s.roll = damp(s.roll, -((input.strafe || 0)) * 0.35, 3, dt);
-    // 油门：E/C 与 滚轮
-    if (input.held.has('KeyE')) s.throttle = clamp(s.throttle + dt * 0.6, 0, 1);
-    if (input.held.has('KeyC')) s.throttle = clamp(s.throttle - dt * 0.6, 0, 1);
-    if (input.forward) s.throttle = clamp(s.throttle + dt * 0.25, 0, 1);
+    // 油门（BUG-39）：只由明确的加速/减速命令改变，俯仰键不再偷偷加油门。
+    // 键盘 E/C、触屏持续加减速按钮、滚轮都走同一条通道。
+    const throttleIn = (input.throttle || 0) + (this.autoThrottle !== undefined ? 0 : 0);
+    if (throttleIn) s.throttle = clamp(s.throttle + dt * 0.6 * throttleIn, 0, 1);
     if (input.wheel) s.throttle = clamp(s.throttle - input.wheel * 0.12, 0, 1);
     if (this.autoThrottle !== undefined) {
       s.throttle = damp(s.throttle, this.autoThrottle, 0.8, dt);
@@ -261,7 +315,8 @@ export class FlightSystem {
     }
     const targetSpeed = s.throttle * 900;
     s.speed = damp(s.speed, targetSpeed, 0.9, dt);
-    const warp = input.held.has('ShiftLeft') || input.sprint ? 1 : 0;
+    // BUG-08：曲率用 held Shift 或触屏“曲”按钮
+    const warp = input.warp || input.held.has('ShiftLeft') || input.sprint ? 1 : 0;
     s.warp = damp(s.warp, warp, 2, dt);
     const speed = s.speed * (1 + s.warp * 2.2);
     this.speedForHud = speed;
@@ -292,20 +347,15 @@ export class FlightSystem {
       this.ship.flameOuter.mat.uniforms.uLen.value = 1.6 + s.throttle * 2.2 + s.warp * 1.5;
     }
     this.ship.lampOn = false;
-    // 相机：船尾侧后上方（俯视角度，让尾焰从画面下方掠过而不是直冲镜头）
+    // 所有太空阶段共用同一组正交基，自动接近和再入也保持地平线稳定。
     const back = forward.clone().negate();
-    const up = new THREE.Vector3(0, 1, 0).applyQuaternion(q);
-    const side = new THREE.Vector3().crossVectors(forward, up).normalize();
+    const { right, up } = cameraBasis(s.yaw, s.pitch);
     // 相机在船身侧后方（略微偏上），从侧后方看飞船与尾焰，避免尾焰正对镜头
     const desired = s.pos.clone()
       .addScaledVector(back, 13.0)
       .addScaledVector(up, 4.2)
-      .addScaledVector(side, 17.0);
-    if (this.spaceCamInit) {
-      game.camera.position.copy(desired);
-      this.spaceCamInit = false;
-    }
-    game.camera.position.lerp(desired, 1 - Math.exp(-5 * dt));
+      .addScaledVector(right, 17.0);
+    this.followCamera(desired, dt, 5);
     // 取景：飞船略偏下，视线沿飞行方向但只领先少量距离
     const look = s.pos.clone().addScaledVector(forward, 9.0).addScaledVector(up, 1.6);
     game.cameraLookTarget = look;
@@ -333,7 +383,9 @@ export class FlightSystem {
     } else {
       game.ui?.showPrompt('');
     }
-    if ((input.aim || input.interact) && hit) {
+    // BUG-38：降落用独立命令（F / 触屏降落键），不再复用通用的 interact，
+    // 否则“按 E 加速”会同时被当成降落确认。
+    if ((input.land || input.aim) && hit) {
       game.ui?.showPrompt('');
       this.requestLanding(hit);
     }
@@ -387,10 +439,10 @@ export class FlightSystem {
     }
     // 朝向行星
     const to = target.clone().sub(s.pos).normalize();
-    s.yaw = damp(s.yaw, Math.atan2(to.x, to.z), 2.2, dt);
+    const yawDelta = Math.atan2(Math.sin(Math.atan2(to.x, to.z) - s.yaw), Math.cos(Math.atan2(to.x, to.z) - s.yaw));
+    s.yaw += yawDelta * (1 - Math.exp(-2.2 * dt));
     s.pitch = damp(s.pitch, Math.asin(clamp(to.y, -1, 1)), 2.2, dt);
     s.roll = damp(s.roll, 0, 2, dt);
-    this.autoThrottle = 1;
     const forward = dirFrom(s.yaw, s.pitch);
     const q = quatFor(forward, s.roll);
     // 沿视线的平滑推进：从起点冲向行星外大气层（R*1.18）
@@ -408,13 +460,12 @@ export class FlightSystem {
     ship.quaternion.copy(q);
     this.ship.throttle = 0.8;
     this.ship.update(dt, this.t);
-    const up = new THREE.Vector3(0, 1, 0).applyQuaternion(q);
-    const side = new THREE.Vector3().crossVectors(forward, up).normalize();
+    const { up, right: side } = cameraBasis(s.yaw, s.pitch);
     const camOffset = s.pos.clone()
       .addScaledVector(forward, -12.5)
       .addScaledVector(up, 3.4)
       .addScaledVector(side, 4.8);
-    game.camera.position.lerp(camOffset, 1 - Math.exp(-4 * dt));
+    this.followCamera(camOffset, dt, 4);
     const look = s.pos.clone().addScaledVector(forward, 22);
     game.cameraLookTarget = look;
     game.camera.up.copy(up);
@@ -447,13 +498,12 @@ export class FlightSystem {
     this.ship.throttle = 0.9;
     this.ship.update(dt, this.t);
     game.cameraShake = 0.25 + approachK * 0.2;
-    const up = new THREE.Vector3(0, 1, 0).applyQuaternion(q);
-    const side = new THREE.Vector3().crossVectors(forward, up).normalize();
+    const { up, right: side } = cameraBasis(s.yaw, s.pitch);
     const camOffset = s.pos.clone()
       .addScaledVector(forward, -18)
       .addScaledVector(up, 6)
       .addScaledVector(side, 8);
-    game.camera.position.lerp(camOffset, 1 - Math.exp(-4 * dt));
+    this.followCamera(camOffset, dt, 4);
     const look = s.pos.clone().addScaledVector(forward, 12);
     game.cameraLookTarget = look;
     game.camera.up.copy(up);
@@ -464,6 +514,9 @@ export class FlightSystem {
       this.reentrySwapped = true;
       game.startLandingScene(id);
       this.setPhase('atmos');
+      // 星系坐标和地表坐标不能互相插值，否则镜头会从数千米外飞进地表。
+      this.updateAtmos(0);
+      game.terrain.update?.(game.camera, game.time);
     }
   }
 
@@ -473,10 +526,10 @@ export class FlightSystem {
     const t = this.phaseT;
     const startY = game.landingStartY;
     const ship = this.ship.group;
-    // 高度从 260 降到地面
+    // 从入场高度连续下降到着陆段的起点。
     const k = smoothstep(0, 4.2, t);
-    const groundY = game.player.terrain.height(ship.position.x, ship.position.z) + 1.2;
-    ship.position.y = lerp(startY, groundY + 26, k * 0.85);
+    const groundY = game.player.terrain.height(ship.position.x, ship.position.z);
+    ship.position.y = lerp(startY, groundY + 26, k);
     // 姿态：从俯冲逐步拉平到垂直（机头朝上），保留着陆朝向
     const tilt = lerp(0.75, 0, smoothstep(0, 3.2, t));
     ship.quaternion.setFromEuler(new THREE.Euler(tilt, this.landingYaw || 0, Math.sin(t * 0.9) * 0.05 * tilt, 'YXZ'));
@@ -487,7 +540,7 @@ export class FlightSystem {
     // 镜头：从云层上方跟随下降到地面附近的侧后视
     const look = ship.position.clone().add(V3(0, 1.0, 0));
     const camTarget = ship.position.clone().add(V3(11, 6, 15));
-    game.camera.position.lerp(camTarget, 1 - Math.exp(-2.6 * dt));
+    this.followCamera(camTarget, dt, 2.6, this.phaseT === 0);
     game.cameraLookTarget = look;
     game.camera.up.set(0, 1, 0);
     game.camera.lookAt(look);
@@ -504,28 +557,28 @@ export class FlightSystem {
     const game = this.game;
     const ship = this.ship.group;
     const t = this.phaseT;
-    const groundY = game.player.terrain.height(ship.position.x, ship.position.z) + 0.9;
-    const startY = groundY + 26;
+    const groundY = game.player.terrain.height(ship.position.x, ship.position.z);
+    const startY = this.landStartY ?? ship.position.y;
     const k = smoothstep(0, 3.0, t);
     ship.position.y = lerp(startY, groundY, k * k);
     // 落到地面时姿态回到垂直（轻微摇摆）
     const settle = smoothstep(0, 2.2, t);
-    ship.quaternion.setFromUnitVectors(NOSE, new THREE.Vector3(
-      Math.sin(t * 1.4) * 0.012 * (1 - settle * 0.5),
-      1,
-      Math.sin(t * 1.1) * 0.01 * (1 - settle * 0.5)
-    ).normalize());
+    ship.quaternion.setFromEuler(new THREE.Euler(
+      Math.sin(t * 1.1) * 0.01 * (1 - settle), this.landingYaw || 0,
+      Math.sin(t * 1.4) * 0.012 * (1 - settle), 'YXZ'
+    ));
     this.ship.throttle = lerp(0.75, 0, smoothstep(2.4, 3.2, t));
     this.ship.update(dt, this.t);
     game.cameraShake = 0.06 + (1 - k) * 0.05;
     const camTarget = ship.position.clone().add(V3(6.5, 2.2, 8.5));
-    game.camera.position.lerp(camTarget, 1 - Math.exp(-2.2 * dt));
+    this.followCamera(camTarget, dt, 2.2);
     game.cameraLookTarget = ship.position.clone().add(V3(0, 1, 0));
     game.camera.up.set(0, 1, 0);
     game.camera.lookAt(game.cameraLookTarget);
     game.fovCurrent = 56;
     if (t > 3.0 && !this.touchedDown) {
       this.touchedDown = true;
+      ship.userData.groundY = groundY;
       game.audio?.play('heavyLand');
       game.cameraShake = 0.5;
       if (game.dustPlume) for (let i = 0; i < 6; i++) setTimeout(() => game.dustPlume.userData.emit(ship.position.clone().add(V3(0, 0.3, 0)), 3.2, 1.2), i * 90);
@@ -563,26 +616,38 @@ export class FlightSystem {
     const doorWorld = ship.position.clone().add(V3(0, 0.15, -1.3).applyAxisAngle(V3(0, 1, 0), yaw));
     const k = smoothstep(0, 1.4, t);
     const outward = V3(0, 0, -1).applyAxisAngle(V3(0, 1, 0), yaw);
-    const startPos = ship.position.clone().add(V3(0, 0.9, -0.2));
+    const startPos = ship.position.clone().add(V3(0, 0.9, -0.2).applyAxisAngle(V3(0, 1, 0), yaw));
     p.pos.lerpVectors(startPos, doorWorld.clone().addScaledVector(outward, 7.0), k);
     p.pos.y = game.terrain.height(p.pos.x, p.pos.z);
     p.astronaut.root.visible = t > 0.15;
     p.yaw = Math.atan2(outward.x, outward.z);
     p.camYaw = p.yaw + Math.PI;
-    p.astronaut.params.walk = t > 0.2 && t < 1.5 ? 0.8 : 0;
-    if (t > 0.2 && t < 1.5) p.astronaut.cycle += dt * 5;
-    // 相机：拉回到第三人称（用玩家朝向而非相机朝向，避免穿过船体）
-    const camYaw = p.yaw;
-    const camDesired = p.pos.clone().add(V3(Math.sin(camYaw) * -5.2, 2.4, Math.cos(camYaw) * -5.2));
-    game.camera.position.lerp(camDesired, 1 - Math.exp(-2.5 * dt));
-    game.cameraLookTarget = p.pos.clone().add(V3(0, 0.9, 0));
+    p.object.position.copy(p.pos);
+    p.object.rotation.set(0, p.yaw, 0);
+    p.astronaut.update(dt, { speed: t > 0.2 && t < 1.5 ? 2.7 : 0 });
+    p.vel.set(0, 0, 0);
+    p.velY = 0;
+    p.grounded = true;
+    p.aiming = false;
+    p.landImpact = 0;
+    p.camPitch = 0.28;
+    p.camCur = p.camDist;
+    p.camTarget.copy(p.pos).add(V3(0, 0.5, 0));
+    // 从舱门侧面绕到角色身后，视线始终跟随角色；沿用地表的距离与俯仰。
+    const blend = smoothstep(0, 2.0, t);
+    p.updateCamera(dt, game.camera, {}, true);
+    game.camera.position.lerpVectors(this.exitCamStart, game.camera.position.clone(), blend);
+    const fromShip = game.camera.position.clone().sub(ship.position);
+    const outsideDoor = fromShip.dot(outward);
+    if (outsideDoor < 2.5) game.camera.position.addScaledVector(outward, 2.5 - outsideDoor);
+    game.camera.position.y = Math.max(game.camera.position.y, game.terrain.height(game.camera.position.x, game.camera.position.z) + 0.45);
+    game.cameraLookTarget.lerpVectors(this.exitLookStart, game.cameraLookTarget.clone(), smoothstep(0, 0.4, t));
     game.camera.up.set(0, 1, 0);
     game.camera.lookAt(game.cameraLookTarget);
     game.fovCurrent = 55;
     this.ship.openDoor(false);
     if (t > 2.0) {
       p.inRocket = false;
-      p.camYaw = camYaw + Math.PI;
       game.finishLanding();
       this.setPhase('ground');
       this.touchedDown = false;

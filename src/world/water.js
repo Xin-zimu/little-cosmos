@@ -93,6 +93,8 @@ export function createWater(palette, level, kind) {
     },
   });
   const mesh = new THREE.Mesh(geo, mat);
+  // BUG-29：水面是纯视觉层，不阻挡弹道
+  mesh.userData.noBlock = true;
   mesh.position.y = level;
   mesh.renderOrder = 2;
   mesh.name = 'water';

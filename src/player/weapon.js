@@ -19,6 +19,32 @@ void main() {
 }
 `;
 
+// BUG-05：每种射击模式的能量消耗（与 tryFire 中的校验共用同一份数据）
+const ENERGY_COST = [8, 26, 16];
+
+// 射线只应命中"看得见"的物体。Raycaster 自身不检查 visible，而采集后的资源节点
+// 与死亡后淡出的生物只是把 visible 置 false，若不在这里过滤，射线会打在隐形物体上：
+// 伤害被吸收且没有命中反馈，玩家会以为武器失灵。
+function isVisibleInScene(obj) {
+  for (let o = obj; o; o = o.parent) {
+    if (!o.visible) return false;
+  }
+  return true;
+}
+
+// BUG-29：区分“可伤害”（hittable）与“可阻挡”（occluder）。
+// 判定采用“默认阻挡 + 显式放行”：
+//  - 任何可见的实体网格（含 InstancedMesh）都会挡住弹道，因此地形、建筑、
+//    飞船、植被、资源无需逐个打标记也不会被穿透；
+//  - 纯视觉元素（天空、水面、粒子、弹道自身、全息预览）显式标记 noBlock 放行。
+// 这样新增场景物件不会悄悄破坏“射击被遮挡”的规则。
+function isOccluder(obj) {
+  if (!obj.isMesh && !obj.isInstancedMesh) return false;
+  if (obj.userData.noBlock) return false;
+  if (obj.userData.hittable || obj.userData.occluder) return true;
+  return true;
+}
+
 export class Weapon {
   constructor(game) {
     this.game = game;
@@ -57,12 +83,38 @@ export class Weapon {
     this.flashTex.colorSpace = THREE.SRGBColorSpace;
   }
 
+  // BUG-32：切换模式丢弃尚未发射的余弹，避免切回来后“不按开火也会继续射击”
   switchMode() {
+    if (this.burstCount > 0) {
+      this.burstCount = 0;
+      this.burstTimer = 0;
+    }
+    this.cooldown = Math.max(this.cooldown, 0);
     this.mode = (this.mode + 1) % 3;
     this.game.ui?.toast(`射击模式：${this.modes[this.mode]}`, 'info');
     this.game.audio?.play('uiTick');
   }
 
+  // BUG-33：离开地表 / 重开游戏时显式销毁所有短生命周期特效
+  clearEffects() {
+    for (const b of this.beams) {
+      this.game.scene.remove(b.mesh);
+      b.mesh.geometry.dispose();
+      b.mesh.material.dispose();
+    }
+    this.beams.length = 0;
+    for (const f of this.flashes) {
+      this.game.scene.remove(f.sprite);
+      f.sprite.material.dispose();
+    }
+    this.flashes.length = 0;
+    this.light.intensity = 0;
+    this.burstCount = 0;
+    this.burstTimer = 0;
+    this.recoil = 0;
+  }
+
+  // BUG-33：短生命周期特效的更新放进通用循环，飞行/太空/菜单期间也会自然消失
   update(dt) {
     this.cooldown -= dt;
     this.recoil = Math.max(0, this.recoil - dt * 6);
@@ -107,23 +159,23 @@ export class Weapon {
   tryFire(camera, fromPlayer) {
     if (!fromPlayer) return;
     if (this.cooldown > 0) return;
-    if (this.energy < 8) {
-      this.game.ui?.toast('能量不足', 'warn');
+    // BUG-05：三种模式消耗不同，必须按当前模式校验能量，并保证扣费后不为负
+    const cost = ENERGY_COST[this.mode] ?? ENERGY_COST[0];
+    if (this.energy < cost) {
+      this.game.ui?.toast(`能量不足（需要 ${Math.ceil(cost)}）`, 'warn');
       this.game.audio?.play('uiError');
       return;
     }
+    this.energy = Math.max(0, this.energy - cost);
     if (this.mode === 0) {
       this.cooldown = 0.22;
-      this.energy -= 8;
       this.fireOnce(1.0);
     } else if (this.mode === 1) {
       this.cooldown = 0.9;
-      this.energy -= 26;
       this.burstCount = 4;
       this.burstTimer = 0;
     } else {
       this.cooldown = 0.55;
-      this.energy -= 16;
       for (let i = -2; i <= 2; i++) this.fireOnce(0.55, false, i * 0.032);
     }
   }
@@ -131,23 +183,48 @@ export class Weapon {
   fireOnce(mult = 1, small = false, spread = 0) {
     const game = this.game;
     const cam = game.camera;
-    const dir = new THREE.Vector3();
-    cam.getWorldDirection(dir);
-    dir.x += spread;
-    dir.y += spread * 0.4;
-    dir.normalize();
+    // BUG-31：散射在相机局部正交基上施加，不再直接叠加世界坐标 x/y，
+    // 因此朝任何方向射击的扇形张角都一致。
+    const baseDir = new THREE.Vector3();
+    cam.getWorldDirection(baseDir);
+    const dir = baseDir.clone();
+    if (spread) {
+      const right = new THREE.Vector3();
+      const up = new THREE.Vector3();
+      // 由视线构造稳定的正交基（视线接近竖直时退回到世界轴）
+      up.set(0, 1, 0);
+      if (Math.abs(baseDir.dot(up)) > 0.98) up.set(0, 0, 1);
+      right.crossVectors(baseDir, up).normalize();
+      up.crossVectors(right, baseDir).normalize();
+      // spread 是归一化后的横向偏移量，围绕射线旋转成固定角度
+      const ang = Math.atan(spread);
+      dir.addScaledVector(right, Math.tan(ang)).addScaledVector(up, Math.tan(ang) * 0.4).normalize();
+    }
+    // 便于验证与调试：记录本次实际使用的射线方向
+    this.lastDir = dir.clone();
+    this.lastOrigin = cam.position.clone();
     const origin = cam.position.clone();
     const muzzleWorld = new THREE.Vector3();
     const muzzle = game.player.astronaut.muzzle;
     muzzle.getWorldPosition(muzzleWorld);
 
+    // BUG-29：射线集合 = 全部“可伤害 + 可阻挡”的实体，先取最近命中再判定伤害。
+    // 玩家自身的模型必须排除：枪口就在模型上，否则“枪口到相机的遮挡检查”会命中自己。
+    const targets = [];
+    const ownRoot = game.player?.object;
+    const isOwn = (o) => {
+      for (let n = o; n; n = n.parent) if (n === ownRoot) return true;
+      return false;
+    };
+    game.scene.traverse((o) => {
+      if (o.isMesh && isOccluder(o) && isVisibleInScene(o) && !isOwn(o)) targets.push(o);
+    });
     this.raycaster.set(origin, dir);
     this.raycaster.far = this.range;
-    const targets = [];
-    game.scene.traverse((o) => {
-      if (o.isMesh && o.userData.hittable) targets.push(o);
-    });
-    const hits = this.raycaster.intersectObjects(targets, false);
+    let hits = this.raycaster.intersectObjects(targets, false);
+    // BUG-29 补充：弹道是从枪口画到命中点的，枪口到目标之间也必须没有遮挡。
+    // 判定放在确定命中点之后进行（见下方 muzzleBlocked 计算）。
+    this.lastHitCount = hits.length;
     let end = origin.clone().addScaledVector(dir, this.range);
     let hitCreature = null;
     let hitObj = null;
@@ -155,10 +232,29 @@ export class Weapon {
       end = hits[0].point;
       hitObj = hits[0].object;
       const c = hitObj.userData.creature;
-      if (c && !c.dead) {
-        // 命中弱点判定：头部 / 背脊
-        const local = hitObj.worldToLocal(hits[0].point.clone());
-        const weak = hitObj.userData.weak && local.y > hitObj.userData.weakY;
+      // BUG-29：枪口到命中点的遮挡检查。
+      // 只在枪口处于合理位置时启用：如果宇航员变换尚未更新，枪口坐标会远离相机，
+      // 此时线段没有意义，不能据此判定“整枪被挡住”。
+      let muzzleBlocked = false;
+      const camToMuzzle = muzzleWorld.distanceTo(origin);
+      const targetDist = hits[0].distance;
+      if (camToMuzzle > 0.15 && camToMuzzle < targetDist) {
+        const seg = end.clone().sub(muzzleWorld);
+        const segLen = seg.length();
+        if (segLen > 0.2) {
+          this.raycaster.set(muzzleWorld, seg.normalize());
+          this.raycaster.far = segLen - 0.08;
+          const mHits = this.raycaster.intersectObjects(targets, false);
+          // 起手就贴在枪口上的面（同一个物体）不算遮挡
+          muzzleBlocked = mHits.some((h) => h.object !== hitObj && h.distance > 0.05);
+          this.raycaster.far = this.range;
+          this.raycaster.near = 0;
+        }
+      }
+      this.lastMuzzleBlocked = muzzleBlocked;
+      if (c && !c.dead && !muzzleBlocked) {
+        // BUG-30：弱点由模型显式标记（userData.weak），命中点局部坐标落在弱点体内即为暴击
+        const weak = !!hitObj.userData.weak;
         hitCreature = c;
         const killed = c.damage(this.damage * mult, hits[0].point, weak);
         game.onHitFeedback(hits[0].point, weak, killed);
@@ -182,6 +278,8 @@ export class Weapon {
       uniforms: { uColor: { value: new THREE.Color(game.palette.accent) }, uLife: { value: 1 } },
     });
     const mesh = new THREE.Mesh(geo, mat);
+    // BUG-29：弹道自身不是遮挡体
+    mesh.userData.noBlock = true;
     mesh.position.copy(muzzleWorld);
     mesh.lookAt(end);
     game.scene.add(mesh);

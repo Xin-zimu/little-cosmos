@@ -156,6 +156,8 @@ export function createSky(palette) {
   const geo = new THREE.SphereGeometry(1, 32, 20);
   const mat = createSkyMaterial(palette);
   const mesh = new THREE.Mesh(geo, mat);
+  // BUG-29：天空穹顶是纯视觉层，不阻挡弹道
+  mesh.userData.noBlock = true;
   mesh.frustumCulled = false;
   mesh.renderOrder = -1000;
   mesh.scale.setScalar(1000);

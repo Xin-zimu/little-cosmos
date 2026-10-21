@@ -182,7 +182,7 @@ var LittleCosmos = (function (exports) {
 
 			}
 
-			if ( listeners[ type ].indexOf( listener ) === -1 ) {
+			if ( listeners[ type ].indexOf( listener ) === - 1 ) {
 
 				listeners[ type ].push( listener );
 
@@ -196,7 +196,7 @@ var LittleCosmos = (function (exports) {
 
 			const listeners = this._listeners;
 
-			return listeners[ type ] !== undefined && listeners[ type ].indexOf( listener ) !== -1;
+			return listeners[ type ] !== undefined && listeners[ type ].indexOf( listener ) !== - 1;
 
 		}
 
@@ -211,7 +211,7 @@ var LittleCosmos = (function (exports) {
 
 				const index = listenerArray.indexOf( listener );
 
-				if ( index !== -1 ) {
+				if ( index !== - 1 ) {
 
 					listenerArray.splice( index, 1 );
 
@@ -315,15 +315,15 @@ var LittleCosmos = (function (exports) {
 
 			case Int32Array:
 
-				return Math.max( value / 2147483647.0, -1 );
+				return Math.max( value / 2147483647.0, - 1.0 );
 
 			case Int16Array:
 
-				return Math.max( value / 32767.0, -1 );
+				return Math.max( value / 32767.0, - 1.0 );
 
 			case Int8Array:
 
-				return Math.max( value / 127.0, -1 );
+				return Math.max( value / 127.0, - 1.0 );
 
 			default:
 
@@ -738,7 +738,7 @@ var LittleCosmos = (function (exports) {
 
 			// clamp, to handle numerical problems
 
-			return Math.acos( clamp$1( theta, -1, 1 ) );
+			return Math.acos( clamp$1( theta, - 1, 1 ) );
 
 		}
 
@@ -1321,7 +1321,7 @@ var LittleCosmos = (function (exports) {
 	function toReversedProjectionMatrix( projectionMatrix ) {
 
 		const m = projectionMatrix.elements;
-		const isPerspectiveMatrix = m[ 11 ] === -1;
+		const isPerspectiveMatrix = m[ 11 ] === - 1;
 
 		// Reverse [0, 1] projection matrix
 		if ( isPerspectiveMatrix ) {
@@ -1488,9 +1488,9 @@ var LittleCosmos = (function (exports) {
 	);
 
 	const XYZ_TO_LINEAR_REC709 = /*@__PURE__*/ new Matrix3().set(
-		3.2409699, -1.5373832, -0.4986108,
-		-0.9692436, 1.8759675, 0.0415551,
-		0.0556301, -0.203977, 1.0569715
+		3.2409699, - 1.5373832, - 0.4986108,
+		- 0.9692436, 1.8759675, 0.0415551,
+		0.0556301, - 0.2039770, 1.0569715
 	);
 
 	ColorManagement.define( {
@@ -3022,7 +3022,7 @@ var LittleCosmos = (function (exports) {
 
 				let s = 1 - t;
 				const cos = x0 * x1 + y0 * y1 + z0 * z1 + w0 * w1,
-					dir = ( cos >= 0 ? 1 : -1 ),
+					dir = ( cos >= 0 ? 1 : - 1 ),
 					sqrSin = 1 - cos * cos;
 
 				// Skip the Slerp for tiny steps to avoid numeric problems:
@@ -3365,7 +3365,7 @@ var LittleCosmos = (function (exports) {
 
 		angleTo( q ) {
 
-			return 2 * Math.acos( Math.abs( clamp$1( this.dot( q ), -1, 1 ) ) );
+			return 2 * Math.acos( Math.abs( clamp$1( this.dot( q ), - 1, 1 ) ) );
 
 		}
 
@@ -3399,9 +3399,9 @@ var LittleCosmos = (function (exports) {
 
 		conjugate() {
 
-			this._x *= -1;
-			this._y *= -1;
-			this._z *= -1;
+			this._x *= - 1;
+			this._y *= - 1;
+			this._z *= - 1;
 
 			this._onChangeCallback();
 
@@ -4183,7 +4183,7 @@ var LittleCosmos = (function (exports) {
 
 			// clamp, to handle numerical problems
 
-			return Math.acos( clamp$1( theta, -1, 1 ) );
+			return Math.acos( clamp$1( theta, - 1, 1 ) );
 
 		}
 
@@ -4911,7 +4911,7 @@ var LittleCosmos = (function (exports) {
 
 	class Sphere {
 
-		constructor( center = new Vector3(), radius = -1 ) {
+		constructor( center = new Vector3(), radius = - 1 ) {
 
 			this.isSphere = true;
 
@@ -4975,7 +4975,7 @@ var LittleCosmos = (function (exports) {
 		makeEmpty() {
 
 			this.center.set( 0, 0, 0 );
-			this.radius = -1;
+			this.radius = - 1;
 
 			return this;
 
@@ -5157,7 +5157,7 @@ var LittleCosmos = (function (exports) {
 
 	class Ray {
 
-		constructor( origin = new Vector3(), direction = new Vector3( 0, 0, -1 ) ) {
+		constructor( origin = new Vector3(), direction = new Vector3( 0, 0, - 1 ) ) {
 
 			this.origin = origin;
 			this.direction = direction;
@@ -5563,7 +5563,7 @@ var LittleCosmos = (function (exports) {
 
 			} else if ( DdN < 0 ) {
 
-				sign = -1;
+				sign = - 1;
 				DdN = - DdN;
 
 			} else {
@@ -6423,7 +6423,7 @@ var LittleCosmos = (function (exports) {
 			if ( coordinateSystem === WebGLCoordinateSystem ) {
 
 				c = - ( far + near ) / ( far - near );
-				d = ( -2 * far * near ) / ( far - near );
+				d = ( - 2 * far * near ) / ( far - near );
 
 			} else if ( coordinateSystem === WebGPUCoordinateSystem ) {
 
@@ -6439,7 +6439,7 @@ var LittleCosmos = (function (exports) {
 			te[ 0 ] = x;	te[ 4 ] = 0;	te[ 8 ] = a; 	te[ 12 ] = 0;
 			te[ 1 ] = 0;	te[ 5 ] = y;	te[ 9 ] = b; 	te[ 13 ] = 0;
 			te[ 2 ] = 0;	te[ 6 ] = 0;	te[ 10 ] = c; 	te[ 14 ] = d;
-			te[ 3 ] = 0;	te[ 7 ] = 0;	te[ 11 ] = -1;	te[ 15 ] = 0;
+			te[ 3 ] = 0;	te[ 7 ] = 0;	te[ 11 ] = - 1;	te[ 15 ] = 0;
 
 			return this;
 
@@ -6460,12 +6460,12 @@ var LittleCosmos = (function (exports) {
 			if ( coordinateSystem === WebGLCoordinateSystem ) {
 
 				z = ( far + near ) * p;
-				zInv = -2 * p;
+				zInv = - 2 * p;
 
 			} else if ( coordinateSystem === WebGPUCoordinateSystem ) {
 
 				z = near * p;
-				zInv = -1 * p;
+				zInv = - 1 * p;
 
 			} else {
 
@@ -6660,7 +6660,7 @@ var LittleCosmos = (function (exports) {
 
 				case 'XYZ':
 
-					this._y = Math.asin( clamp$1( m13, -1, 1 ) );
+					this._y = Math.asin( clamp$1( m13, - 1, 1 ) );
 
 					if ( Math.abs( m13 ) < 0.9999999 ) {
 
@@ -6678,7 +6678,7 @@ var LittleCosmos = (function (exports) {
 
 				case 'YXZ':
 
-					this._x = Math.asin( - clamp$1( m23, -1, 1 ) );
+					this._x = Math.asin( - clamp$1( m23, - 1, 1 ) );
 
 					if ( Math.abs( m23 ) < 0.9999999 ) {
 
@@ -6696,7 +6696,7 @@ var LittleCosmos = (function (exports) {
 
 				case 'ZXY':
 
-					this._x = Math.asin( clamp$1( m32, -1, 1 ) );
+					this._x = Math.asin( clamp$1( m32, - 1, 1 ) );
 
 					if ( Math.abs( m32 ) < 0.9999999 ) {
 
@@ -6714,7 +6714,7 @@ var LittleCosmos = (function (exports) {
 
 				case 'ZYX':
 
-					this._y = Math.asin( - clamp$1( m31, -1, 1 ) );
+					this._y = Math.asin( - clamp$1( m31, - 1, 1 ) );
 
 					if ( Math.abs( m31 ) < 0.9999999 ) {
 
@@ -6732,7 +6732,7 @@ var LittleCosmos = (function (exports) {
 
 				case 'YZX':
 
-					this._z = Math.asin( clamp$1( m21, -1, 1 ) );
+					this._z = Math.asin( clamp$1( m21, - 1, 1 ) );
 
 					if ( Math.abs( m21 ) < 0.9999999 ) {
 
@@ -6750,7 +6750,7 @@ var LittleCosmos = (function (exports) {
 
 				case 'XZY':
 
-					this._z = Math.asin( - clamp$1( m12, -1, 1 ) );
+					this._z = Math.asin( - clamp$1( m12, - 1, 1 ) );
 
 					if ( Math.abs( m12 ) < 0.9999999 ) {
 
@@ -7277,7 +7277,7 @@ var LittleCosmos = (function (exports) {
 
 			const index = this.children.indexOf( object );
 
-			if ( index !== -1 ) {
+			if ( index !== - 1 ) {
 
 				object.parent = null;
 				this.children.splice( index, 1 );
@@ -8618,7 +8618,7 @@ var LittleCosmos = (function (exports) {
 
 		getHexString( colorSpace = SRGBColorSpace ) {
 
-			return ( '000000' + this.getHex( colorSpace ).toString( 16 ) ).slice( -6 );
+			return ( '000000' + this.getHex( colorSpace ).toString( 16 ) ).slice( - 6 );
 
 		}
 
@@ -10535,7 +10535,7 @@ var LittleCosmos = (function (exports) {
 
 				tmp2.crossVectors( n2, t );
 				const test = tmp2.dot( tan2[ v ] );
-				const w = ( test < 0.0 ) ? -1 : 1.0;
+				const w = ( test < 0.0 ) ? - 1.0 : 1.0;
 
 				tangentAttribute.setXYZW( v, tmp.x, tmp.y, tmp.z, w );
 
@@ -11377,7 +11377,7 @@ var LittleCosmos = (function (exports) {
 
 				if ( intersection.normal.dot( ray.direction ) > 0 ) {
 
-					intersection.normal.multiplyScalar( -1 );
+					intersection.normal.multiplyScalar( - 1 );
 
 				}
 
@@ -11441,12 +11441,12 @@ var LittleCosmos = (function (exports) {
 
 			// build each side of the box geometry
 
-			buildPlane( 'z', 'y', 'x', -1, -1, depth, height, width, depthSegments, heightSegments, 0 ); // px
-			buildPlane( 'z', 'y', 'x', 1, -1, depth, height, - width, depthSegments, heightSegments, 1 ); // nx
+			buildPlane( 'z', 'y', 'x', - 1, - 1, depth, height, width, depthSegments, heightSegments, 0 ); // px
+			buildPlane( 'z', 'y', 'x', 1, - 1, depth, height, - width, depthSegments, heightSegments, 1 ); // nx
 			buildPlane( 'x', 'z', 'y', 1, 1, width, depth, height, widthSegments, depthSegments, 2 ); // py
-			buildPlane( 'x', 'z', 'y', 1, -1, width, depth, - height, widthSegments, depthSegments, 3 ); // ny
-			buildPlane( 'x', 'y', 'z', 1, -1, width, height, depth, widthSegments, heightSegments, 4 ); // pz
-			buildPlane( 'x', 'y', 'z', -1, -1, width, height, - depth, widthSegments, heightSegments, 5 ); // nz
+			buildPlane( 'x', 'z', 'y', 1, - 1, width, depth, - height, widthSegments, depthSegments, 3 ); // ny
+			buildPlane( 'x', 'y', 'z', 1, - 1, width, height, depth, widthSegments, heightSegments, 4 ); // pz
+			buildPlane( 'x', 'y', 'z', - 1, - 1, width, height, - depth, widthSegments, heightSegments, 5 ); // nz
 
 			// build geometry
 
@@ -11496,7 +11496,7 @@ var LittleCosmos = (function (exports) {
 
 						vector[ u ] = 0;
 						vector[ v ] = 0;
-						vector[ w ] = depth > 0 ? 1 : -1;
+						vector[ w ] = depth > 0 ? 1 : - 1;
 
 						// now apply vector to normal buffer
 
@@ -12046,7 +12046,7 @@ var LittleCosmos = (function (exports) {
 		 */
 		getViewBounds( distance, minTarget, maxTarget ) {
 
-			_v3$1.set( -1, -1, 0.5 ).applyMatrix4( this.projectionMatrixInverse );
+			_v3$1.set( - 1, - 1, 0.5 ).applyMatrix4( this.projectionMatrixInverse );
 
 			minTarget.set( _v3$1.x, _v3$1.y ).multiplyScalar( - distance / _v3$1.z );
 
@@ -12151,7 +12151,7 @@ var LittleCosmos = (function (exports) {
 			let top = near * Math.tan( DEG2RAD * 0.5 * this.fov ) / this.zoom;
 			let height = 2 * top;
 			let width = this.aspect * height;
-			let left = -0.5 * width;
+			let left = - 0.5 * width;
 			const view = this.view;
 
 			if ( this.view !== null && this.view.enabled ) {
@@ -12199,7 +12199,7 @@ var LittleCosmos = (function (exports) {
 
 	}
 
-	const fov = -90; // negative fov is not an error
+	const fov = - 90; // negative fov is not an error
 	const aspect = 1;
 
 	class CubeCamera extends Object3D {
@@ -12256,39 +12256,39 @@ var LittleCosmos = (function (exports) {
 				cameraPX.lookAt( 1, 0, 0 );
 
 				cameraNX.up.set( 0, 1, 0 );
-				cameraNX.lookAt( -1, 0, 0 );
+				cameraNX.lookAt( - 1, 0, 0 );
 
-				cameraPY.up.set( 0, 0, -1 );
+				cameraPY.up.set( 0, 0, - 1 );
 				cameraPY.lookAt( 0, 1, 0 );
 
 				cameraNY.up.set( 0, 0, 1 );
-				cameraNY.lookAt( 0, -1, 0 );
+				cameraNY.lookAt( 0, - 1, 0 );
 
 				cameraPZ.up.set( 0, 1, 0 );
 				cameraPZ.lookAt( 0, 0, 1 );
 
 				cameraNZ.up.set( 0, 1, 0 );
-				cameraNZ.lookAt( 0, 0, -1 );
+				cameraNZ.lookAt( 0, 0, - 1 );
 
 			} else if ( coordinateSystem === WebGPUCoordinateSystem ) {
 
-				cameraPX.up.set( 0, -1, 0 );
-				cameraPX.lookAt( -1, 0, 0 );
+				cameraPX.up.set( 0, - 1, 0 );
+				cameraPX.lookAt( - 1, 0, 0 );
 
-				cameraNX.up.set( 0, -1, 0 );
+				cameraNX.up.set( 0, - 1, 0 );
 				cameraNX.lookAt( 1, 0, 0 );
 
 				cameraPY.up.set( 0, 0, 1 );
 				cameraPY.lookAt( 0, 1, 0 );
 
-				cameraNY.up.set( 0, 0, -1 );
-				cameraNY.lookAt( 0, -1, 0 );
+				cameraNY.up.set( 0, 0, - 1 );
+				cameraNY.lookAt( 0, - 1, 0 );
 
-				cameraPZ.up.set( 0, -1, 0 );
+				cameraPZ.up.set( 0, - 1, 0 );
 				cameraPZ.lookAt( 0, 0, 1 );
 
-				cameraNZ.up.set( 0, -1, 0 );
-				cameraNZ.lookAt( 0, 0, -1 );
+				cameraNZ.up.set( 0, - 1, 0 );
+				cameraNZ.lookAt( 0, 0, - 1 );
 
 			} else {
 
@@ -12611,7 +12611,7 @@ var LittleCosmos = (function (exports) {
 
 		negate() {
 
-			this.constant *= -1;
+			this.constant *= - 1;
 			this.normal.negate();
 
 			return this;
@@ -13748,7 +13748,7 @@ var LittleCosmos = (function (exports) {
 
 			envMap: { value: null },
 			envMapRotation: { value: /*@__PURE__*/ new Matrix3() },
-			flipEnvMap: { value: -1 },
+			flipEnvMap: { value: - 1 },
 			reflectivity: { value: 1.0 }, // basic, lambert, phong
 			ior: { value: 1.5 }, // physical
 			refractionRatio: { value: 0.98 }, // basic, lambert, phong
@@ -14169,7 +14169,7 @@ var LittleCosmos = (function (exports) {
 
 			uniforms: {
 				envMap: { value: null },
-				flipEnvMap: { value: -1 },
+				flipEnvMap: { value: - 1 },
 				backgroundBlurriness: { value: 0 },
 				backgroundIntensity: { value: 1 },
 				backgroundRotation: { value: /*@__PURE__*/ new Matrix3() }
@@ -14184,7 +14184,7 @@ var LittleCosmos = (function (exports) {
 
 			uniforms: {
 				tCube: { value: null },
-				tFlip: { value: -1 },
+				tFlip: { value: - 1 },
 				opacity: { value: 1.0 }
 			},
 
@@ -14418,18 +14418,18 @@ var LittleCosmos = (function (exports) {
 				_e1$1.copy( scene.backgroundRotation );
 
 				// accommodate left-handed frame
-				_e1$1.x *= -1; _e1$1.y *= -1; _e1$1.z *= -1;
+				_e1$1.x *= - 1; _e1$1.y *= - 1; _e1$1.z *= - 1;
 
 				if ( background.isCubeTexture && background.isRenderTargetTexture === false ) {
 
 					// environment maps which are not cube render targets or PMREMs follow a different convention
-					_e1$1.y *= -1;
-					_e1$1.z *= -1;
+					_e1$1.y *= - 1;
+					_e1$1.z *= - 1;
 
 				}
 
 				boxMesh.material.uniforms.envMap.value = background;
-				boxMesh.material.uniforms.flipEnvMap.value = ( background.isCubeTexture && background.isRenderTargetTexture === false ) ? -1 : 1;
+				boxMesh.material.uniforms.flipEnvMap.value = ( background.isCubeTexture && background.isRenderTargetTexture === false ) ? - 1 : 1;
 				boxMesh.material.uniforms.backgroundBlurriness.value = scene.backgroundBlurriness;
 				boxMesh.material.uniforms.backgroundIntensity.value = scene.backgroundIntensity;
 				boxMesh.material.uniforms.backgroundRotation.value.setFromMatrix4( _m1$1.makeRotationFromEuler( _e1$1 ) );
@@ -15640,7 +15640,7 @@ var LittleCosmos = (function (exports) {
 
 	class OrthographicCamera extends Camera {
 
-		constructor( left = -1, right = 1, top = 1, bottom = -1, near = 0.1, far = 2000 ) {
+		constructor( left = - 1, right = 1, top = 1, bottom = - 1, near = 0.1, far = 2000 ) {
 
 			super();
 
@@ -15803,9 +15803,9 @@ var LittleCosmos = (function (exports) {
 		/*@__PURE__*/ new Vector3( INV_PHI, 0, PHI ),
 		/*@__PURE__*/ new Vector3( 0, PHI, - INV_PHI ),
 		/*@__PURE__*/ new Vector3( 0, PHI, INV_PHI ),
-		/*@__PURE__*/ new Vector3( -1, 1, -1 ),
-		/*@__PURE__*/ new Vector3( 1, 1, -1 ),
-		/*@__PURE__*/ new Vector3( -1, 1, 1 ),
+		/*@__PURE__*/ new Vector3( - 1, 1, - 1 ),
+		/*@__PURE__*/ new Vector3( 1, 1, - 1 ),
+		/*@__PURE__*/ new Vector3( - 1, 1, 1 ),
 		/*@__PURE__*/ new Vector3( 1, 1, 1 ) ];
 
 	/**
@@ -16059,8 +16059,8 @@ var LittleCosmos = (function (exports) {
 			const fov = 90;
 			const aspect = 1;
 			const cubeCamera = new PerspectiveCamera( fov, aspect, near, far );
-			const upSign = [ 1, -1, 1, 1, 1, 1 ];
-			const forwardSign = [ 1, 1, 1, -1, -1, -1 ];
+			const upSign = [ 1, - 1, 1, 1, 1, 1 ];
+			const forwardSign = [ 1, 1, 1, - 1, - 1, - 1 ];
 			const renderer = this._renderer;
 
 			const originalAutoClear = renderer.autoClear;
@@ -16159,7 +16159,7 @@ var LittleCosmos = (function (exports) {
 
 				}
 
-				this._cubemapMaterial.uniforms.flipEnvMap.value = ( texture.isRenderTargetTexture === false ) ? -1 : 1;
+				this._cubemapMaterial.uniforms.flipEnvMap.value = ( texture.isRenderTargetTexture === false ) ? - 1 : 1;
 
 			} else {
 
@@ -16372,7 +16372,7 @@ var LittleCosmos = (function (exports) {
 			for ( let face = 0; face < cubeFaces; face ++ ) {
 
 				const x = ( face % 3 ) * 2 / 3 - 1;
-				const y = face > 2 ? 0 : -1;
+				const y = face > 2 ? 0 : - 1;
 				const coordinates = [
 					x, y, 0,
 					x + 2 / 3, y, 0,
@@ -16571,7 +16571,7 @@ var LittleCosmos = (function (exports) {
 
 			uniforms: {
 				'envMap': { value: null },
-				'flipEnvMap': { value: -1 }
+				'flipEnvMap': { value: - 1 }
 			},
 
 			vertexShader: _getCommonVertexShader(),
@@ -21021,18 +21021,18 @@ var LittleCosmos = (function (exports) {
 			version: 0,
 
 			hash: {
-				directionalLength: -1,
-				pointLength: -1,
-				spotLength: -1,
-				rectAreaLength: -1,
-				hemiLength: -1,
+				directionalLength: - 1,
+				pointLength: - 1,
+				spotLength: - 1,
+				rectAreaLength: - 1,
+				hemiLength: - 1,
 
-				numDirectionalShadows: -1,
-				numPointShadows: -1,
-				numSpotShadows: -1,
-				numSpotMaps: -1,
+				numDirectionalShadows: - 1,
+				numPointShadows: - 1,
+				numSpotShadows: - 1,
+				numSpotMaps: - 1,
 
-				numLightProbes: -1
+				numLightProbes: - 1
 			},
 
 			ambient: [ 0, 0, 0 ],
@@ -21671,7 +21671,7 @@ var LittleCosmos = (function (exports) {
 		fullScreenTri.setAttribute(
 			'position',
 			new BufferAttribute(
-				new Float32Array( [ -1, -1, 0.5, 3, -1, 0.5, -1, 3, 0.5 ] ),
+				new Float32Array( [ - 1, - 1, 0.5, 3, - 1, 0.5, - 1, 3, 0.5 ] ),
 				3
 			)
 		);
@@ -22104,7 +22104,7 @@ var LittleCosmos = (function (exports) {
 					locked = false;
 
 					currentColorMask = null;
-					currentColorClear.set( -1, 0, 0, 0 ); // set to invalid state
+					currentColorClear.set( - 1, 0, 0, 0 ); // set to invalid state
 
 				}
 
@@ -22433,12 +22433,12 @@ var LittleCosmos = (function (exports) {
 		let version = 0;
 		const glVersion = gl.getParameter( gl.VERSION );
 
-		if ( glVersion.indexOf( 'WebGL' ) !== -1 ) {
+		if ( glVersion.indexOf( 'WebGL' ) !== - 1 ) {
 
 			version = parseFloat( /^WebGL (\d)/.exec( glVersion )[ 1 ] );
 			lineWidthAvailable = ( version >= 1.0 );
 
-		} else if ( glVersion.indexOf( 'OpenGL ES' ) !== -1 ) {
+		} else if ( glVersion.indexOf( 'OpenGL ES' ) !== - 1 ) {
 
 			version = parseFloat( /^OpenGL ES (\d)/.exec( glVersion )[ 1 ] );
 			lineWidthAvailable = ( version >= 2.0 );
@@ -26467,7 +26467,7 @@ void main() {
 
 				const controllerIndex = controllerInputSources.indexOf( event.inputSource );
 
-				if ( controllerIndex === -1 ) {
+				if ( controllerIndex === - 1 ) {
 
 					return;
 
@@ -26753,7 +26753,7 @@ void main() {
 
 					let controllerIndex = controllerInputSources.indexOf( inputSource );
 
-					if ( controllerIndex === -1 ) {
+					if ( controllerIndex === - 1 ) {
 
 						// Assign input source a controller that currently has no input source
 
@@ -26777,7 +26777,7 @@ void main() {
 
 						// If all controllers do currently receive input we ignore new ones
 
-						if ( controllerIndex === -1 ) break;
+						if ( controllerIndex === - 1 ) break;
 
 					}
 
@@ -26840,7 +26840,7 @@ void main() {
 				camera.matrixWorldInverse.copy( camera.matrixWorld ).invert();
 
 				// Check if the projection uses an infinite far plane.
-				if ( projL[ 10 ] === -1 ) {
+				if ( projL[ 10 ] === - 1.0 ) {
 
 					// Use the projection matrix from the left eye.
 					// The camera offset is sufficient to include the view volumes
@@ -27338,7 +27338,7 @@ void main() {
 
 				if ( material.side === BackSide ) {
 
-					uniforms.bumpScale.value *= -1;
+					uniforms.bumpScale.value *= - 1;
 
 				}
 
@@ -27405,19 +27405,19 @@ void main() {
 				_e1.copy( envMapRotation );
 
 				// accommodate left-handed frame
-				_e1.x *= -1; _e1.y *= -1; _e1.z *= -1;
+				_e1.x *= - 1; _e1.y *= - 1; _e1.z *= - 1;
 
 				if ( envMap.isCubeTexture && envMap.isRenderTargetTexture === false ) {
 
 					// environment maps which are not cube render targets or PMREMs follow a different convention
-					_e1.y *= -1;
-					_e1.z *= -1;
+					_e1.y *= - 1;
+					_e1.z *= - 1;
 
 				}
 
 				uniforms.envMapRotation.value.setFromMatrix4( _m1.makeRotationFromEuler( _e1 ) );
 
-				uniforms.flipEnvMap.value = ( envMap.isCubeTexture && envMap.isRenderTargetTexture === false ) ? -1 : 1;
+				uniforms.flipEnvMap.value = ( envMap.isCubeTexture && envMap.isRenderTargetTexture === false ) ? - 1 : 1;
 
 				uniforms.reflectivity.value = material.reflectivity;
 				uniforms.ior.value = material.ior;
@@ -27840,7 +27840,7 @@ void main() {
 
 			for ( let i = 0; i < maxBindingPoints; i ++ ) {
 
-				if ( allocatedBindingPoints.indexOf( i ) === -1 ) {
+				if ( allocatedBindingPoints.indexOf( i ) === - 1 ) {
 
 					allocatedBindingPoints.push( i );
 					return i;
@@ -28262,7 +28262,7 @@ void main() {
 			let _currentActiveCubeFace = 0;
 			let _currentActiveMipmapLevel = 0;
 			let _currentRenderTarget = null;
-			let _currentMaterialId = -1;
+			let _currentMaterialId = - 1;
 
 			let _currentCamera = null;
 
@@ -29389,7 +29389,7 @@ void main() {
 				// _gl.finish();
 
 				bindingStates.resetDefaultState();
-				_currentMaterialId = -1;
+				_currentMaterialId = - 1;
 				_currentCamera = null;
 
 				renderStateStack.pop();
@@ -30205,7 +30205,7 @@ void main() {
 
 					m_uniforms.envMap.value = envMap;
 
-					m_uniforms.flipEnvMap.value = ( envMap.isCubeTexture && envMap.isRenderTargetTexture === false ) ? -1 : 1;
+					m_uniforms.flipEnvMap.value = ( envMap.isCubeTexture && envMap.isRenderTargetTexture === false ) ? - 1 : 1;
 
 				}
 
@@ -30498,7 +30498,7 @@ void main() {
 
 				}
 
-				_currentMaterialId = -1; // reset current material to ensure correct uniform bindings
+				_currentMaterialId = - 1; // reset current material to ensure correct uniform bindings
 
 			};
 
@@ -31621,10 +31621,10 @@ void main() {
 				_geometry$1 = new BufferGeometry();
 
 				const float32Array = new Float32Array( [
-					-0.5, -0.5, 0, 0, 0,
-					0.5, -0.5, 0, 1, 0,
+					- 0.5, - 0.5, 0, 0, 0,
+					0.5, - 0.5, 0, 1, 0,
 					0.5, 0.5, 0, 1, 1,
-					-0.5, 0.5, 0, 0, 1
+					- 0.5, 0.5, 0, 0, 1
 				] );
 
 				const interleavedBuffer = new InterleavedBuffer( float32Array, 5 );
@@ -31675,8 +31675,8 @@ void main() {
 
 			const center = this.center;
 
-			transformVertex( _vA.set( -0.5, -0.5, 0 ), _mvPosition, center, _worldScale, sin, cos );
-			transformVertex( _vB.set( 0.5, -0.5, 0 ), _mvPosition, center, _worldScale, sin, cos );
+			transformVertex( _vA.set( - 0.5, - 0.5, 0 ), _mvPosition, center, _worldScale, sin, cos );
+			transformVertex( _vB.set( 0.5, - 0.5, 0 ), _mvPosition, center, _worldScale, sin, cos );
 			transformVertex( _vC.set( 0.5, 0.5, 0 ), _mvPosition, center, _worldScale, sin, cos );
 
 			_uvA.set( 0, 0 );
@@ -31689,7 +31689,7 @@ void main() {
 			if ( intersect === null ) {
 
 				// check second triangle
-				transformVertex( _vB.set( -0.5, 0.5, 0 ), _mvPosition, center, _worldScale, sin, cos );
+				transformVertex( _vB.set( - 0.5, 0.5, 0 ), _mvPosition, center, _worldScale, sin, cos );
 				_uvB.set( 0, 1 );
 
 				intersect = raycaster.ray.intersectTriangle( _vA, _vC, _vB, false, _intersectPoint );
@@ -32630,7 +32630,7 @@ void main() {
 
 					vec.normalize();
 
-					const theta = Math.acos( clamp$1( tangents[ i - 1 ].dot( tangents[ i ] ), -1, 1 ) ); // clamp for floating pt errors
+					const theta = Math.acos( clamp$1( tangents[ i - 1 ].dot( tangents[ i ] ), - 1, 1 ) ); // clamp for floating pt errors
 
 					normals[ i ].applyMatrix4( mat.makeRotationAxis( vec, theta ) );
 
@@ -32644,7 +32644,7 @@ void main() {
 
 			if ( closed === true ) {
 
-				let theta = Math.acos( clamp$1( normals[ 0 ].dot( normals[ segments ] ), -1, 1 ) );
+				let theta = Math.acos( clamp$1( normals[ 0 ].dot( normals[ segments ] ), - 1, 1 ) );
 				theta /= segments;
 
 				if ( tangents[ 0 ].dot( vec.crossVectors( normals[ 0 ], normals[ segments ] ) ) > 0 ) {
@@ -32914,7 +32914,7 @@ void main() {
 
 			c0 = x0;
 			c1 = t0;
-			c2 = -3 * x0 + 3 * x1 - 2 * t0 - t1;
+			c2 = - 3 * x0 + 3 * x1 - 2 * t0 - t1;
 			c3 = 2 * x0 - 2 * x1 + t0 + t1;
 
 		}
@@ -33140,7 +33140,7 @@ void main() {
 		const v1 = ( p3 - p1 ) * 0.5;
 		const t2 = t * t;
 		const t3 = t * t2;
-		return ( 2 * p1 - 2 * p2 + v0 + v1 ) * t3 + ( -3 * p1 + 3 * p2 - 2 * v0 - v1 ) * t2 + v0 * t + p1;
+		return ( 2 * p1 - 2 * p2 + v0 + v1 ) * t3 + ( - 3 * p1 + 3 * p2 - 2 * v0 - v1 ) * t2 + v0 * t + p1;
 
 	}
 
@@ -34474,7 +34474,7 @@ void main() {
 				let groupCount = 0;
 
 				const radius = ( top === true ) ? radiusTop : radiusBottom;
-				const sign = ( top === true ) ? 1 : -1;
+				const sign = ( top === true ) ? 1 : - 1;
 
 				// first we generate the center vertex data of the cap.
 				// because the geometry needs one set of uvs per face,
@@ -35671,7 +35671,7 @@ void main() {
 
 	function sign( num ) {
 
-		return num > 0 ? 1 : num < 0 ? -1 : 0;
+		return num > 0 ? 1 : num < 0 ? - 1 : 0;
 
 	}
 
@@ -35931,7 +35931,7 @@ void main() {
 
 	class ExtrudeGeometry extends BufferGeometry {
 
-		constructor( shapes = new Shape( [ new Vector2( 0.5, 0.5 ), new Vector2( -0.5, 0.5 ), new Vector2( -0.5, -0.5 ), new Vector2( 0.5, -0.5 ) ] ), options = {} ) {
+		constructor( shapes = new Shape( [ new Vector2( 0.5, 0.5 ), new Vector2( - 0.5, 0.5 ), new Vector2( - 0.5, - 0.5 ), new Vector2( 0.5, - 0.5 ) ] ), options = {} ) {
 
 			super();
 
@@ -36718,9 +36718,9 @@ void main() {
 			const t = ( 1 + Math.sqrt( 5 ) ) / 2;
 
 			const vertices = [
-				-1, t, 0, 	1, t, 0, 	-1, - t, 0, 	1, - t, 0,
-				0, -1, t, 	0, 1, t,	0, -1, - t, 	0, 1, - t,
-				t, 0, -1, 	t, 0, 1, 	- t, 0, -1, 	- t, 0, 1
+				- 1, t, 0, 	1, t, 0, 	- 1, - t, 0, 	1, - t, 0,
+				0, - 1, t, 	0, 1, t,	0, - 1, - t, 	0, 1, - t,
+				t, 0, - 1, 	t, 0, 1, 	- t, 0, - 1, 	- t, 0, 1
 			];
 
 			const indices = [
@@ -36754,8 +36754,8 @@ void main() {
 		constructor( radius = 1, detail = 0 ) {
 
 			const vertices = [
-				1, 0, 0, 	-1, 0, 0,	0, 1, 0,
-				0, -1, 0, 	0, 0, 1,	0, 0, -1
+				1, 0, 0, 	- 1, 0, 0,	0, 1, 0,
+				0, - 1, 0, 	0, 0, 1,	0, 0, - 1
 			];
 
 			const indices = [
@@ -36958,7 +36958,7 @@ void main() {
 
 				} else if ( iy === heightSegments && thetaEnd === Math.PI ) {
 
-					uOffset = -0.5 / widthSegments;
+					uOffset = - 0.5 / widthSegments;
 
 				}
 
@@ -37809,13 +37809,13 @@ void main() {
 			];
 
 			this._cubeDirections = [
-				new Vector3( 1, 0, 0 ), new Vector3( -1, 0, 0 ), new Vector3( 0, 0, 1 ),
-				new Vector3( 0, 0, -1 ), new Vector3( 0, 1, 0 ), new Vector3( 0, -1, 0 )
+				new Vector3( 1, 0, 0 ), new Vector3( - 1, 0, 0 ), new Vector3( 0, 0, 1 ),
+				new Vector3( 0, 0, - 1 ), new Vector3( 0, 1, 0 ), new Vector3( 0, - 1, 0 )
 			];
 
 			this._cubeUps = [
 				new Vector3( 0, 1, 0 ), new Vector3( 0, 1, 0 ), new Vector3( 0, 1, 0 ),
-				new Vector3( 0, 1, 0 ), new Vector3( 0, 0, 1 ),	new Vector3( 0, 0, -1 )
+				new Vector3( 0, 1, 0 ), new Vector3( 0, 0, 1 ),	new Vector3( 0, 0, - 1 )
 			];
 
 		}
@@ -37909,7 +37909,7 @@ void main() {
 
 		constructor() {
 
-			super( new OrthographicCamera( -5, 5, 5, -5, 0.5, 500 ) );
+			super( new OrthographicCamera( - 5, 5, 5, - 5, 0.5, 500 ) );
 
 			this.isDirectionalLightShadow = true;
 
@@ -38085,7 +38085,7 @@ void main() {
 			} else if ( camera.isOrthographicCamera ) {
 
 				this.ray.origin.set( coords.x, coords.y, ( camera.near + camera.far ) / ( camera.near - camera.far ) ).unproject( camera ); // set origin in plane of camera
-				this.ray.direction.set( 0, 0, -1 ).transformDirection( camera.matrixWorld );
+				this.ray.direction.set( 0, 0, - 1 ).transformDirection( camera.matrixWorld );
 				this.camera = camera;
 
 			} else {
@@ -38101,7 +38101,7 @@ void main() {
 			_matrix.identity().extractRotation( controller.matrixWorld );
 
 			this.ray.origin.setFromMatrixPosition( controller.matrixWorld );
-			this.ray.direction.set( 0, 0, -1 ).applyMatrix4( _matrix );
+			this.ray.direction.set( 0, 0, - 1 ).applyMatrix4( _matrix );
 
 			return this;
 
@@ -38265,7 +38265,7 @@ void main() {
 
 	// Helper for passes that need to fill the viewport with a single quad.
 
-	const _camera = new OrthographicCamera( -1, 1, 1, -1, 0, 1 );
+	const _camera = new OrthographicCamera( - 1, 1, 1, - 1, 0, 1 );
 
 	// https://github.com/mrdoob/three.js/pull/21358
 
@@ -38275,7 +38275,7 @@ void main() {
 
 			super();
 
-			this.setAttribute( 'position', new Float32BufferAttribute( [ -1, 3, 0, -1, -1, 0, 3, -1, 0 ], 3 ) );
+			this.setAttribute( 'position', new Float32BufferAttribute( [ - 1, 3, 0, - 1, - 1, 0, 3, - 1, 0 ], 3 ) );
 			this.setAttribute( 'uv', new Float32BufferAttribute( [ 0, 2, 0, 0, 2, 0 ], 2 ) );
 
 		}
@@ -38557,7 +38557,7 @@ void main() {
 
 			const index = this.passes.indexOf( pass );
 
-			if ( index !== -1 ) {
+			if ( index !== - 1 ) {
 
 				this.passes.splice( index, 1 );
 
@@ -38806,6 +38806,10 @@ void main() {
 	 */
 
 	const LuminosityHighPassShader = {
+
+		name: 'LuminosityHighPassShader',
+
+		shaderID: 'luminosityHighPass',
 
 		uniforms: {
 
@@ -39144,7 +39148,7 @@ void main() {
 
 			for ( let i = 0; i < kernelRadius; i ++ ) {
 
-				coefficients.push( 0.39894 * Math.exp( -0.5 * i * i / ( kernelRadius * kernelRadius ) ) / kernelRadius );
+				coefficients.push( 0.39894 * Math.exp( - 0.5 * i * i / ( kernelRadius * kernelRadius ) ) / kernelRadius );
 
 			}
 
@@ -39552,7 +39556,6 @@ void main() {
 
 	  setQuality(q) {
 	    this.quality = q;
-	    this.applyPixelRatio();
 	    if (q === 'low') {
 	      this.bloom.strength = 0.45;
 	    } else {
@@ -39561,14 +39564,20 @@ void main() {
 	    this.resize();
 	  }
 
+	  // BUG-44：渲染器、后期链与泛光的尺寸/像素比必须一起更新。
+	  // EffectComposer 会缓存构造时的 pixelRatio，只改 renderer 会让后期按高像素比渲染，
+	  // 低画质的性能收益被完全抵消。
 	  resize() {
 	    const w = window.innerWidth, h = window.innerHeight;
 	    this.applyPixelRatio();
 	    this.renderer.setSize(w, h, false);
+	    const size = this.renderer.getDrawingBufferSize(new Vector2());
+	    const pr = this.renderer.getPixelRatio();
+	    // 让 composer 的目标与渲染器的物理像素一致（逻辑尺寸 × 像素比只乘一次）
+	    this.composer.setPixelRatio(pr);
 	    this.composer.setSize(w, h);
 	    this.camera.aspect = w / h;
 	    this.camera.updateProjectionMatrix();
-	    const size = this.renderer.getDrawingBufferSize(new Vector2());
 	    this.grade.uniforms.uResolution.value.set(size.x, size.y);
 	    this.bloom.setSize(size.x, size.y);
 	  }
@@ -39586,6 +39595,7 @@ void main() {
 	}
 
 	// 输入：键盘 / 鼠标（指针锁定）/ 触摸（虚拟摇杆与按钮）
+	// 统一输入层：所有设备最终折算成同一份 state，地面与太空共用同一套映射。
 	class Input {
 	  constructor(canvas) {
 	    this.canvas = canvas;
@@ -39598,8 +39608,23 @@ void main() {
 	    this.buttons = { fire: false, aim: false, jump: false, sprint: false, build: false, interact: false };
 	    this.justPressed = new Set();
 	    this.enabled = true;
-	    this.touch = { move: { x: 0, y: 0 }, look: { dx: 0, dy: 0 }, active: false, fire: false, sprint: false, jump: false, aim: false };
-	    this.isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+	    this.touch = {
+	      move: { x: 0, y: 0 },
+	      look: { dx: 0, dy: 0 },
+	      active: false,
+	      fire: false,
+	      aim: false,
+	      sprint: false,
+	      jump: false,
+	      throttle: 0, // 太空：持续加减速 -1 / 0 / +1
+	      warp: false, // 太空：曲率引擎
+	      land: false, // 太空：请求降落
+	    };
+	    this.hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+	    // BUG-10：按“最近一次真实使用的指针类型”决定是否锁定，
+	    // 而不是“设备具备触摸能力”就全局禁用鼠标视角。
+	    this.pointer = this.hasTouch ? 'touch' : 'mouse';
+	    this.resetHooks = [];
 	    this._bind();
 	  }
 
@@ -39607,14 +39632,19 @@ void main() {
 	    window.addEventListener('keydown', (e) => {
 	      if (e.repeat) return;
 	      const k = e.code;
+	      // BUG-13：暂停/菜单期间不再累积瞬时按键，避免恢复时补执行
+	      if (this.enabled) {
+	        this.justPressed.add(k);
+	        this.pressed.add(k);
+	      }
 	      this.keys.add(k);
-	      this.justPressed.add(k);
-	      this.pressed.add(k);
 	      if (['Space', 'KeyW', 'KeyA', 'KeyS', 'KeyD', 'Tab'].includes(k)) e.preventDefault();
 	    });
 	    window.addEventListener('keyup', (e) => this.keys.delete(e.code));
-	    window.addEventListener('blur', () => { this.keys.clear(); this.buttons.fire = false; });
+	    // BUG-12：失焦必须清理全部输入状态（鼠标位移、瞬时按键、持续按钮）
+	    window.addEventListener('blur', () => this.reset());
 	    this.canvas.addEventListener('mousedown', (e) => {
+	      this.pointer = 'mouse';
 	      if (e.button === 0) this.buttons.fire = true;
 	      if (e.button === 2) this.buttons.aim = true;
 	    });
@@ -39624,6 +39654,7 @@ void main() {
 	    });
 	    this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 	    window.addEventListener('mousemove', (e) => {
+	      if (e.movementX || e.movementY) this.pointer = 'mouse';
 	      if (!this.locked) return;
 	      this.mouseDX += e.movementX || 0;
 	      this.mouseDY += e.movementY || 0;
@@ -39631,12 +39662,20 @@ void main() {
 	    window.addEventListener('wheel', (e) => { this.wheel += Math.sign(e.deltaY); }, { passive: true });
 	    document.addEventListener('pointerlockchange', () => {
 	      this.locked = document.pointerLockElement === this.canvas;
+	      // BUG-12：失锁时同样清掉鼠标位移与持续按钮，防止切回后突然转头或持续开火
+	      if (!this.locked) {
+	        this.mouseDX = this.mouseDY = 0;
+	        this.buttons.fire = false;
+	        this.buttons.aim = false;
+	      }
 	    });
 	    // ---- 触摸：画面右侧滑动 = 视角，左侧摇杆 = 移动 ----
-	    const el = document.getElementById('touch-layer');
+	    // BUG-06：观察手势直接挂在 canvas 上，虚拟层不再铺满屏幕拦截 HUD 控件。
+	    const el = this.canvas;
 	    if (el) {
 	      let lookId = null, lookX = 0, lookY = 0;
 	      el.addEventListener('touchstart', (e) => {
+	        this.pointer = 'touch';
 	        for (const t of e.changedTouches) {
 	          if (t.clientX > window.innerWidth * 0.42 && lookId === null) {
 	            lookId = t.identifier; lookX = t.clientX; lookY = t.clientY;
@@ -39656,14 +39695,40 @@ void main() {
 	      const end = (e) => {
 	        for (const t of e.changedTouches) if (t.identifier === lookId) lookId = null;
 	      };
+	      // BUG-11：touchcancel 与 touchend 一视同仁，系统手势打断时也要松开
 	      el.addEventListener('touchend', end);
 	      el.addEventListener('touchcancel', end);
 	    }
 	  }
 
+	  // 统一复位：失焦、失锁、暂停、模式切换、触摸中断都走这里
+	  reset() {
+	    this.keys.clear();
+	    this.justPressed.clear();
+	    this.pressed.clear();
+	    this.mouseDX = this.mouseDY = 0;
+	    this.wheel = 0;
+	    for (const k of Object.keys(this.buttons)) this.buttons[k] = false;
+	    this.touch.fire = false;
+	    this.touch.aim = false;
+	    this.touch.sprint = false;
+	    this.touch.jump = false;
+	    this.touch.throttle = 0;
+	    this.touch.warp = false;
+	    this.touch.land = false;
+	    this.touch.look.dx = this.touch.look.dy = 0;
+	    this.touch.move.x = this.touch.move.y = 0;
+	    this.touch.active = false;
+	    for (const fn of this.resetHooks) { try { fn(); } catch {} }
+	  }
+
 	  requestLock() {
-	    if (this.isTouch) return;
-	    try { this.canvas.requestPointerLock?.(); } catch {}
+	    // BUG-10：仅当最近一次交互来自触摸时才跳过锁定；
+	    // 带触屏的电脑用鼠标点击时仍可获得指针锁定。
+	    if (this.pointer === 'touch') return;
+	    // 浏览器可能拒绝没有用户手势的自动锁定（例如出舱），也可能异步返回拒绝。
+	    // 保持游戏可用，下一次点击画面时由正常输入流程重试。
+	    try { this.canvas.requestPointerLock?.()?.catch?.(() => {}); } catch {}
 	  }
 
 	  releaseLock() {
@@ -39674,8 +39739,17 @@ void main() {
 	  consume() {
 	    const k = this.keys;
 	    const kd = (c) => (k.has(c) ? 1 : 0);
-	    const forward = kd('KeyW') + kd('ArrowUp') - kd('KeyS') - kd('ArrowDown');
-	    const strafe = kd('KeyD') + kd('ArrowRight') - kd('KeyA') - kd('ArrowLeft');
+	    const tm = this.touch.move;
+	    let forward = kd('KeyW') + kd('ArrowUp') - kd('KeyS') - kd('ArrowDown');
+	    let strafe = kd('KeyD') + kd('ArrowRight') - kd('KeyA') - kd('ArrowLeft');
+	    // BUG-08：摇杆在统一输入层换算成 forward/strafe，
+	    // 地面与太空都读同一份结果，不再是只有地表会看 touch.move。
+	    const touchActive = Math.abs(tm.x) > 0.08 || Math.abs(tm.y) > 0.08;
+	    if (touchActive) {
+	      forward = -tm.y;
+	      strafe = tm.x;
+	    }
+	    this.touch.active = touchActive;
 	    const state = {
 	      forward,
 	      strafe,
@@ -39690,6 +39764,12 @@ void main() {
 	      map: this.justPressed.has('KeyM') || this.justPressed.has('Tab'),
 	      scan: this.justPressed.has('KeyV'),
 	      pause: this.justPressed.has('Escape'),
+	      // BUG-38：降落使用独立命令（F / 触屏降落键），不再复用通用 interact
+	      land: this.justPressed.has('KeyF') || this.touch.land,
+	      // 太空油门与曲率（键盘持续键 + 触屏持续按钮）
+	      throttle: (k.has('KeyE') ? 1 : 0) - (k.has('KeyC') ? 1 : 0) + (this.touch.throttle || 0),
+	      warp: k.has('ShiftLeft') || k.has('ShiftRight') || this.touch.warp,
+	      touchActive,
 	      mouseDX: this.mouseDX + this.touch.look.dx * 1.6,
 	      mouseDY: this.mouseDY + this.touch.look.dy * 1.6,
 	      wheel: this.wheel,
@@ -39702,6 +39782,7 @@ void main() {
 	    this.wheel = 0;
 	    this.justPressed.clear();
 	    this.touch.jump = false;
+	    this.touch.land = false;
 	    this.touch.look.dx = this.touch.look.dy = 0;
 	    return state;
 	  }
@@ -39761,8 +39842,11 @@ void main() {
 	    this.musicBus.gain.value = this.musicVol;
 	    this.musicBus.connect(this.compressor);
 	    this.musicBus.connect(this.reverb);
+	    // BUG-46：环境声与引擎声都按音效滑块缩放。
+	    // ambBus 的自身增益就是 0.8 * sfxVol，因此“音效=0”时环境声确实为 0。
 	    this.ambBus = ctx.createGain();
-	    this.ambBus.gain.value = 0.8;
+	    this.ambGainBase = 0.8;
+	    this.ambBus.gain.value = this.ambGainBase * this.sfxVol;
 	    this.ambBus.connect(this.compressor);
 	    this.ambBus.connect(this.reverb);
 
@@ -40114,8 +40198,9 @@ void main() {
 	    // 引擎层（飞行时启用）
 	    const eo = ctx.createOscillator(); eo.type = 'sawtooth'; eo.frequency.value = 60;
 	    const elp = ctx.createBiquadFilter(); elp.type = 'lowpass'; elp.frequency.value = 300;
+	    // BUG-46：引擎层同样接入受控音效总线，不再直连 master 绕过音效滑块
 	    const eg = ctx.createGain(); eg.gain.value = 0;
-	    eo.connect(elp).connect(eg).connect(this.master);
+	    eo.connect(elp).connect(eg).connect(this.sfxBus);
 	    eo.start();
 	    this.engineLayer = { o: eo, lp: elp, g: eg };
 	    this.setPlanet('verdant');
@@ -40138,13 +40223,18 @@ void main() {
 	    this.layers.crickets.gain.setTargetAtTime(id === 'verdant' ? 0.02 : 0.0, t, 2);
 	  }
 
+	  // BUG-45：level<=0 时会把引擎层真正关掉（并让气动层回到基础值）
 	  setEngine(level, speed = 0) {
-	    if (!this.started) return;
+	    if (!this.started || !this.engineLayer) return;
 	    const t = this.ctx.currentTime;
-	    this.engineLayer.g.gain.setTargetAtTime(level * 0.22, t, 0.4);
+	    const target = Math.max(0, level) * 0.22;
+	    this.engineLayer.g.gain.cancelScheduledValues(t);
+	    this.engineLayer.g.gain.setTargetAtTime(target, t, target === 0 ? 0.25 : 0.4);
 	    this.engineLayer.o.frequency.setTargetAtTime(52 + speed * 26, t, 0.4);
 	    this.engineLayer.lp.frequency.setTargetAtTime(200 + speed * 900, t, 0.4);
-	    this.layers.air.gain.setTargetAtTime(0.006 + speed * 0.06, t, 0.5);
+	    // 气动噪声只在飞行时有额外增益，回到地面要收回基础值
+	    const airBase = { verdant: 0.012, emer: 0.035, lumina: 0.006 }[this.planet] ?? 0.012;
+	    this.layers.air.gain.setTargetAtTime(airBase + Math.max(0, speed) * 0.06, t, 0.5);
 	  }
 
 	  // ---------------- 生成式氛围音乐 ----------------
@@ -40164,6 +40254,11 @@ void main() {
 	    if (!this.ctx || !this.started) return;
 	    const ctx = this.ctx;
 	    const beat = 60 / this.bpm;
+	    // BUG-47：暂停期间 AudioContext 时间照常推进，恢复后不能把已经过去的音符
+	    // 全部补排一遍。落后超过 2 拍时直接对齐到当前时间。
+	    if (this.nextNoteTime < ctx.currentTime - beat * 2) {
+	      this.nextNoteTime = ctx.currentTime + 0.06;
+	    }
 	    if (ctx.currentTime < this.nextNoteTime) return;
 	    const t = this.nextNoteTime;
 	    this.musicStep++;
@@ -40247,7 +40342,12 @@ void main() {
 	  }
 
 	  setMusicVolume(v) { this.musicVol = v; if (this.musicBus) this.musicBus.gain.value = v; }
-	  setSfxVolume(v) { this.sfxVol = v; if (this.sfxBus) this.sfxBus.gain.value = v; }
+	  // BUG-46：音效滑块同时控制音效总线、环境声与引擎层
+	  setSfxVolume(v) {
+	    this.sfxVol = v;
+	    if (this.sfxBus) this.sfxBus.gain.value = v;
+	    if (this.ambBus) this.ambBus.gain.value = (this.ambGainBase ?? 0.8) * v;
+	  }
 	}
 
 	// 三颗星球的美术方向：色彩、光照、大气、雾、生态参数
@@ -40564,8 +40664,10 @@ void main() {
 	  const geo = new SphereGeometry(1, 32, 20);
 	  const mat = createSkyMaterial(palette);
 	  const mesh = new Mesh(geo, mat);
+	  // BUG-29：天空穹顶是纯视觉层，不阻挡弹道
+	  mesh.userData.noBlock = true;
 	  mesh.frustumCulled = false;
-	  mesh.renderOrder = -1e3;
+	  mesh.renderOrder = -1000;
 	  mesh.scale.setScalar(1000);
 	  mesh.name = 'sky';
 	  return mesh;
@@ -41031,6 +41133,8 @@ void main() {
 	    const near = new Mesh(geoNear, matNear);
 	    near.frustumCulled = false;
 	    near.name = 'terrain-near';
+	    // BUG-29：地形是弹道遮挡体（不可伤害，但会挡住射线）
+	    near.userData.occluder = true;
 	    this.group.add(near);
 	    this.meshes.push(near);
 	    this.near = near;
@@ -41070,6 +41174,7 @@ void main() {
 	      const mesh = new Mesh(geo, mat);
 	      mesh.frustumCulled = false;
 	      mesh.name = 'terrain-ring' + ri;
+	      mesh.userData.occluder = true;
 	      this.group.add(mesh);
 	      this.meshes.push(mesh);
 	      this.rings.push({ mesh, L: r.L, outer: r.outer });
@@ -41077,16 +41182,11 @@ void main() {
 	  }
 
 	  update(camera, time) {
-	    // 近网格跟随相机（按格对齐避免顶点抖动）
-	    const step = (this.extent * 2) / 512;
-	    const cx = Math.round(camera.position.x / step) * step;
-	    const cz = Math.round(camera.position.z / step) * step;
-	    this.near.position.set(cx, 0, cz);
-	    for (const r of this.rings) {
-	      (r.outer * 2) / r.L;
-	      // 环网格固定在原点（格点在绝对世界中稳定），避免重采样造成接缝闪烁
-	      r.mesh.position.set(0, 0, 0);
-	    }
+	    // 所有地形网格的顶点都使用绝对世界坐标（见 _grid，x/z 覆盖 ±extent），
+	    // 因此网格必须固定在原点。原先按相机吸附值平移近景网格，会让渲染地形
+	    // 与 terrain.height() 的碰撞/摆放高度错开最多半个格距（≈0.6m），
+	    // 表现为角色下沉/悬浮，并在近远景衔接处露缝。
+	    // 世界尺度的细节层次由 shader 里的 uTerrainCenter 负责，不需要移动网格。
 	    this.materials.forEach((m) => {
 	      m.uniforms.uTime.value = time;
 	      m.uniforms.uTerrainCenter.value.copy(camera.position);
@@ -41303,7 +41403,7 @@ void main() {
 		let TypedArray;
 		let itemSize;
 		let normalized;
-		let gpuType = -1;
+		let gpuType = - 1;
 		let arrayLength = 0;
 
 		for ( let i = 0; i < attributes.length; ++ i ) {
@@ -41334,7 +41434,7 @@ void main() {
 
 			}
 
-			if ( gpuType === -1 ) gpuType = attribute.gpuType;
+			if ( gpuType === - 1 ) gpuType = attribute.gpuType;
 			if ( gpuType !== attribute.gpuType ) {
 
 				console.error( 'THREE.BufferGeometryUtils: .mergeAttributes() failed. BufferAttribute.gpuType must be consistent across matching attributes.' );
@@ -41769,6 +41869,11 @@ void main() {
 	    this.colliders = [];
 	    this.shade = Array.from({ length: 40 }, () => new Vector4(0, 0, 0, 0));
 	    this.build();
+	    // BUG-29：植被是弹道遮挡体（树干/岩石/晶簇都会挡住射线）
+	    this.group.traverse((o) => {
+	      if (o.isMesh) o.userData.occluder = true;
+	      else if (o.isInstancedMesh) o.userData.occluder = true;
+	    });
 	  }
 
 	  _sample(count, radius, minR = 0, filter) {
@@ -42308,6 +42413,8 @@ void main() {
 	    },
 	  });
 	  const mesh = new Mesh(geo, mat);
+	  // BUG-29：水面是纯视觉层，不阻挡弹道
+	  mesh.userData.noBlock = true;
 	  mesh.position.y = level;
 	  mesh.renderOrder = 2;
 	  mesh.name = 'water';
@@ -42677,6 +42784,19 @@ void main() {
 	    const sp = new Mesh(new ConeGeometry(0.035 * def.body[0] + 0.012, 0.16 * (1 - Math.abs(t - 0.5)), 5), accentMat);
 	    sp.position.set(0, def.body[1] * (0.85 + Math.sin(t * Math.PI) * 0.15), (t - 0.5) * def.body[2] * 1.55);
 	    body.add(sp);
+	    // BUG-30：背脊同样是弱点（设计文案：“弱点：背脊棘刺”）
+	    if (i >= 2 && i <= 4) {
+	      const weak = new Mesh(
+	        new SphereGeometry(1, 8, 6),
+	        new MeshBasicMaterial({ visible: false, transparent: true, opacity: 0 })
+	      );
+	      weak.scale.set(def.body[0] * 0.45, 0.14, def.body[2] * 0.16);
+	      weak.position.copy(sp.position);
+	      weak.position.y += 0.05;
+	      weak.userData.weak = true;
+	      weak.userData.weakPart = 'spine';
+	      body.add(weak);
+	    }
 	  }
 
 	  // 颈与头
@@ -42701,6 +42821,16 @@ void main() {
 	    eye.position.set(sgn * def.head[0] * 0.62, def.head[1] * 0.35, def.head[2] * 0.60);
 	    head.add(eye);
 	  }
+	  // BUG-30：头部命中体显式标记为弱点（暴击区）。它是一个略大于颅骨的不可见球体，
+	  // 射线命中它即判定为弱点命中，不再依赖从未被赋值的 userData.weakY。
+	  const headWeak = new Mesh(
+	    new SphereGeometry(1, 12, 10),
+	    new MeshBasicMaterial({ visible: false, transparent: true, opacity: 0 })
+	  );
+	  headWeak.scale.set(def.head[0] * 1.15, def.head[1] * 1.15, def.head[2] * 1.2);
+	  headWeak.userData.weak = true;
+	  headWeak.userData.weakPart = 'head';
+	  head.add(headWeak);
 	  // 吻部
 	  const snout = new Mesh(new SphereGeometry(1, 12, 10), bellyMat);
 	  snout.scale.set(def.head[0] * 0.55, def.head[1] * 0.45, def.head[2] * 0.5);
@@ -42752,7 +42882,19 @@ void main() {
 	    legs.push({ hip, knee, sx, sz });
 	  }
 
-	  g.userData.rig = { body, neck, head, tail, legs, bodyY, accentMat, eyeMat, mat };
+	  // 核心命中体：躯干用的是低多边形球，射线正好穿过球体极轴时（three 的退化三角形）
+	  // 可能漏检。这里用一个不可见的包围盒保证任意角度都能命中。
+	  // 注意：物体本身必须 visible=true（射线集合会沿父链检查 visible），
+	  // 只把材质设为不可见，这样它不参与渲染但始终能被射线命中。
+	  const core = new Mesh(
+	    new BoxGeometry(1.6, 1.3, def.body[2] * 2.1),
+	    new MeshBasicMaterial({ visible: false })
+	  );
+	  core.position.y = bodyY;
+	  core.userData.hitCore = true;
+	  g.add(core);
+
+	  g.userData.rig = { body, neck, head, tail, legs, bodyY, accentMat, eyeMat, mat, core };
 	  return g;
 	}
 
@@ -42826,7 +42968,9 @@ void main() {
 	      if (o.isMesh) {
 	        o.userData.hittable = true;
 	        o.userData.creature = this;
-	        o.castShadow = true;
+	        // 命中核心本身不投影，也不参与可见性剔除（visible=false 时射线仍然有效，
+	        // 因为 isVisibleInScene 只沿父链检查）
+	        if (!o.userData.hitCore) o.castShadow = true;
 	      }
 	    });
 	    this.pos = position.clone();
@@ -42875,6 +43019,8 @@ void main() {
 	      this.dead = true;
 	      this.deathT = 0;
 	      this.game.audio?.play('creatureDie', { pos: this.pos });
+	      // BUG-03：击杀才产出战利品，否则科研升级永远缺样本
+	      this.game.onCreatureKilled?.(this);
 	      return true;
 	    }
 	    if (this.def.hostile) {
@@ -42911,24 +43057,40 @@ void main() {
 
 	    // ---------- 决策 ----------
 	    if (this.def.hostile) {
+	      const range = this.def.attackRange;
+	      // BUG-34：攻击/追击用同一套范围 + 小幅迟滞，不再出现“攻击状态但够不着、又不追”的死区。
+	      // 进入攻击：dist <= range + 0.4；退出攻击：dist > range + 0.9。
+	      const attackEnter = range + 0.4;
+	      const attackExit = range + 0.9;
 	      const detect = this.def.aggroRange * (night ? 1.2 : 1.0);
 	      if (playerDist < detect && !player.inRocket) {
-	        // 只在"刚发现玩家"时进入 alert，之后由计时结束转入 chase/attack
-	        if (this.state !== 'chase' && this.state !== 'attack' && this.state !== 'alert') {
+	        if (this.state === 'alert') {
+	          if (this.stateT <= 0) this.state = playerDist <= attackEnter ? 'attack' : 'chase';
+	        } else if (this.state === 'attack') {
+	          if (playerDist > attackExit) this.state = 'chase';
+	        } else if (this.state === 'chase') {
+	          if (playerDist <= attackEnter) this.state = 'attack';
+	        } else {
+	          // 刚发现玩家
 	          this.state = 'alert';
 	          this.stateT = 0.75;
 	          this.game.audio?.play('creatureAlert', { pos: this.pos });
-	        } else if (this.state === 'alert' && this.stateT <= 0) {
-	          this.state = playerDist < this.def.attackRange ? 'attack' : 'chase';
-	        } else if (this.state === 'chase' && playerDist < this.def.attackRange * 1.15) {
-	          // 追到身边就进入攻击循环
-	          this.state = 'attack';
-	        } else if (this.state === 'attack' && playerDist > this.def.attackRange * 2.2) {
-	          this.state = 'chase';
 	        }
 	      } else if (this.state === 'chase' || this.state === 'attack' || this.state === 'alert') {
 	        this.state = 'wander';
+	        this.stateT = 0;
 	        this.pickWander();
+	      }
+	      // BUG-35：敌对生物在未发现玩家时也要正常巡游（与温和生物共用同一套游荡计时）
+	      if (this.state === 'wander' || this.state === 'graze') {
+	        if (this.stateT <= 0) {
+	          this.state = Math.random() < 0.2 ? 'graze' : 'wander';
+	          this.stateT = 4 + Math.random() * 6;
+	          this.pickWander();
+	        } else if (this.wanderTarget && this.pos.distanceTo(this.wanderTarget) < 1.2) {
+	          this.pickWander();
+	          this.stateT = 4 + Math.random() * 6;
+	        }
 	      }
 	    } else {
 	      if (this.state === 'flee') {
@@ -42997,14 +43159,27 @@ void main() {
 	        if (this.attackCd <= 0) {
 	          this.attackCd = 1.5;
 	          this.attackLunge = 1;
-	          if (dp < this.def.attackRange + 0.4) {
+	          // BUG-36：攻击不再只看水平距离，还要通过高度与遮挡校验
+	          if (dp < this.def.attackRange + 0.4 && this._canReach(player)) {
 	            this.game.onCreatureAttack(this, this.def.damage);
 	          }
 	        }
 	      }
 	      if (speed > 0) {
-	        const tx = this.pos.x + desired.x * speed * dt;
-	        const tz = this.pos.z + desired.z * speed * dt;
+	        let tx = this.pos.x + desired.x * speed * dt;
+	        let tz = this.pos.z + desired.z * speed * dt;
+	        // BUG-36：生物移动接入同一套静态碰撞，不能穿过基地墙体与大型障碍追击
+	        if (this._blocked(tx, tz)) {
+	          // 沿障碍切向滑动：先试左右偏转，再退回原地
+	          const px = -desired.z, pz = desired.x;
+	          let moved = false;
+	          for (const sgn of [1, -1]) {
+	            const sx = this.pos.x + (desired.x * 0.4 + px * sgn * 0.9) * speed * dt;
+	            const sz = this.pos.z + (desired.z * 0.4 + pz * sgn * 0.9) * speed * dt;
+	            if (!this._blocked(sx, sz)) { tx = sx; tz = sz; moved = true; break; }
+	          }
+	          if (!moved) { tx = this.pos.x; tz = this.pos.z; }
+	        }
 	        const gh = this.game.terrain.height(tx, tz);
 	        this.pos.x = tx;
 	        this.pos.z = tz;
@@ -43031,6 +43206,28 @@ void main() {
 	    this.root.position.copy(this.pos);
 	    this.root.rotation.y = this.yaw;
 	    this.root.rotation.z = 0;
+	  }
+
+	  // BUG-36：生物的静态碰撞查询（植被 + 基地建筑）
+	  _blocked(x, z) {
+	    const g = this.game;
+	    const r = 0.35 * (this.def.scale || 1);
+	    if (g.vegetation?.blocked(x, z, r)) return true;
+	    if (g.building?.blockedAt && g.building.blockedAt(x, z, r)) return true;
+	    return false;
+	  }
+
+	  // BUG-36：近战判定加入高度与遮挡校验
+	  _canReach(player) {
+	    if (Math.abs(player.pos.y - this.pos.y) > 1.6) return false;
+	    const steps = 4;
+	    for (let i = 1; i < steps; i++) {
+	      const t = i / steps;
+	      const x = this.pos.x + (player.pos.x - this.pos.x) * t;
+	      const z = this.pos.z + (player.pos.z - this.pos.z) * t;
+	      if (this._blocked(x, z)) return false;
+	    }
+	    return true;
 	  }
 
 	  animate(dt, t, speed, dp) {
@@ -43102,17 +43299,28 @@ void main() {
 	    this.list = [];
 	    this.group = new Group();
 	    this.group.name = 'creatures';
+	    // BUG-02：生物用星球种子生成稳定布局，并带稳定 ID
+	    this.rnd = Math.random;
+	    this.spawnIndex = 0;
+	  }
+
+	  setSeed(seed) {
+	    this.rnd = mulberry32((seed || 1) * 104729 + 7);
+	    this.spawnIndex = 0;
 	  }
 
 	  spawn(key, count, pos) {
 	    for (let i = 0; i < count; i++) {
-	      const a = Math.random() * Math.PI * 2;
-	      const r = 6 + Math.random() * 22;
+	      const a = this.rnd() * Math.PI * 2;
+	      const r = 6 + this.rnd() * 22;
 	      const p = pos.clone();
 	      p.x += Math.cos(a) * r;
 	      p.z += Math.sin(a) * r;
 	      p.y = this.game.terrain.height(p.x, p.z);
-	      this.add(new Creature(CREATURE_DEFS[key], p, this.game));
+	      const c = new Creature(CREATURE_DEFS[key], p, this.game);
+	      c.id = `${key}-${this.spawnIndex++}`;
+	      c.homeId = key;
+	      this.add(c);
 	    }
 	  }
 
@@ -43127,10 +43335,39 @@ void main() {
 	      this.group.remove(c.root);
 	      c.root.traverse((o) => {
 	        if (o.geometry) o.geometry.dispose();
-	        if (o.material) o.material.dispose();
+	        if (o.material) {
+	          if (Array.isArray(o.material)) o.material.forEach((m) => m.dispose());
+	          else o.material.dispose();
+	        }
 	      });
 	    }
 	    this.list = [];
+	  }
+
+	  // BUG-02：持久化死亡/血量状态
+	  serialize() {
+	    const out = {};
+	    for (const c of this.list) {
+	      if (!c.id) continue;
+	      if (c.dead) out[c.id] = { dead: 1 };
+	      else if (c.hp < c.maxHp) out[c.id] = { hp: c.hp };
+	    }
+	    return out;
+	  }
+
+	  restore(state) {
+	    if (!state || typeof state !== 'object') return;
+	    for (const c of this.list) {
+	      const s = state[c.id];
+	      if (!s) continue;
+	      if (s.dead) {
+	        c.dead = true;
+	        c.deathT = 3;
+	        c.root.visible = false;
+	      } else if (Number.isFinite(s.hp)) {
+	        c.hp = clamp(s.hp, 1, c.maxHp);
+	      }
+	    }
 	  }
 
 	  update(dt, player) {
@@ -43170,26 +43407,31 @@ void main() {
 	  return base;
 	}
 
-	function crystalGeo() {
+	function crystalGeo(rnd = Math.random) {
 	  const parts = [];
 	  for (let i = 0; i < 4; i++) {
 	    const g = new ConeGeometry(0.12, 0.8 + i * 0.16, 6);
 	    g.translate(0, (0.8 + i * 0.16) / 2, 0);
-	    g.rotateZ((Math.random() - 0.5) * 0.7);
+	    g.rotateZ((rnd() - 0.5) * 0.7);
 	    g.rotateY(i * 1.4);
-	    g.translate((Math.random() - 0.5) * 0.3, 0, (Math.random() - 0.5) * 0.3);
+	    g.translate((rnd() - 0.5) * 0.3, 0, (rnd() - 0.5) * 0.3);
 	    parts.push(g);
 	  }
 	  return parts;
 	}
 
 	class ResourceField {
-	  constructor(terrain, palette, rng = Math.random) {
+	  // BUG-02：用星球种子生成固定布局，节点带稳定 ID，
+	  // 读档/重返星球时可以按 ID 恢复采集冷却，而不是重新随机。
+	  constructor(terrain, palette, rng = Math.random, opts = {}) {
 	    this.terrain = terrain;
 	    this.palette = palette;
 	    this.group = new Group();
 	    this.group.name = 'resources';
 	    this.nodes = [];
+	    this.planetId = opts.planetId || null;
+	    this.seed = Number.isFinite(opts.seed) ? opts.seed : 1;
+	    this.rng = mulberry32(this.seed * 7919 + 13);
 	    this.build(rng);
 	  }
 
@@ -43217,13 +43459,26 @@ void main() {
 	      emissiveIntensity: 2.0,
 	      roughness: 0.35,
 	    });
+	    // BUG-03：生物质荚材质（半透明浆果，带自发光便于夜间辨识）
+	    const bioMat = new MeshStandardMaterial({
+	      color: new Color('#7fe0a4'),
+	      emissive: new Color('#2f7a4a'),
+	      emissiveIntensity: 1.1,
+	      roughness: 0.45,
+	      metalness: 0.05,
+	      transparent: true,
+	      opacity: 0.9,
+	    });
 	    this.oreMat = oreMat;
 	    this.crystalMat = crystalMat;
+	    this.bioMat = bioMat;
 
+	    // BUG-02：所有随机量都来自星球种子，同一星球每次生成的布局完全一致
+	    const rnd = this.rng;
 	    const mk = (type, count, radius) => {
 	      for (let i = 0; i < count; i++) {
-	        const a = Math.random() * Math.PI * 2;
-	        const r = 12 + Math.sqrt(Math.random()) * radius;
+	        const a = rnd() * Math.PI * 2;
+	        const r = 12 + Math.sqrt(rnd()) * radius;
 	        const x = Math.cos(a) * r, z = Math.sin(a) * r;
 	        if (Math.hypot(x, z) < 6) continue;
 	        const y = this.terrain.height(x, z);
@@ -43233,11 +43488,11 @@ void main() {
 	        let mesh;
 	        if (type === 'ferrite') {
 	          mesh = new Mesh(oreGeo(), oreMat);
-	          mesh.scale.setScalar(0.7 + Math.random() * 0.6);
+	          mesh.scale.setScalar(0.7 + rnd() * 0.6);
 	          mesh.position.y = 0.25;
-	          mesh.rotation.set(Math.random(), Math.random() * 6, Math.random());
+	          mesh.rotation.set(rnd(), rnd() * 6, rnd());
 	        } else if (type === 'silica') {
-	          for (const g of crystalGeo()) {
+	          for (const g of crystalGeo(rnd)) {
 	            const m = new Mesh(g, crystalMat);
 	            root.add(m);
 	          }
@@ -43252,53 +43507,111 @@ void main() {
 	            stem.position.set(Math.cos(k * 2.1) * 0.07, 0.06, Math.sin(k * 2.1) * 0.07);
 	            root.add(stem);
 	          }
+	        } else if (type === 'bio') {
+	          // 生物质荚：地表一簇半透明浆果荚，采集后转为生物质
+	          const cluster = new Group();
+	          for (let k = 0; k < 3; k++) {
+	            const pod = new Mesh(new SphereGeometry(0.19 - k * 0.03, 10, 8), bioMat);
+	            pod.scale.set(1, 1.35, 1);
+	            const a = k * 2.1;
+	            pod.position.set(Math.cos(a) * 0.17, 0.2 + k * 0.06, Math.sin(a) * 0.17);
+	            cluster.add(pod);
+	          }
+	          const stalk = new Mesh(new CylinderGeometry(0.025, 0.05, 0.34, 6), bioMat);
+	          stalk.position.y = 0.17;
+	          cluster.add(stalk);
+	          root.add(cluster);
 	        }
 	        if (mesh) { mesh.castShadow = true; root.add(mesh); }
 	        root.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.userData.hittable = true; } });
+	        // BUG-02：稳定 ID = 类型 + 序号，读档时按 ID 恢复采集状态
+	        const id = `${type}-${this.nodes.filter((n) => n.type === type).length}`;
 	        const node = {
+	          id,
 	          type,
 	          root,
 	          pos: new Vector3(x, y, z),
-	          amount: 2 + Math.floor(Math.random() * 3),
+	          amount: 2 + Math.floor(rnd() * 3),
 	          harvested: false,
 	          respawnT: 0,
-	          colliderR: 0.5,
+	          colliderR: 0.55,
 	        };
 	        root.traverse((o) => { if (o.isMesh) o.userData.resource = node; });
 	        this.group.add(root);
 	        this.nodes.push(node);
 	      }
 	    };
+	    // BUG-03：生物质必须有可采集来源，否则科研站（需 bio 6）永久无法建造
 	    if (biome === 'desert') {
 	      mk('ferrite', 22, 230);
 	      mk('silica', 24, 230);
+	      mk('bio', 10, 200);
 	    } else if (biome === 'glowfen') {
 	      mk('lumen', 34, 230);
 	      mk('ferrite', 12, 230);
+	      mk('bio', 14, 200);
 	    } else {
 	      mk('ferrite', 22, 230);
 	      mk('silica', 14, 230);
+	      mk('bio', 12, 200);
 	    }
 	  }
 
+	  // BUG-37：用实际三维距离筛选，并检查可达性（高度差 + 视线遮挡）
 	  nearest(pos, type, radius = 3.2) {
 	    let best = null, bd = radius;
 	    for (const n of this.nodes) {
 	      if (n.harvested) continue;
 	      if (type && n.type !== type) continue;
-	      const d = Math.hypot(n.pos.x - pos.x, n.pos.z - pos.z);
-	      if (d < bd) { bd = d; best = n; }
+	      const dx = n.pos.x - pos.x, dz = n.pos.z - pos.z;
+	      const horiz = Math.hypot(dx, dz);
+	      if (horiz >= bd) continue;
+	      // 高度差太大（头顶/脚下）不算可交互
+	      if (Math.abs(n.pos.y - pos.y) > 2.0) continue;
+	      // 中间有实心障碍时不算可达
+	      if (this._occluded(pos, n.pos)) continue;
+	      bd = horiz; best = n;
 	    }
 	    return best;
 	  }
 
-	  harvest(node) {
+	  _occluded(from, to) {
+	    const g = this.game;
+	    if (!g) return false;
+	    const steps = 5;
+	    for (let i = 1; i < steps; i++) {
+	      const t = i / steps;
+	      const x = from.x + (to.x - from.x) * t;
+	      const z = from.z + (to.z - from.z) * t;
+	      if (g.vegetation?.blocked(x, z, 0)) return true;
+	      if (g.building?.blockedAt && g.building.blockedAt(x, z, 0)) return true;
+	    }
+	    return false;
+	  }
+
+	  // BUG-17：资源实体的水平阻挡（矿石/晶簇本身是实心的）
+	  blockedAt(x, z, pad = 0) {
+	    for (const n of this.nodes) {
+	      if (n.harvested) continue;
+	      const r = (n.colliderR || 0.5) * 0.7;
+	      const dx = n.pos.x - x, dz = n.pos.z - z;
+	      if (dx * dx + dz * dz < (r + pad) * (r + pad)) return n;
+	    }
+	    return null;
+	  }
+
+	  // BUG-37：执行采集时再校验一次距离与遮挡
+	  harvest(node, playerPos) {
 	    if (!node || node.harvested) return null;
+	    if (playerPos) {
+	      const d = Math.hypot(node.pos.x - playerPos.x, node.pos.z - playerPos.z);
+	      if (d > 2.8 || Math.abs(node.pos.y - playerPos.y) > 2.0) return null;
+	      if (this._occluded(playerPos, node.pos)) return null;
+	    }
 	    node.harvested = true;
 	    node.respawnT = 90;
 	    node.root.visible = false;
-	    const out = { type: node.type, amount: node.amount };
-	    return out;
+	    return { type: node.type, amount: node.amount, id: node.id };
 	  }
 
 	  update(dt) {
@@ -43310,6 +43623,44 @@ void main() {
 	        n.root.visible = true;
 	      }
 	    }
+	  }
+
+	  // BUG-02：把采集状态序列化成可存档的稳定结构
+	  serialize() {
+	    const out = {};
+	    for (const n of this.nodes) {
+	      if (n.harvested) out[n.id] = Math.max(1, Math.round(n.respawnT));
+	    }
+	    return out;
+	  }
+
+	  restore(state) {
+	    if (!state || typeof state !== 'object') return;
+	    for (const n of this.nodes) {
+	      const t = state[n.id];
+	      if (Number.isFinite(t)) {
+	        n.harvested = true;
+	        n.respawnT = Math.max(0.1, t);
+	        n.root.visible = false;
+	      } else {
+	        n.harvested = false;
+	        n.respawnT = 0;
+	        n.root.visible = true;
+	      }
+	    }
+	  }
+
+	  // BUG-43：释放几何与材质
+	  dispose() {
+	    const mats = new Set();
+	    this.group.traverse((o) => {
+	      if (o.geometry) o.geometry.dispose();
+	      if (o.material) {
+	        if (Array.isArray(o.material)) o.material.forEach((m) => mats.add(m));
+	        else mats.add(o.material);
+	      }
+	    });
+	    for (const m of mats) m.dispose();
 	  }
 	}
 
@@ -43417,7 +43768,7 @@ void main() {
 					case 1: // left
 
 						// generate UVs along Z then Y
-						faceDirVector.set( -1, 0, 0 );
+						faceDirVector.set( - 1, 0, 0 );
 						uvs[ j + 0 ] = 1.0 - getUv( faceDirVector, normal, 'z', 'y', radius, depth );
 						uvs[ j + 1 ] = 1.0 - getUv( faceDirVector, normal, 'y', 'z', radius, height );
 						break;
@@ -43433,7 +43784,7 @@ void main() {
 					case 3: // bottom
 
 						// generate UVs along X then Z
-						faceDirVector.set( 0, -1, 0 );
+						faceDirVector.set( 0, - 1, 0 );
 						uvs[ j + 0 ] = 1.0 - getUv( faceDirVector, normal, 'x', 'z', radius, width );
 						uvs[ j + 1 ] = 1.0 - getUv( faceDirVector, normal, 'z', 'x', radius, depth );
 						break;
@@ -43449,7 +43800,7 @@ void main() {
 					case 5: // back
 
 						// generate UVs along X then Y
-						faceDirVector.set( 0, 0, -1 );
+						faceDirVector.set( 0, 0, - 1 );
 						uvs[ j + 0 ] = getUv( faceDirVector, normal, 'x', 'y', radius, width );
 						uvs[ j + 1 ] = 1.0 - getUv( faceDirVector, normal, 'y', 'x', radius, height );
 						break;
@@ -43587,7 +43938,7 @@ void main() {
 	    helmet.scale.set(1, 1.02, 1.04);
 	    // 面窗：大而透明的金色玻璃
 	    const visorGeo = new SphereGeometry(0.06, 32, 24, -Math.PI * 0.62, Math.PI * 1.24, Math.PI * 0.18, Math.PI * 0.55);
-	    this.visor = m(visorGeo, M.gold, 0, -4e-3, 0.004, this.head);
+	    this.visor = m(visorGeo, M.gold, 0, -0.004, 0.004, this.head);
 	    this.visor.rotation.x = -0.06;
 	    this.visor.castShadow = false;
 	    // 头盔外玻璃罩
@@ -43681,11 +44032,11 @@ void main() {
 	    this.muzzle.position.set(0, 0.006, 0.058);
 	    g.add(this.muzzle);
 	    const grip = new Mesh(new RoundedBoxGeometry(0.018, 0.04, 0.022, 2, 0.006), M.accentMat);
-	    grip.position.set(0, -0.035, -8e-3);
+	    grip.position.set(0, -0.035, -0.008);
 	    grip.rotation.x = -0.25;
 	    g.add(grip);
 	    const fin = new Mesh(new BoxGeometry(0.004, 0.012, 0.02), M.metal);
-	    fin.position.set(0, 0.024, -6e-3);
+	    fin.position.set(0, 0.024, -0.006);
 	    g.add(fin);
 	    g.traverse((o) => { if (o.isMesh) { o.castShadow = true; } });
 	    return g;
@@ -43812,6 +44163,11 @@ void main() {
 
 	// 第三人称角色控制器：不同重力、惯性位移、斜坡行走、碰撞、镜头环绕与碰撞退缩
 
+	// 角色碰撞半径（米）。与植被/建筑/资源/火箭共用同一套水平阻挡。
+	const PLAYER_R = 0.42;
+	// BUG-15：碰撞推进的最大迭代次数，用于反复推出穿透后再取最高地面
+	const MAX_SLIDE_ITER = 3;
+
 	class PlayerController {
 	  constructor(game) {
 	    this.game = game;
@@ -43824,7 +44180,7 @@ void main() {
 	    this.gravity = 7.4;
 	    this.yaw = 0; // 角色朝向
 	    this.camYaw = 0;
-	    this.camPitch = -0.1;
+	    this.camPitch = 0.28;
 	    this.camDist = 5.4;
 	    this.camCur = 5.2;
 	    this.camTarget = new Vector3();
@@ -43851,19 +44207,37 @@ void main() {
 	    this.inertia = 9 + (1 - palette.gravity / 10) * 6;
 	  }
 
-	  teleport(x, z, yaw = 0) {
+	  // BUG-20：瞬移必须同步镜头状态，否则死亡重生后镜头会横穿整个场景再追上来。
+	  teleport(x, z, yaw = 0, opts = {}) {
 	    const y = this.terrain.height(x, z);
 	    this.pos.set(x, y, z);
 	    this.vel.set(0, 0, 0);
 	    this.velY = 0;
 	    this.yaw = yaw;
-	    this.camYaw = yaw;
+	    if (opts.keepCameraYaw !== true) this.camYaw = yaw;
 	    this.grounded = true;
+	    this.landImpact = 0;
+	    this.stepAccum = 0;
+	    // 跟随目标与当前镜头距离一起归位；相机位置由下一帧 snap 处理
+	    this.camTarget.copy(this.pos).add(new Vector3(0, 0.5, 0));
+	    this.camCur = this.aiming ? this.camDist - 1.75 : this.camDist;
+	    this.camSnapPending = true;
 	  }
 
+	  // 瞬移后让镜头立刻归位（供 respawn / 读档使用）
+	  snapCamera(camera) {
+	    this.camTarget.copy(this.pos).add(new Vector3(0, 0.5, 0));
+	    this.camCur = this.aiming ? this.camDist - 1.75 : this.camDist;
+	    this.updateCamera(0, camera, {}, true);
+	    this.camSnapPending = false;
+	  }
+
+	  // BUG-14：camPitch 是“相机绕角色抬起的角度”，鼠标向下应该让视线向下。
+	  // 相机位于角色背后上方，视线方向近似 -dir，因此 camPitch 增大=视线向下。
+	  // 统一约定：鼠标下移（dy>0）→ 视线下移 → camPitch 增大，与太空俯仰一致。
 	  look(dx, dy, sens = 0.0022) {
 	    this.camYaw -= dx * sens;
-	    this.camPitch = clamp(this.camPitch - dy * sens, -1.15, 0.85);
+	    this.camPitch = clamp(this.camPitch + dy * sens, -1.15, 0.85);
 	  }
 
 	  jump() {
@@ -43894,41 +44268,22 @@ void main() {
 	    this.vel.x = damp(this.vel.x, target.x, accel, dt);
 	    this.vel.z = damp(this.vel.z, target.z, accel, dt);
 
-	    // 水平移动 + 碰撞
-	    const nx = this.pos.x + this.vel.x * dt;
-	    const nz = this.pos.z + this.vel.z * dt;
-	    const groundH = t.height(nx, nz);
-	    const col = this.game.vegetation?.blocked(nx, nz, 0.35);
-	    // 火箭船体：不让玩家钻进起落架/机身（舱门侧留出登船通道）
-	    let rocketBlock = null;
-	    const rk = this.game.rocket?.group;
-	    if (rk) {
-	      const dx = rk.position.x - nx, dz = rk.position.z - nz;
-	      const dist = Math.hypot(dx, dz);
-	      if (dist < 1.5) {
-	        // 舱门方向（局部 -Z）允许靠近到 1.0m
-	        const yaw = rk.rotation.y;
-	        const doorDx = -Math.sin(yaw), doorDz = -Math.cos(yaw);
-	        const along = (nx - rk.position.x) * doorDx + (nz - rk.position.z) * doorDz;
-	        const allow = along > 0.2 ? 1.0 : 1.45;
-	        if (dist < allow) rocketBlock = true;
-	      }
-	    }
-	    if (!col && !rocketBlock) {
-	      this.pos.x = nx;
-	      this.pos.z = nz;
-	    } else {
-	      // 沿山坡滑移
-	      this.pos.x += this.vel.x * dt * 0.2;
-	      this.pos.z += this.vel.z * dt * 0.2;
-	      this.vel.multiplyScalar(0.5);
-	    }
+	    // 水平移动 + 碰撞（BUG-15 / BUG-16 / BUG-17）
+	    // 顺序：逐轴推进并做切向滑动 → 边界约束 → 用最终位置重新查询地面高度。
+	    const stepX = this.vel.x * dt;
+	    const stepZ = this.vel.z * dt;
+	    this._moveAxis(stepX, 0);
+	    this._moveAxis(0, stepZ);
+	    // 滑块被完全挡住时仍有极小穿透风险，做一次显式推出
+	    this._depenetrate();
 	    // 边界
 	    const r = Math.hypot(this.pos.x, this.pos.z);
 	    if (r > 300) {
 	      this.pos.x *= 300 / r;
 	      this.pos.z *= 300 / r;
 	    }
+	    // BUG-16：碰撞与边界修正之后，地面高度必须按最终位置重新采样
+	    const groundH = t.height(this.pos.x, this.pos.z);
 
 	    // 垂直：贴地 / 重力
 	    if (!this.grounded) {
@@ -44009,17 +44364,18 @@ void main() {
 	    this.landImpact = damp(this.landImpact, 0, 6, dt);
 	  }
 
-	  updateCamera(dt, camera, input) {
+	  updateCamera(dt, camera, input, snap = false) {
 	    const desiredTarget = this.pos.clone().add(new Vector3(0, 0.5, 0));
 	    // 相机跟随平滑
 	    this.camTarget.x = damp(this.camTarget.x, desiredTarget.x, 12, dt);
 	    this.camTarget.y = damp(this.camTarget.y, desiredTarget.y, 10, dt);
 	    this.camTarget.z = damp(this.camTarget.z, desiredTarget.z, 12, dt);
-	    if (this.camTarget.lengthSq() === 0) this.camTarget.copy(desiredTarget);
+	    if (snap || this.camTarget.lengthSq() === 0) this.camTarget.copy(desiredTarget);
 
 	    const aimZoom = this.aiming ? 1.75 : 0;
 	    const fitDist = this.camDist - aimZoom;
 	    this.camCur = damp(this.camCur, fitDist, 6, dt);
+	    if (snap) this.camCur = fitDist;
 
 	    const cp = Math.cos(this.camPitch);
 	    const dir = new Vector3(
@@ -44027,15 +44383,18 @@ void main() {
 	      Math.sin(this.camPitch),
 	      Math.cos(this.camYaw) * cp
 	    );
-	    // 相机遮挡：沿视线采样 + 侧向环形采样，逼近相机局部地形高度
-	    let dist = this.camCur;
+	    // 相机遮挡（BUG-18 / BUG-19）：
+	    // 把相机当成半径 CAM_R 的球体，对地形、火箭船体、树干岩柱、基地建筑一起做采样，
+	    // 一旦入口距离小于当前距离就立刻收缩（允许小于 2.4 米，不再越过碰撞入口）。
 	    const origin = this.camTarget;
-	    const steps = 14;
+	    let dist = this.camCur;
+	    const steps = 18;
 	    const clearance = 0.32;
+	    const distBefore = dist;
 	    for (let i = 1; i <= steps; i++) {
 	      const d = (i / steps) * this.camCur;
 	      const p = origin.clone().addScaledVector(dir, d);
-	      // 相机半径内的最高地面（含侧向），防止擦入斜坡
+	      // 1) 地形：相机半径内的最高地面（含侧向），防止擦入斜坡
 	      let gh = this.terrain.height(p.x, p.z);
 	      const r = 0.35 + d * 0.05;
 	      const cand = [
@@ -44047,17 +44406,17 @@ void main() {
 	        dist = Math.min(dist, d * 0.9);
 	        break;
 	      }
-	      // 火箭船体遮挡：相机不要钻进机身
-	      const rk = this.game.rocket?.group;
-	      if (rk) {
-	        const rdx = p.x - rk.position.x, rdz = p.z - rk.position.z;
-	        if (rdx * rdx + rdz * rdz < 1.75 * 1.75 && p.y < rk.position.y + 3.6) {
-	          dist = Math.min(dist, Math.max(2.4, d - 0.8));
-	          break;
-	        }
+	      // 2) 实体遮挡：船体 / 树干岩柱 / 基地建筑（同一套体积判定）
+	      if (this._cameraBlocked(p)) {
+	        // 回退到入口前的最后一个安全采样点，而不是强行保留 2.4 米
+	        dist = Math.min(dist, Math.max(0.55, d - 0.35));
+	        break;
 	      }
 	    }
-	    dist = Math.max(dist, 0.9);
+	    dist = Math.max(dist, 0.55);
+	    // 收缩要立刻生效，恢复可以慢一点，避免镜头抖动（入口收缩永远优先）
+	    this.camCur = Math.min(this.camCur, Math.max(dist, 0.55));
+	    if (dist < distBefore) this.camCur = Math.max(dist, 0.55);
 	    const shake = this.game.cameraShake || 0;
 	    const desiredPos = origin.clone().addScaledVector(dir, dist);
 	    const cgh = this.terrain.height(desiredPos.x, desiredPos.z) + 0.45;
@@ -44070,8 +44429,19 @@ void main() {
 	    // 瞄准时右肩偏移
 	    const shoulder = this.aiming ? this.camCur * 0.18 : 0;
 	    desiredPos.addScaledVector(new Vector3(Math.cos(this.camYaw), 0, -Math.sin(this.camYaw)), shoulder);
-	    camera.position.lerp(desiredPos, 1 - Math.exp(-(this.aiming ? 22 : 14) * dt));
-	    const lookAt = origin.clone().addScaledVector(dir, -2);
+	    if (snap || this.camSnapPending) {
+	      camera.position.copy(desiredPos);
+	      this.camSnapPending = false;
+	    } else camera.position.lerp(desiredPos, 1 - Math.exp(-(this.aiming ? 22 : 14) * dt));
+	    // BUG-19：插值之后的最终位置必须再校验一次，
+	    // 否则镜头平滑追上来的过程仍会穿过船体/树干。
+	    for (let guard = 0; guard < 6 && this._cameraBlocked(camera.position); guard++) {
+	      const back = origin.clone().sub(camera.position);
+	      const len = back.length();
+	      if (len < 0.4) { camera.position.copy(origin).addScaledVector(dir, 0.5); break; }
+	      camera.position.addScaledVector(back.normalize(), Math.min(len * 0.5, 0.6));
+	    }
+	    const lookAt = origin.clone().addScaledVector(dir, -2.0);
 	    if (this.aiming) {
 	      lookAt.copy(origin).addScaledVector(dir, -4).add(new Vector3(0, 0.06, 0));
 	    }
@@ -44084,13 +44454,98 @@ void main() {
 	    const breath = this.grounded && !this.aiming ? 0.006 : 0.012;
 	    camera.position.x += Math.sin(tt * 0.9) * breath;
 	    camera.position.y += Math.sin(tt * 1.3) * breath;
+	    camera.up.set(0, 1, 0);
 	    camera.lookAt(lookAt);
+	    this.game.cameraLookTarget.copy(lookAt);
 	  }
 
 	  // 面向镜头前方（采集 / 建造时）
 	  faceCameraForward() {
 	    const hs = Math.hypot(this.vel.x, this.vel.z);
 	    if (hs < 0.3) this.yaw = this.camYaw + Math.PI;
+	  }
+
+	  // ================= 统一水平碰撞 =================
+	  // BUG-17：把植被、基地建筑（实心）、资源节点、火箭船体统一成一个可行走碰撞集合，
+	  // 角色任何方向都走不进实体内部。
+	  _solidCircle(x, z) {
+	    // 返回该点是否落在实心体内（含角色半径）
+	    const g = this.game;
+	    const pad = PLAYER_R;
+	    // 植被（树干 / 岩柱 / 大石）
+	    if (g.vegetation?.blocked(x, z, pad)) return true;
+	    // 基地建筑
+	    if (g.building?.blockedAt && g.building.blockedAt(x, z, pad)) return true;
+	    // 资源节点（矿石 / 晶簇）
+	    if (g.resources?.blockedAt && g.resources.blockedAt(x, z, pad)) return true;
+	    // 火箭船体：舱门方向（局部 -Z）留出登船通道
+	    const rk = g.rocket?.group;
+	    if (rk) {
+	      const dx = rk.position.x - x, dz = rk.position.z - z;
+	      const dist = Math.hypot(dx, dz);
+	      if (dist < 2.2) {
+	        const yaw = rk.rotation.y;
+	        const doorDx = -Math.sin(yaw), doorDz = -Math.cos(yaw);
+	        const along = (x - rk.position.x) * doorDx + (z - rk.position.z) * doorDz;
+	        const allow = along > 0.2 ? 1.0 : 1.45;
+	        if (dist < allow + pad * 0.5) return true;
+	      }
+	    }
+	    return false;
+	  }
+
+	  // BUG-18 / BUG-19：相机体积遮挡。相机是半径 CAM_R 的球，
+	  // 命中船体、树干岩柱或基地建筑时返回 true。
+	  _cameraBlocked(p) {
+	    const g = this.game;
+	    const CAM_R = 0.35;
+	    // 火箭船体：圆柱（轴线垂直，半径约 0.75，舱底到机头约 3.6 米）
+	    const rk = g.rocket?.group;
+	    if (rk) {
+	      const rdx = p.x - rk.position.x, rdz = p.z - rk.position.z;
+	      const horiz = Math.hypot(rdx, rdz);
+	      const baseY = rk.position.y;
+	      if (horiz < 0.85 + CAM_R && p.y > baseY - 0.4 && p.y < baseY + 4.2) return true;
+	    }
+	    // 植被与基地建筑：统一用水平圆 + 高度区间
+	    const t = this.terrain;
+	    if (t) {
+	      const gh = t.height(p.x, p.z);
+	      if (g.vegetation?.blocked(p.x, p.z, CAM_R)) return true;
+	      if (g.building?.cameraBlockedAt && g.building.cameraBlockedAt(p.x, p.z, CAM_R, p.y - gh)) return true;
+	    }
+	    return false;
+	  }
+
+	  // 单轴推进：被挡住时只吞掉该轴位移，另一轴保留 → 自然产生切向滑动
+	  _moveAxis(dx, dz) {
+	    if (!dx && !dz) return;
+	    const nx = this.pos.x + dx;
+	    const nz = this.pos.z + dz;
+	    if (!this._solidCircle(nx, nz)) {
+	      this.pos.x = nx;
+	      this.pos.z = nz;
+	      return;
+	    }
+	    // 被挡住：清掉该方向的水平速度，避免持续挤压后逐帧抖动
+	    if (dx) this.vel.x = 0;
+	    if (dz) this.vel.z = 0;
+	  }
+
+	  // 显式推出：如果已经被卡进实体（例如传送、建筑落成、上岸），沿最近边界推开
+	  _depenetrate() {
+	    this.game;
+	    if (!this._solidCircle(this.pos.x, this.pos.z)) return;
+	    for (let i = 0; i < MAX_SLIDE_ITER; i++) {
+	      let moved = false;
+	      const probes = [[0.35, 0], [-0.35, 0], [0, 0.35], [0, -0.35], [0.3, 0.3], [-0.3, 0.3], [0.3, -0.3], [-0.3, -0.3]];
+	      for (const [ox, oz] of probes) {
+	        const nx = this.pos.x + ox, nz = this.pos.z + oz;
+	        if (!this._solidCircle(nx, nz)) { this.pos.x = nx; this.pos.z = nz; moved = true; break; }
+	      }
+	      if (!moved) break;
+	      if (!this._solidCircle(this.pos.x, this.pos.z)) return;
+	    }
 	  }
 	}
 
@@ -44112,6 +44567,32 @@ void main() {
   gl_FragColor = vec4(c * uLife, 1.0);
 }
 `;
+
+	// BUG-05：每种射击模式的能量消耗（与 tryFire 中的校验共用同一份数据）
+	const ENERGY_COST = [8, 26, 16];
+
+	// 射线只应命中"看得见"的物体。Raycaster 自身不检查 visible，而采集后的资源节点
+	// 与死亡后淡出的生物只是把 visible 置 false，若不在这里过滤，射线会打在隐形物体上：
+	// 伤害被吸收且没有命中反馈，玩家会以为武器失灵。
+	function isVisibleInScene(obj) {
+	  for (let o = obj; o; o = o.parent) {
+	    if (!o.visible) return false;
+	  }
+	  return true;
+	}
+
+	// BUG-29：区分“可伤害”（hittable）与“可阻挡”（occluder）。
+	// 判定采用“默认阻挡 + 显式放行”：
+	//  - 任何可见的实体网格（含 InstancedMesh）都会挡住弹道，因此地形、建筑、
+	//    飞船、植被、资源无需逐个打标记也不会被穿透；
+	//  - 纯视觉元素（天空、水面、粒子、弹道自身、全息预览）显式标记 noBlock 放行。
+	// 这样新增场景物件不会悄悄破坏“射击被遮挡”的规则。
+	function isOccluder(obj) {
+	  if (!obj.isMesh && !obj.isInstancedMesh) return false;
+	  if (obj.userData.noBlock) return false;
+	  if (obj.userData.hittable || obj.userData.occluder) return true;
+	  return true;
+	}
 
 	class Weapon {
 	  constructor(game) {
@@ -44151,12 +44632,38 @@ void main() {
 	    this.flashTex.colorSpace = SRGBColorSpace;
 	  }
 
+	  // BUG-32：切换模式丢弃尚未发射的余弹，避免切回来后“不按开火也会继续射击”
 	  switchMode() {
+	    if (this.burstCount > 0) {
+	      this.burstCount = 0;
+	      this.burstTimer = 0;
+	    }
+	    this.cooldown = Math.max(this.cooldown, 0);
 	    this.mode = (this.mode + 1) % 3;
 	    this.game.ui?.toast(`射击模式：${this.modes[this.mode]}`, 'info');
 	    this.game.audio?.play('uiTick');
 	  }
 
+	  // BUG-33：离开地表 / 重开游戏时显式销毁所有短生命周期特效
+	  clearEffects() {
+	    for (const b of this.beams) {
+	      this.game.scene.remove(b.mesh);
+	      b.mesh.geometry.dispose();
+	      b.mesh.material.dispose();
+	    }
+	    this.beams.length = 0;
+	    for (const f of this.flashes) {
+	      this.game.scene.remove(f.sprite);
+	      f.sprite.material.dispose();
+	    }
+	    this.flashes.length = 0;
+	    this.light.intensity = 0;
+	    this.burstCount = 0;
+	    this.burstTimer = 0;
+	    this.recoil = 0;
+	  }
+
+	  // BUG-33：短生命周期特效的更新放进通用循环，飞行/太空/菜单期间也会自然消失
 	  update(dt) {
 	    this.cooldown -= dt;
 	    this.recoil = Math.max(0, this.recoil - dt * 6);
@@ -44201,23 +44708,23 @@ void main() {
 	  tryFire(camera, fromPlayer) {
 	    if (!fromPlayer) return;
 	    if (this.cooldown > 0) return;
-	    if (this.energy < 8) {
-	      this.game.ui?.toast('能量不足', 'warn');
+	    // BUG-05：三种模式消耗不同，必须按当前模式校验能量，并保证扣费后不为负
+	    const cost = ENERGY_COST[this.mode] ?? ENERGY_COST[0];
+	    if (this.energy < cost) {
+	      this.game.ui?.toast(`能量不足（需要 ${Math.ceil(cost)}）`, 'warn');
 	      this.game.audio?.play('uiError');
 	      return;
 	    }
+	    this.energy = Math.max(0, this.energy - cost);
 	    if (this.mode === 0) {
 	      this.cooldown = 0.22;
-	      this.energy -= 8;
 	      this.fireOnce(1.0);
 	    } else if (this.mode === 1) {
 	      this.cooldown = 0.9;
-	      this.energy -= 26;
 	      this.burstCount = 4;
 	      this.burstTimer = 0;
 	    } else {
 	      this.cooldown = 0.55;
-	      this.energy -= 16;
 	      for (let i = -2; i <= 2; i++) this.fireOnce(0.55, false, i * 0.032);
 	    }
 	  }
@@ -44225,23 +44732,48 @@ void main() {
 	  fireOnce(mult = 1, small = false, spread = 0) {
 	    const game = this.game;
 	    const cam = game.camera;
-	    const dir = new Vector3();
-	    cam.getWorldDirection(dir);
-	    dir.x += spread;
-	    dir.y += spread * 0.4;
-	    dir.normalize();
+	    // BUG-31：散射在相机局部正交基上施加，不再直接叠加世界坐标 x/y，
+	    // 因此朝任何方向射击的扇形张角都一致。
+	    const baseDir = new Vector3();
+	    cam.getWorldDirection(baseDir);
+	    const dir = baseDir.clone();
+	    if (spread) {
+	      const right = new Vector3();
+	      const up = new Vector3();
+	      // 由视线构造稳定的正交基（视线接近竖直时退回到世界轴）
+	      up.set(0, 1, 0);
+	      if (Math.abs(baseDir.dot(up)) > 0.98) up.set(0, 0, 1);
+	      right.crossVectors(baseDir, up).normalize();
+	      up.crossVectors(right, baseDir).normalize();
+	      // spread 是归一化后的横向偏移量，围绕射线旋转成固定角度
+	      const ang = Math.atan(spread);
+	      dir.addScaledVector(right, Math.tan(ang)).addScaledVector(up, Math.tan(ang) * 0.4).normalize();
+	    }
+	    // 便于验证与调试：记录本次实际使用的射线方向
+	    this.lastDir = dir.clone();
+	    this.lastOrigin = cam.position.clone();
 	    const origin = cam.position.clone();
 	    const muzzleWorld = new Vector3();
 	    const muzzle = game.player.astronaut.muzzle;
 	    muzzle.getWorldPosition(muzzleWorld);
 
+	    // BUG-29：射线集合 = 全部“可伤害 + 可阻挡”的实体，先取最近命中再判定伤害。
+	    // 玩家自身的模型必须排除：枪口就在模型上，否则“枪口到相机的遮挡检查”会命中自己。
+	    const targets = [];
+	    const ownRoot = game.player?.object;
+	    const isOwn = (o) => {
+	      for (let n = o; n; n = n.parent) if (n === ownRoot) return true;
+	      return false;
+	    };
+	    game.scene.traverse((o) => {
+	      if (o.isMesh && isOccluder(o) && isVisibleInScene(o) && !isOwn(o)) targets.push(o);
+	    });
 	    this.raycaster.set(origin, dir);
 	    this.raycaster.far = this.range;
-	    const targets = [];
-	    game.scene.traverse((o) => {
-	      if (o.isMesh && o.userData.hittable) targets.push(o);
-	    });
-	    const hits = this.raycaster.intersectObjects(targets, false);
+	    let hits = this.raycaster.intersectObjects(targets, false);
+	    // BUG-29 补充：弹道是从枪口画到命中点的，枪口到目标之间也必须没有遮挡。
+	    // 判定放在确定命中点之后进行（见下方 muzzleBlocked 计算）。
+	    this.lastHitCount = hits.length;
 	    let end = origin.clone().addScaledVector(dir, this.range);
 	    let hitCreature = null;
 	    let hitObj = null;
@@ -44249,10 +44781,29 @@ void main() {
 	      end = hits[0].point;
 	      hitObj = hits[0].object;
 	      const c = hitObj.userData.creature;
-	      if (c && !c.dead) {
-	        // 命中弱点判定：头部 / 背脊
-	        const local = hitObj.worldToLocal(hits[0].point.clone());
-	        const weak = hitObj.userData.weak && local.y > hitObj.userData.weakY;
+	      // BUG-29：枪口到命中点的遮挡检查。
+	      // 只在枪口处于合理位置时启用：如果宇航员变换尚未更新，枪口坐标会远离相机，
+	      // 此时线段没有意义，不能据此判定“整枪被挡住”。
+	      let muzzleBlocked = false;
+	      const camToMuzzle = muzzleWorld.distanceTo(origin);
+	      const targetDist = hits[0].distance;
+	      if (camToMuzzle > 0.15 && camToMuzzle < targetDist) {
+	        const seg = end.clone().sub(muzzleWorld);
+	        const segLen = seg.length();
+	        if (segLen > 0.2) {
+	          this.raycaster.set(muzzleWorld, seg.normalize());
+	          this.raycaster.far = segLen - 0.08;
+	          const mHits = this.raycaster.intersectObjects(targets, false);
+	          // 起手就贴在枪口上的面（同一个物体）不算遮挡
+	          muzzleBlocked = mHits.some((h) => h.object !== hitObj && h.distance > 0.05);
+	          this.raycaster.far = this.range;
+	          this.raycaster.near = 0;
+	        }
+	      }
+	      this.lastMuzzleBlocked = muzzleBlocked;
+	      if (c && !c.dead && !muzzleBlocked) {
+	        // BUG-30：弱点由模型显式标记（userData.weak），命中点局部坐标落在弱点体内即为暴击
+	        const weak = !!hitObj.userData.weak;
 	        hitCreature = c;
 	        const killed = c.damage(this.damage * mult, hits[0].point, weak);
 	        game.onHitFeedback(hits[0].point, weak, killed);
@@ -44276,6 +44827,8 @@ void main() {
 	      uniforms: { uColor: { value: new Color(game.palette.accent) }, uLife: { value: 1 } },
 	    });
 	    const mesh = new Mesh(geo, mat);
+	    // BUG-29：弹道自身不是遮挡体
+	    mesh.userData.noBlock = true;
 	    mesh.position.copy(muzzleWorld);
 	    mesh.lookAt(end);
 	    game.scene.add(mesh);
@@ -44543,7 +45096,13 @@ void main() {
 	    this.group.add(this.lamp);
 	    this.lampOn = false;
 
-	    this.group.traverse((o) => { if (o.isMesh) { o.castShadow = o.castShadow !== false; } });
+	    this.group.traverse((o) => {
+	      if (o.isMesh) {
+	        o.castShadow = o.castShadow !== false;
+	        // BUG-29：飞船船体是弹道遮挡体
+	        o.userData.occluder = true;
+	      }
+	    });
 	    this.group.position.set(0, 0, 0);
 	    this.root = this.group;
 	  }
@@ -44976,6 +45535,12 @@ void main() {
 	  const cp = Math.cos(pitch);
 	  return new Vector3(Math.sin(yaw) * cp, Math.sin(pitch), Math.cos(yaw) * cp);
 	}
+	// 用偏航构造横轴，避免把机头方向当成相机上轴；俯仰接近竖直也不切换参考轴。
+	function cameraBasis(yaw, pitch) {
+	  const forward = dirFrom(yaw, pitch);
+	  const right = V3(Math.cos(yaw), 0, -Math.sin(yaw));
+	  return { forward, right, up: new Vector3().crossVectors(forward, right).normalize() };
+	}
 	// 让机头（局部 +Y）对准 dir，并绕机头滚转
 	function quatFor(dir, roll, out = new Quaternion()) {
 	  out.setFromUnitVectors(NOSE, dir);
@@ -45027,7 +45592,28 @@ void main() {
 	  setPhase(p) {
 	    this.phase = p;
 	    this.phaseT = 0;
+	    // BUG-45：飞行阶段切换时统一设置引擎层目标音量，
+	    // 只要不是太空/逼近/再入，引擎声一律淡出为 0。
+	    const engineOn = p === 'space' || p === 'approach' || p === 'reentry' || p === 'launch' || p === 'atmos' || p === 'landing';
+	    if (!engineOn) this.game.audio?.setEngine(0, 0);
+	    if (p === 'landing') this.landStartY = this.ship.group.position.y;
+	    if (p === 'exit') {
+	      this.exitCamStart = this.game.camera.position.clone();
+	      this.exitLookStart = this.game.cameraLookTarget.clone();
+	    }
 	    this.game.onFlightPhase?.(p);
+	  }
+
+	  // 平移随飞船立即跟进，仅平滑相对偏移，防止高速航行时镜头落后数百米。
+	  followCamera(desired, dt, speed, reset = false) {
+	    const camera = this.game.camera;
+	    const pos = this.ship.group.position;
+	    if (reset) camera.position.copy(desired);
+	    else {
+	      if (this.cameraShipPos) camera.position.add(pos.clone().sub(this.cameraShipPos));
+	      camera.position.lerp(desired, 1 - Math.exp(-speed * dt));
+	    }
+	    this.cameraShipPos = pos.clone();
 	  }
 
 	  beginBoard() {
@@ -45041,7 +45627,7 @@ void main() {
 	    this.ship.openDoor(true);
 	    this.game.audio?.play('door');
 	    this.camStart = this.game.camera.position.clone();
-	    this.camStartLook = this.game.cameraLookTarget || this.game.player.pos.clone();
+	    this.camStartLook = this.game.camera.getWorldDirection(V3()).multiplyScalar(5).add(this.camStart);
 	  }
 
 	  beginLaunch(destId) {
@@ -45049,6 +45635,8 @@ void main() {
 	    this.setPhase('launch');
 	    this.launchYaw = this.ship.group.rotation.y;
 	    this.originPos = this.ship.group.position.clone();
+	    this.cameraShipPos = this.originPos.clone();
+	    this.launchCamRotation = this.game.camera.quaternion.clone();
 	    this.game.audio?.play('thruster', { vol: 1.0 });
 	    this.smokeBurst = 0;
 	    this.ship.lampOn = true;
@@ -45072,13 +45660,26 @@ void main() {
 	    s.throttle = 0.0;
 	    s.speed = 0;
 	    s.warp = 0;
-	    this.spaceCamInit = true;
+	    this.autoThrottle = undefined;
 	    this.hoverTarget = null;
+	    // 场景切换所在帧就同步网格和镜头，不能渲染一帧旧地表坐标。
+	    const { forward, right, up } = cameraBasis(s.yaw, s.pitch);
+	    this.ship.group.position.copy(s.pos);
+	    this.ship.group.quaternion.copy(quatFor(forward, 0));
+	    const desired = s.pos.clone().addScaledVector(forward, -13).addScaledVector(up, 4.2).addScaledVector(right, 17);
+	    this.followCamera(desired, 0, 5, true);
+	    this.game.cameraLookTarget.copy(s.pos).addScaledVector(forward, 9).addScaledVector(up, 1.6);
+	    this.game.camera.up.copy(up);
+	    this.game.camera.lookAt(this.game.cameraLookTarget);
+	    this.game.spaceSystem.follow(this.game.camera, this.t);
 	  }
 
 	  requestLanding(id) {
 	    if (this.phase !== 'space') return;
 	    this.targetPlanet = id;
+	    this.reentrySwapped = false;
+	    this.touchedDown = false;
+	    this.doorSnd = false;
 	    this.approachFrom = null;
 	    this.approachT = 0;
 	    this.setPhase('approach');
@@ -45130,13 +45731,24 @@ void main() {
 	      p.pos.lerp(this.ship.group.position.clone().add(V3(0, 0.9, -0.1)), k);
 	      p.astronaut.root.visible = k < 0.6;
 	    }
+	    p.object.position.copy(p.pos);
+	    p.object.rotation.set(0, p.yaw, 0);
+	    p.astronaut.update(dt, { speed: t < 1.8 ? 1 : 0 });
 	    // 相机：推进到舷窗高度与方向
 	    const ship = this.ship.group;
-	    const camTarget = ship.position.clone().add(V3(0, 1.55, 2.9).applyAxisAngle(V3(0, 1, 0), ship.rotation.y));
-	    const lookTarget = ship.position.clone().add(V3(0, 1.25, -0.4));
+	    const camTarget = ship.position.clone().add(V3(0, 2.35, 0.85).applyAxisAngle(V3(0, 1, 0), ship.rotation.y));
+	    const lookTarget = ship.position.clone().add(V3(0, 2.1, 6.5).applyAxisAngle(V3(0, 1, 0), ship.rotation.y));
 	    const k = smoothstep(0.2, 2.2, t);
-	    this.game.camera.position.lerpVectors(this.camStart, camTarget, k);
+	    // 绕船体外侧进入舷窗，避免从人物镜头直线穿过机身。
+	    const startOffset = this.camStart.clone().sub(ship.position);
+	    const startAngle = Math.atan2(startOffset.x, startOffset.z);
+	    const angleDelta = Math.atan2(Math.sin(ship.rotation.y - startAngle), Math.cos(ship.rotation.y - startAngle));
+	    const angle = startAngle + angleDelta * k;
+	    const radius = lerp(Math.max(0.85, Math.hypot(startOffset.x, startOffset.z)), 0.85, k);
+	    this.game.camera.position.set(ship.position.x + Math.sin(angle) * radius,
+	      lerp(this.camStart.y, camTarget.y, k), ship.position.z + Math.cos(angle) * radius);
 	    this.game.cameraLookTarget = this.camStartLook.clone().lerp(lookTarget, k);
+	    this.game.camera.up.set(0, 1, 0);
 	    this.game.camera.lookAt(this.game.cameraLookTarget);
 	    this.game.fovCurrent = lerp(55, 46, k);
 	    this.ship.openDoor(true);
@@ -45184,10 +45796,11 @@ void main() {
 	    const back = clamp(t / 6, 0, 1);
 	    const camTarget = shipObj.position.clone().add(V3(lerp(5.5, 14, back), lerp(2.2, -1.5, back), lerp(7.5, -16, back)));
 	    const lookAt = shipObj.position.clone().add(V3(0, lerp(1.4, 6, back), 0));
-	    this.game.camera.position.lerp(camTarget, 1 - Math.exp(-3 * dt));
-	    if (t < 0.05) this.game.camera.position.copy(camTarget);
+	    this.followCamera(camTarget, dt, 3);
 	    this.game.cameraLookTarget = lookAt;
+	    this.game.camera.up.set(0, 1, 0);
 	    this.game.camera.lookAt(lookAt);
+	    this.game.camera.quaternion.slerpQuaternions(this.launchCamRotation, this.game.camera.quaternion.clone(), smoothstep(0, 0.8, t));
 	    this.game.fovCurrent = lerp(46, 64, smoothstep(0, 5, t));
 	    // 云层包裹感
 	    this.game.atmosOverlay = clamp(smoothstep(3.6, 5.2, t) * (1 - smoothstep(5.6, 7.2, t)), 0, 1);
@@ -45203,16 +45816,16 @@ void main() {
 	  updateSpace(dt, input) {
 	    const s = this.shipState;
 	    const game = this.game;
-	    // 输入
+	    // 输入（BUG-08：摇杆在统一输入层已折算进 forward/strafe，这里直接复用）
 	    const yawIn = -(input.mouseDX || 0) * 0.0022 - (input.strafe || 0) * dt * 0.6;
-	    const pitchIn = -(input.mouseDY || 0) * 0.0022 + (input.forward || 0) * dt * 0.35;
+	    const pitchIn = -(input.mouseDY || 0) * 0.0022 - (input.forward || 0) * dt * 0.35;
 	    s.yaw += yawIn;
 	    s.pitch = clamp(s.pitch + pitchIn, -1.2, 1.2);
 	    s.roll = damp(s.roll, -((input.strafe || 0)) * 0.35, 3, dt);
-	    // 油门：E/C 与 滚轮
-	    if (input.held.has('KeyE')) s.throttle = clamp(s.throttle + dt * 0.6, 0, 1);
-	    if (input.held.has('KeyC')) s.throttle = clamp(s.throttle - dt * 0.6, 0, 1);
-	    if (input.forward) s.throttle = clamp(s.throttle + dt * 0.25, 0, 1);
+	    // 油门（BUG-39）：只由明确的加速/减速命令改变，俯仰键不再偷偷加油门。
+	    // 键盘 E/C、触屏持续加减速按钮、滚轮都走同一条通道。
+	    const throttleIn = (input.throttle || 0) + (this.autoThrottle !== undefined ? 0 : 0);
+	    if (throttleIn) s.throttle = clamp(s.throttle + dt * 0.6 * throttleIn, 0, 1);
 	    if (input.wheel) s.throttle = clamp(s.throttle - input.wheel * 0.12, 0, 1);
 	    if (this.autoThrottle !== undefined) {
 	      s.throttle = damp(s.throttle, this.autoThrottle, 0.8, dt);
@@ -45220,7 +45833,8 @@ void main() {
 	    }
 	    const targetSpeed = s.throttle * 900;
 	    s.speed = damp(s.speed, targetSpeed, 0.9, dt);
-	    const warp = input.held.has('ShiftLeft') || input.sprint ? 1 : 0;
+	    // BUG-08：曲率用 held Shift 或触屏“曲”按钮
+	    const warp = input.warp || input.held.has('ShiftLeft') || input.sprint ? 1 : 0;
 	    s.warp = damp(s.warp, warp, 2, dt);
 	    const speed = s.speed * (1 + s.warp * 2.2);
 	    this.speedForHud = speed;
@@ -45251,20 +45865,15 @@ void main() {
 	      this.ship.flameOuter.mat.uniforms.uLen.value = 1.6 + s.throttle * 2.2 + s.warp * 1.5;
 	    }
 	    this.ship.lampOn = false;
-	    // 相机：船尾侧后上方（俯视角度，让尾焰从画面下方掠过而不是直冲镜头）
+	    // 所有太空阶段共用同一组正交基，自动接近和再入也保持地平线稳定。
 	    const back = forward.clone().negate();
-	    const up = new Vector3(0, 1, 0).applyQuaternion(q);
-	    const side = new Vector3().crossVectors(forward, up).normalize();
+	    const { right, up } = cameraBasis(s.yaw, s.pitch);
 	    // 相机在船身侧后方（略微偏上），从侧后方看飞船与尾焰，避免尾焰正对镜头
 	    const desired = s.pos.clone()
 	      .addScaledVector(back, 13.0)
 	      .addScaledVector(up, 4.2)
-	      .addScaledVector(side, 17.0);
-	    if (this.spaceCamInit) {
-	      game.camera.position.copy(desired);
-	      this.spaceCamInit = false;
-	    }
-	    game.camera.position.lerp(desired, 1 - Math.exp(-5 * dt));
+	      .addScaledVector(right, 17.0);
+	    this.followCamera(desired, dt, 5);
 	    // 取景：飞船略偏下，视线沿飞行方向但只领先少量距离
 	    const look = s.pos.clone().addScaledVector(forward, 9.0).addScaledVector(up, 1.6);
 	    game.cameraLookTarget = look;
@@ -45292,7 +45901,9 @@ void main() {
 	    } else {
 	      game.ui?.showPrompt('');
 	    }
-	    if ((input.aim || input.interact) && hit) {
+	    // BUG-38：降落用独立命令（F / 触屏降落键），不再复用通用的 interact，
+	    // 否则“按 E 加速”会同时被当成降落确认。
+	    if ((input.land || input.aim) && hit) {
 	      game.ui?.showPrompt('');
 	      this.requestLanding(hit);
 	    }
@@ -45346,10 +45957,10 @@ void main() {
 	    }
 	    // 朝向行星
 	    const to = target.clone().sub(s.pos).normalize();
-	    s.yaw = damp(s.yaw, Math.atan2(to.x, to.z), 2.2, dt);
+	    const yawDelta = Math.atan2(Math.sin(Math.atan2(to.x, to.z) - s.yaw), Math.cos(Math.atan2(to.x, to.z) - s.yaw));
+	    s.yaw += yawDelta * (1 - Math.exp(-2.2 * dt));
 	    s.pitch = damp(s.pitch, Math.asin(clamp(to.y, -1, 1)), 2.2, dt);
 	    s.roll = damp(s.roll, 0, 2, dt);
-	    this.autoThrottle = 1;
 	    const forward = dirFrom(s.yaw, s.pitch);
 	    const q = quatFor(forward, s.roll);
 	    // 沿视线的平滑推进：从起点冲向行星外大气层（R*1.18）
@@ -45367,13 +45978,12 @@ void main() {
 	    ship.quaternion.copy(q);
 	    this.ship.throttle = 0.8;
 	    this.ship.update(dt, this.t);
-	    const up = new Vector3(0, 1, 0).applyQuaternion(q);
-	    const side = new Vector3().crossVectors(forward, up).normalize();
+	    const { up, right: side } = cameraBasis(s.yaw, s.pitch);
 	    const camOffset = s.pos.clone()
 	      .addScaledVector(forward, -12.5)
 	      .addScaledVector(up, 3.4)
 	      .addScaledVector(side, 4.8);
-	    game.camera.position.lerp(camOffset, 1 - Math.exp(-4 * dt));
+	    this.followCamera(camOffset, dt, 4);
 	    const look = s.pos.clone().addScaledVector(forward, 22);
 	    game.cameraLookTarget = look;
 	    game.camera.up.copy(up);
@@ -45406,13 +46016,12 @@ void main() {
 	    this.ship.throttle = 0.9;
 	    this.ship.update(dt, this.t);
 	    game.cameraShake = 0.25 + approachK * 0.2;
-	    const up = new Vector3(0, 1, 0).applyQuaternion(q);
-	    const side = new Vector3().crossVectors(forward, up).normalize();
+	    const { up, right: side } = cameraBasis(s.yaw, s.pitch);
 	    const camOffset = s.pos.clone()
 	      .addScaledVector(forward, -18)
 	      .addScaledVector(up, 6)
 	      .addScaledVector(side, 8);
-	    game.camera.position.lerp(camOffset, 1 - Math.exp(-4 * dt));
+	    this.followCamera(camOffset, dt, 4);
 	    const look = s.pos.clone().addScaledVector(forward, 12);
 	    game.cameraLookTarget = look;
 	    game.camera.up.copy(up);
@@ -45423,6 +46032,9 @@ void main() {
 	      this.reentrySwapped = true;
 	      game.startLandingScene(id);
 	      this.setPhase('atmos');
+	      // 星系坐标和地表坐标不能互相插值，否则镜头会从数千米外飞进地表。
+	      this.updateAtmos(0);
+	      game.terrain.update?.(game.camera, game.time);
 	    }
 	  }
 
@@ -45432,10 +46044,10 @@ void main() {
 	    const t = this.phaseT;
 	    const startY = game.landingStartY;
 	    const ship = this.ship.group;
-	    // 高度从 260 降到地面
+	    // 从入场高度连续下降到着陆段的起点。
 	    const k = smoothstep(0, 4.2, t);
-	    const groundY = game.player.terrain.height(ship.position.x, ship.position.z) + 1.2;
-	    ship.position.y = lerp(startY, groundY + 26, k * 0.85);
+	    const groundY = game.player.terrain.height(ship.position.x, ship.position.z);
+	    ship.position.y = lerp(startY, groundY + 26, k);
 	    // 姿态：从俯冲逐步拉平到垂直（机头朝上），保留着陆朝向
 	    const tilt = lerp(0.75, 0, smoothstep(0, 3.2, t));
 	    ship.quaternion.setFromEuler(new Euler(tilt, this.landingYaw || 0, Math.sin(t * 0.9) * 0.05 * tilt, 'YXZ'));
@@ -45446,7 +46058,7 @@ void main() {
 	    // 镜头：从云层上方跟随下降到地面附近的侧后视
 	    const look = ship.position.clone().add(V3(0, 1.0, 0));
 	    const camTarget = ship.position.clone().add(V3(11, 6, 15));
-	    game.camera.position.lerp(camTarget, 1 - Math.exp(-2.6 * dt));
+	    this.followCamera(camTarget, dt, 2.6, this.phaseT === 0);
 	    game.cameraLookTarget = look;
 	    game.camera.up.set(0, 1, 0);
 	    game.camera.lookAt(look);
@@ -45463,28 +46075,28 @@ void main() {
 	    const game = this.game;
 	    const ship = this.ship.group;
 	    const t = this.phaseT;
-	    const groundY = game.player.terrain.height(ship.position.x, ship.position.z) + 0.9;
-	    const startY = groundY + 26;
+	    const groundY = game.player.terrain.height(ship.position.x, ship.position.z);
+	    const startY = this.landStartY ?? ship.position.y;
 	    const k = smoothstep(0, 3.0, t);
 	    ship.position.y = lerp(startY, groundY, k * k);
 	    // 落到地面时姿态回到垂直（轻微摇摆）
 	    const settle = smoothstep(0, 2.2, t);
-	    ship.quaternion.setFromUnitVectors(NOSE, new Vector3(
-	      Math.sin(t * 1.4) * 0.012 * (1 - settle * 0.5),
-	      1,
-	      Math.sin(t * 1.1) * 0.01 * (1 - settle * 0.5)
-	    ).normalize());
+	    ship.quaternion.setFromEuler(new Euler(
+	      Math.sin(t * 1.1) * 0.01 * (1 - settle), this.landingYaw || 0,
+	      Math.sin(t * 1.4) * 0.012 * (1 - settle), 'YXZ'
+	    ));
 	    this.ship.throttle = lerp(0.75, 0, smoothstep(2.4, 3.2, t));
 	    this.ship.update(dt, this.t);
 	    game.cameraShake = 0.06 + (1 - k) * 0.05;
 	    const camTarget = ship.position.clone().add(V3(6.5, 2.2, 8.5));
-	    game.camera.position.lerp(camTarget, 1 - Math.exp(-2.2 * dt));
+	    this.followCamera(camTarget, dt, 2.2);
 	    game.cameraLookTarget = ship.position.clone().add(V3(0, 1, 0));
 	    game.camera.up.set(0, 1, 0);
 	    game.camera.lookAt(game.cameraLookTarget);
 	    game.fovCurrent = 56;
 	    if (t > 3.0 && !this.touchedDown) {
 	      this.touchedDown = true;
+	      ship.userData.groundY = groundY;
 	      game.audio?.play('heavyLand');
 	      game.cameraShake = 0.5;
 	      if (game.dustPlume) for (let i = 0; i < 6; i++) setTimeout(() => game.dustPlume.userData.emit(ship.position.clone().add(V3(0, 0.3, 0)), 3.2, 1.2), i * 90);
@@ -45522,26 +46134,38 @@ void main() {
 	    const doorWorld = ship.position.clone().add(V3(0, 0.15, -1.3).applyAxisAngle(V3(0, 1, 0), yaw));
 	    const k = smoothstep(0, 1.4, t);
 	    const outward = V3(0, 0, -1).applyAxisAngle(V3(0, 1, 0), yaw);
-	    const startPos = ship.position.clone().add(V3(0, 0.9, -0.2));
+	    const startPos = ship.position.clone().add(V3(0, 0.9, -0.2).applyAxisAngle(V3(0, 1, 0), yaw));
 	    p.pos.lerpVectors(startPos, doorWorld.clone().addScaledVector(outward, 7.0), k);
 	    p.pos.y = game.terrain.height(p.pos.x, p.pos.z);
 	    p.astronaut.root.visible = t > 0.15;
 	    p.yaw = Math.atan2(outward.x, outward.z);
 	    p.camYaw = p.yaw + Math.PI;
-	    p.astronaut.params.walk = t > 0.2 && t < 1.5 ? 0.8 : 0;
-	    if (t > 0.2 && t < 1.5) p.astronaut.cycle += dt * 5;
-	    // 相机：拉回到第三人称（用玩家朝向而非相机朝向，避免穿过船体）
-	    const camYaw = p.yaw;
-	    const camDesired = p.pos.clone().add(V3(Math.sin(camYaw) * -5.2, 2.4, Math.cos(camYaw) * -5.2));
-	    game.camera.position.lerp(camDesired, 1 - Math.exp(-2.5 * dt));
-	    game.cameraLookTarget = p.pos.clone().add(V3(0, 0.9, 0));
+	    p.object.position.copy(p.pos);
+	    p.object.rotation.set(0, p.yaw, 0);
+	    p.astronaut.update(dt, { speed: t > 0.2 && t < 1.5 ? 2.7 : 0 });
+	    p.vel.set(0, 0, 0);
+	    p.velY = 0;
+	    p.grounded = true;
+	    p.aiming = false;
+	    p.landImpact = 0;
+	    p.camPitch = 0.28;
+	    p.camCur = p.camDist;
+	    p.camTarget.copy(p.pos).add(V3(0, 0.5, 0));
+	    // 从舱门侧面绕到角色身后，视线始终跟随角色；沿用地表的距离与俯仰。
+	    const blend = smoothstep(0, 2.0, t);
+	    p.updateCamera(dt, game.camera, {}, true);
+	    game.camera.position.lerpVectors(this.exitCamStart, game.camera.position.clone(), blend);
+	    const fromShip = game.camera.position.clone().sub(ship.position);
+	    const outsideDoor = fromShip.dot(outward);
+	    if (outsideDoor < 2.5) game.camera.position.addScaledVector(outward, 2.5 - outsideDoor);
+	    game.camera.position.y = Math.max(game.camera.position.y, game.terrain.height(game.camera.position.x, game.camera.position.z) + 0.45);
+	    game.cameraLookTarget.lerpVectors(this.exitLookStart, game.cameraLookTarget.clone(), smoothstep(0, 0.4, t));
 	    game.camera.up.set(0, 1, 0);
 	    game.camera.lookAt(game.cameraLookTarget);
 	    game.fovCurrent = 55;
 	    this.ship.openDoor(false);
 	    if (t > 2.0) {
 	      p.inRocket = false;
-	      p.camYaw = camYaw + Math.PI;
 	      game.finishLanding();
 	      this.setPhase('ground');
 	      this.touchedDown = false;
@@ -45553,30 +46177,41 @@ void main() {
 
 	// 基地建设：全息预览、吸附、旋转、确认建造动画；功能模块（居住舱/能源站/采矿机/存储/科研/停机坪）
 
+	// 每个建筑都声明：
+	//   size      占地 [宽, 高, 深]
+	//   solid     是否阻挡角色（可进入的居住舱留出登舱通道）
+	//   colliderR 角色/镜头阻挡半径（米）
+	//   topY      相对地面的遮挡高度，供镜头体积判定使用
 	const BUILDINGS = {
 	  habitat: {
 	    name: '居住舱', en: 'HABITAT', desc: '可进入的小型生活舱，恢复护盾并作为重生点。',
 	    cost: { ferrite: 9, silica: 3 }, power: 0, produce: { energyUse: 2 }, size: [3.2, 2.4, 3.2], icon: '⌂',
+	    solid: true, colliderR: 1.45, topY: 2.7, respawn: true,
 	  },
 	  solar: {
 	    name: '太阳能阵列', en: 'SOLAR ARRAY', desc: '白天持续供电，夜晚依靠储能。',
 	    cost: { ferrite: 5, silica: 6 }, power: 6, size: [4.2, 2.2, 4.2], icon: '☀',
+	    solid: true, colliderR: 1.5, topY: 2.4,
 	  },
 	  miner: {
 	    name: '采矿无人机', en: 'MINER DRONE', desc: '缓慢自动开采附近的矿脉。',
 	    cost: { ferrite: 8, silica: 2 }, power: 0, produce: { ferrite: 1 }, energyUse: 3, size: [2.6, 2.2, 2.6], icon: '⛏',
+	    solid: true, colliderR: 0.9, topY: 1.8,
 	  },
 	  storage: {
 	    name: '资源存储', en: 'STORAGE', desc: '提升资源上限并自动整理入库。',
 	    cost: { ferrite: 8 }, power: 0, size: [2.4, 1.8, 2.4], icon: '▤',
+	    solid: true, colliderR: 1.0, topY: 1.7, capacity: 60,
 	  },
 	  lab: {
 	    name: '科研站', en: 'RESEARCH NODE', desc: '分析生物样本，解锁装备升级。',
 	    cost: { ferrite: 10, silica: 10, bio: 6 }, power: 0, energyUse: 4, size: [3.0, 3.6, 3.0], icon: '◉',
+	    solid: true, colliderR: 1.1, topY: 3.4,
 	  },
 	  pad: {
 	    name: '停机坪', en: 'LANDING PAD', desc: '为飞船提供起降平台与补给。',
 	    cost: { ferrite: 16, silica: 6 }, power: 0, size: [5.0, 0.5, 5.0], icon: '◎',
+	    solid: false, colliderR: 0, topY: 0.3, landing: true,
 	  },
 	};
 	const BUILD_ORDER = ['habitat', 'solar', 'miner', 'storage', 'lab', 'pad'];
@@ -45622,6 +46257,10 @@ void main() {
 	    this.buildHologram();
 	    this.power = 0;
 	    this.capacity = 0;
+	    // 供电基线（非矿机负载），供 isOperational 在首帧 update 之前查询
+	    this.gen = 0;
+	    this.baseUse = 0;
+	    this.use = 0;
 	  }
 
 	  makeRing() {
@@ -45717,7 +46356,10 @@ void main() {
 	          const foot = add(new CylinderGeometry(0.11, 0.15, 0.2, 8), mats?.metal);
 	          foot.position.set(Math.cos(a) * 1.3, -1.14, Math.sin(a) * 1.3);
 	        }
-	        g.position.y = 1.24;
+	        // BUG-22：原点修正放进独立子节点 pivot，而不是整个组的 position.y。
+	        // 这样 confirm/restore 覆盖根位置时不会把模型整体沉进地面。
+	        // （由 makeGeometryFor 末尾统一处理，这里只记录偏移）
+	        g.userData.groundOffset = 1.24;
 	        // 入户光带（交互点）
 	        const entry = add(new TorusGeometry(0.62, 0.026, 6, 28), mats?.glow);
 	        entry.rotation.x = Math.PI / 2; entry.position.y = -0.96; entry.position.z = 1.15;
@@ -45796,7 +46438,22 @@ void main() {
 	      }
 	    }
 	    if (ghost) {
-	      g.traverse((o) => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
+	      g.traverse((o) => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; o.userData.noBlock = true; } });
+	    } else {
+	      // BUG-29：实心建筑是弹道遮挡体（停机坪是地面平台，不挡枪线）
+	      if (BUILDINGS[type]?.solid !== false) {
+	        g.traverse((o) => { if (o.isMesh) o.userData.occluder = true; });
+	      }
+	    }
+	    // BUG-22：把模型原点修正封进子节点。根节点的位置始终等于“地面坐标”，
+	    // 预览、落成、读档三条路径因此共用同一套变换。
+	    const offset = g.userData.groundOffset || 0;
+	    if (offset) {
+	      const pivot = new Group();
+	      pivot.name = 'pivot';
+	      pivot.position.y = offset;
+	      while (g.children.length) pivot.add(g.children[0]);
+	      g.add(pivot);
 	    }
 	    return g;
 	  }
@@ -45805,6 +46462,12 @@ void main() {
 	    if (this.ghostType === type) { this.cancelPlacing(); return; }
 	    this.ghostType = type;
 	    this.rot = 0;
+	    // BUG-21：切换类型立即失效上一次的预览结果，
+	    // 避免“先预览可负担的建筑、再切类型、抢在重算前确认”绕过校验。
+	    this.valid = false;
+	    this.blockReason = '正在校验…';
+	    this.ghostPos = null;
+	    this.validatedType = null;
 	    this.holo.children.forEach((h) => { h.visible = h.userData.type === type; });
 	    this.ringGhost.visible = true;
 	    this.game.audio?.play('uiTick');
@@ -45812,6 +46475,9 @@ void main() {
 
 	  cancelPlacing() {
 	    this.ghostType = null;
+	    this.valid = false;
+	    this.ghostPos = null;
+	    this.validatedType = null;
 	    this.holo && this.holo.children.forEach((h) => (h.visible = false));
 	    this.ringGhost.visible = false;
 	  }
@@ -45828,18 +46494,55 @@ void main() {
 	    return true;
 	  }
 
-	  // 判断某个位置是否可以放置（不含"是否买得起"）
-	  _spotOk(x, z, def) {
+	  // BUG-26：统一的放置校验。预览与确认共用同一函数，且按旋转后的占地轮廓采样：
+	  // 地形高差、水位、植被碰撞体、已有建筑、火箭都要在整块占地内检查，而不是只看中心点。
+	  // 返回值: { ok, reason, y }
+	  validate(x, z, type, rot) {
 	    const t = this.game.terrain;
+	    const def = BUILDINGS[type];
+	    if (!def) return { ok: false, reason: '未知建筑' };
 	    const y = t.height(x, z);
-	    if (t.slopeAt(x, z) >= 0.45) return false;
-	    if (t.waterLevel !== undefined && y < t.waterLevel + 0.6) return false;
+	    if (t.slopeAt(x, z) >= 0.45) return { ok: false, reason: '地面太陡', y };
+	    if (t.waterLevel !== undefined && y < t.waterLevel + 0.6) return { ok: false, reason: '不能建在水面上', y };
 	    const rk = this.game.rocket.group.position;
-	    if (Math.hypot(rk.x - x, rk.z - z) < 3.2) return false;
-	    for (const it of this.items) {
-	      if (Math.hypot(it.pos.x - x, it.pos.z - z) < (it.def.size[0] + def.size[0]) * 0.5) return false;
+	    if (Math.hypot(rk.x - x, rk.z - z) < 3.2) return { ok: false, reason: '离火箭太近', y };
+	    // 占地轮廓采样：旋转后的矩形
+	    const halfW = def.size[0] * 0.5, halfD = def.size[2] * 0.5;
+	    const cos = Math.cos(rot || 0), sin = Math.sin(rot || 0);
+	    const samplePts = [];
+	    const N = 3;
+	    for (let i = 0; i < N; i++) {
+	      for (let j = 0; j < N; j++) {
+	        const lx = (i / (N - 1) - 0.5) * 2 * halfW;
+	        const lz = (j / (N - 1) - 0.5) * 2 * halfD;
+	        samplePts.push({ x: x + lx * cos + lz * sin, z: z - lx * sin + lz * cos });
+	      }
 	    }
-	    return true;
+	    // 采样点上的坡度与水位（大型建筑跨过陡坡/水面时不应显示可建）
+	    for (const p of samplePts) {
+	      const py = t.height(p.x, p.z);
+	      if (Math.abs(py - y) > Math.max(0.9, def.size[1] * 0.5)) return { ok: false, reason: '地面起伏太大', y };
+	      if (t.slopeAt(p.x, p.z) >= 0.55) return { ok: false, reason: '地面太陡', y };
+	      if (t.waterLevel !== undefined && py < t.waterLevel + 0.35) return { ok: false, reason: '不能建在水面上', y };
+	      const veg = this.game.vegetation?.blocked(p.x, p.z, 0);
+	      if (veg) return { ok: false, reason: '有树木或岩石阻挡', y };
+	    }
+	    // 停机坪不阻挡角色，其余建筑按圆形占地判定重叠
+	    for (const it of this.items) {
+	      const otherDef = it.def || BUILDINGS[it.type];
+	      const rSelf = (def.colliderR || def.size[0] * 0.5) + 0.35;
+	      const rOther = (otherDef.colliderR || otherDef.size[0] * 0.5) + 0.35;
+	      if (Math.hypot(it.pos.x - x, it.pos.z - z) < Math.max(rSelf + rOther, (otherDef.size[0] + def.size[0]) * 0.5)) {
+	        return { ok: false, reason: '与已有建筑重叠', y };
+	      }
+	    }
+	    return { ok: true, reason: '', y };
+	  }
+
+	  _spotOk(x, z, def) {
+	    const type = this.ghostType || Object.keys(BUILDINGS).find((k) => BUILDINGS[k] === def);
+	    if (!type) return false;
+	    return this.validate(x, z, type, this.rot).ok;
 	  }
 
 	  updateGhost(camera, player, dt) {
@@ -45879,38 +46582,57 @@ void main() {
 	    this.holo.rotation.y = this.rot;
 	    this.ringGhost.position.set(px, y + 0.05, pz);
 	    this.ringGhost.material.color.set(this.game.palette.accent);
-	    // 有效性
-	    const slope = this.game.terrain.slopeAt(px, pz);
-	    const blocked = this.items.some((it) => Math.hypot(it.pos.x - px, it.pos.z - pz) < (it.def.size[0] + def.size[0]) * 0.5);
-	    const rocketPos = this.game.rocket.group.position;
-	    const nearRocket = Math.hypot(rocketPos.x - px, rocketPos.z - pz) < 3.2;
-	    const wet = this.game.terrain.waterLevel !== undefined && y < this.game.terrain.waterLevel + 0.4;
+	    // BUG-21 / BUG-26：预览与确认共用同一个校验函数
+	    const spot = this.validate(px, pz, this.ghostType, this.rot);
 	    const affordable = this.canAfford(this.ghostType);
-	    this.blockReason = !affordable ? '资源不足' : nearRocket ? '离火箭太近' : slope >= 0.45 ? '地面太陡' : wet ? '不能建在水面上' : blocked ? '与已有建筑重叠' : '';
+	    this.blockReason = !affordable ? '资源不足' : (spot.ok ? '' : spot.reason);
 	    this.valid = !this.blockReason;
+	    this.validatedType = this.ghostType;
+	    this.validatedRot = this.rot;
+	    this.validatedPos = new Vector3(px, y, pz);
 	    this.holoMat.uniforms.uOk.value = this.valid ? 1 : 0;
 	    this.holoMat.uniforms.uTime.value += dt;
 	    this.holoMat.uniforms.uColor.value.set(this.game.palette.accent);
 	    this.ghostPos = new Vector3(px, y, pz);
 	  }
 
+	  // BUG-21：确认时用“当前类型 + 当前位置 + 当前资源”重新做原子校验，
+	  // 全部通过后才扣费建造。缓存的预览结果不再被信任。
 	  confirm() {
 	    if (!this.ghostType) return null;
-	    if (!this.valid) {
-	      this.game.ui?.toast(this.canAfford(this.ghostType) ? '此处无法建造' : '资源不足', 'warn');
+	    const type = this.ghostType;
+	    const def = BUILDINGS[type];
+	    const pos = this.ghostPos;
+	    if (!pos) {
+	      this.game.ui?.toast('请先选择放置位置', 'warn');
 	      this.game.audio?.play('uiError');
 	      return null;
 	    }
-	    const type = this.ghostType;
-	    const def = BUILDINGS[type];
+	    // 原子校验：类型、旋转、位置、资源全部按当前值重算
+	    const spot = this.validate(pos.x, pos.z, type, this.rot);
+	    if (!spot.ok) {
+	      this.valid = false;
+	      this.blockReason = spot.reason;
+	      this.game.ui?.toast(spot.reason || '此处无法建造', 'warn');
+	      this.game.audio?.play('uiError');
+	      return null;
+	    }
+	    if (!this.canAfford(type)) {
+	      this.valid = false;
+	      this.blockReason = '资源不足';
+	      this.game.ui?.toast('资源不足', 'warn');
+	      this.game.audio?.play('uiError');
+	      return null;
+	    }
+	    const y = this.game.terrain.height(pos.x, pos.z);
 	    for (const k in def.cost) this.game.inventory[k] -= def.cost[k];
 	    const mesh = this.makeGeometryFor(type, false);
-	    mesh.position.copy(this.ghostPos);
+	    mesh.position.set(pos.x, y, pos.z);
 	    mesh.rotation.y = this.rot;
 	    this.group.add(mesh);
 	    // 建造动画：从下方升起 + 透明度
 	    mesh.scale.set(1, 0.01, 1);
-	    const item = { type, def, mesh, pos: this.ghostPos.clone(), built: 0, power: 0 };
+	    const item = { type, def, mesh, pos: new Vector3(pos.x, y, pos.z), rot: this.rot, built: 0, power: 0, active: false, produceTimer: 0 };
 	    this.items.push(item);
 	    this.game.audio?.play('build');
 	    this.game.ui?.toast(`${def.name} 建造完成`, 'ok');
@@ -45943,6 +46665,16 @@ void main() {
 	    return best;
 	  }
 
+	  // 太阳能朝向系数：由太阳方向与面板法线的夹角决定，夜间降至微光底值
+	  solarEfficiency() {
+	    const pal = this.game.palette;
+	    const sd = this.game.sunDirVec || (pal && pal.sunDir ? new Vector3(...pal.sunDir).normalize() : new Vector3(0.5, 0.5, 0));
+	    const elev = clamp(sd.y, 0, 1);
+	    const base = 0.35 + clamp(sd.y, -1, 1) * 0.45 + elev * 0.2;
+	    const night = this.game.isNight ? 0.25 : 1;
+	    return clamp(base * night, 0, 1);
+	  }
+
 	  update(dt, player) {
 	    // 建造升起动画
 	    for (const it of this.items) {
@@ -45953,63 +46685,234 @@ void main() {
 	      }
 	      if (it.mesh.userData.spinner) it.mesh.userData.spinner.rotation.z += dt * 1.5;
 	    }
-	    // 能量：太阳能阵列 + 科研/采集消耗
-	    let gen = 0, use = 0;
-	    const solarFacing = this.solarFactor;
+	    // ---- 电力（BUG-23）：先算总发电与非矿机用电，再把剩下的配额分给矿机 ----
+	    const solarFacing = this.solarEfficiency();
+	    let gen = 0, baseUse = 0;
 	    for (const it of this.items) {
-	      if (it.type === 'solar') gen += 4 * (0.4 + solarFacing * 0.6) * it.built;
-	      if (it.type === 'habitat' || it.type === 'lab') use += 2;
+	      const def = it.def || BUILDINGS[it.type] || {};
+	      if (it.type === 'solar') {
+	        // 面板在建造动画期间逐步并网
+	        gen += 4 * (0.4 + solarFacing * 0.6) * clamp(it.built, 0, 1);
+	      } else if (it.type !== 'miner') {
+	        baseUse += def.energyUse ?? def.produce?.energyUse ?? 0;
+	      }
 	    }
+	    if (!Number.isFinite(gen)) gen = 0;
+	    if (!Number.isFinite(baseUse)) baseUse = 0;
 	    this.gen = gen;
-	    this.use = use;
-	    this.power = clamp(gen - use, -20, 60);
-	    // 有电时工作
-	    if (this.power > 0) {
-	      this.produceTimer = (this.produceTimer || 0) + dt;
-	      if (this.produceTimer > 6) {
-	        this.produceTimer = 0;
-	        for (const it of this.items) {
-	          if (it.type === 'miner' && it.built >= 1) {
-	            this.game.inventory.ferrite += 1;
-	            this.game.ui?.floatingGain('ferrite', 1);
-	          }
+	    this.miners = this.items.filter((it) => it.type === 'miner' && it.built >= 1);
+	    const minerUnit = BUILDINGS.miner.energyUse || 3;
+	    const minersDemand = this.miners.length * minerUnit;
+	    // 矿机可用配额 = 发电 - 其他用电，不再重复扣一次矿机需求
+	    const powerForMiners = Math.max(0, gen - baseUse);
+	    const minersActive = minersDemand > 0 ? clamp(powerForMiners / minersDemand, 0, 1) : 0;
+	    this.baseUse = baseUse;
+	    this.use = baseUse + minersDemand * minersActive;
+	    this.power = clamp(gen - this.use, -20, 60);
+	    // BUG-25：每个建筑的运行状态（建成 / 供电）统一在这里维护，交互入口直接查询。
+	    // 供电优先级：先用发电满足非矿机负载，剩下的才分给矿机（与上面配额分配一致）。
+	    const baseSupplied = gen + 1e-6 >= baseUse;
+	    for (const it of this.items) {
+	      const def = it.def || BUILDINGS[it.type] || {};
+	      const need = def.energyUse ?? def.produce?.energyUse ?? 0;
+	      it.ready = it.built >= 1;
+	      if (need <= 0) it.powered = it.ready;
+	      else if (it.type === 'miner') it.powered = it.ready && minersActive > 0;
+	      else it.powered = it.ready && baseSupplied;
+	      it.active = it.ready && it.powered;
+	    }
+	    // BUG-28：生产进度归属到每台矿机，而不是一个全局计时器
+	    if (minersActive > 0) {
+	      for (const it of this.miners) {
+	        it.produceTimer = (it.produceTimer || 0) + dt * minersActive;
+	        if (it.produceTimer > 6) {
+	          it.produceTimer = 0;
+	          const amount = it.def.produce?.ferrite ?? 1;
+	          this.game.inventory.ferrite = (this.game.inventory.ferrite || 0) + amount;
+	          this.game.ui?.toast(`+${amount} 铁素矿 · 无人机自动开采`, 'ok');
 	        }
 	      }
 	    }
-	    // 居住舱恢复
+	    // 兼容旧字段：总进度仅供 HUD/调试参考，不再参与结算
+	    this.produceTimer = this.miners.reduce((m, it) => Math.max(m, it.produceTimer || 0), 0);
+	    // ---- 居住舱（BUG-24 / BUG-25 / BUG-49）：范围内最近的、已建成的、有电的居住舱 ----
+	    this.habitatInRange = null;
 	    if (player && player.inRocket === false) {
-	      const h = this.items.find((it) => it.type === 'habitat' && it.built >= 1);
-	      if (h && Math.hypot(h.pos.x - player.pos.x, h.pos.z - player.pos.z) < 3.2) {
+	      let best = null, bd = Infinity;
+	      for (const it of this.items) {
+	        if (it.type !== 'habitat' || it.built < 1 || !it.active) continue;
+	        const d = Math.hypot(it.pos.x - player.pos.x, it.pos.z - player.pos.z);
+	        if (d < 3.6 + (it.def.colliderR || 1.4) && d < bd) { bd = d; best = it; }
+	      }
+	      this.habitatInRange = best;
+	      if (best) {
 	        this.game.playerShield = Math.min(this.game.playerMaxShield, this.game.playerShield + dt * 9);
 	        this.game.playerHealth = Math.min(this.game.playerMaxHealth, this.game.playerHealth + dt * 3);
 	      }
 	    }
 	  }
 
+	  // BUG-25：交互入口统一查询建筑是否可用
+	  isOperational(item) {
+	    if (!item) return false;
+	    if (item.built < 1) return false;
+	    const def = item.def || BUILDINGS[item.type] || {};
+	    const need = def.energyUse ?? def.produce?.energyUse ?? 0;
+	    if (need <= 0) return true;
+	    // 与 update() 中的供电判定保持一致
+	    return item.powered !== false && this.gen + 1e-6 >= this.baseUse;
+	  }
+
+	  // BUG-49：可作为重生点的居住舱（已建成），优先最近玩家的一座。
+	  // 居住舱不做供电硬门槛：否则断电时玩家没有可用的重生点。
+	  respawnHabitat(pos) {
+	    let best = null, bd = Infinity;
+	    for (const it of this.items) {
+	      if (it.type !== 'habitat' || !(it.built >= 1)) continue;
+	      const d = pos ? Math.hypot(it.pos.x - pos.x, it.pos.z - pos.z) : 0;
+	      if (d < bd) { bd = d; best = it; }
+	    }
+	    return best;
+	  }
+
+	  // BUG-50：存储容量总和
+	  totalCapacity() {
+	    let cap = 0;
+	    for (const it of this.items) {
+	      const def = it.def || BUILDINGS[it.type] || {};
+	      if (it.type === 'storage' && it.built >= 1 && this.isOperational(it)) cap += def.capacity || 0;
+	    }
+	    return cap;
+	  }
+
+	  // BUG-51：可作为着陆平台的停机坪
+	  landingPadNear(x, z, maxDist = 40) {
+	    let best = null, bd = maxDist;
+	    for (const it of this.items) {
+	      if (it.type !== 'pad' || it.built < 1 || !this.isOperational(it)) continue;
+	      const d = Math.hypot(it.pos.x - x, it.pos.z - z);
+	      if (d < bd) { bd = d; best = it; }
+	    }
+	    return best;
+	  }
+
+	  // BUG-17：角色的水平阻挡（圆形碰撞体）
+	  blockedAt(x, z, pad = 0) {
+	    for (const it of this.items) {
+	      const def = it.def || BUILDINGS[it.type] || {};
+	      if (def.solid === false) continue;
+	      const r = def.colliderR || def.size[0] * 0.5;
+	      const dx = it.pos.x - x, dz = it.pos.z - z;
+	      if (dx * dx + dz * dz < (r + pad) * (r + pad)) return it;
+	    }
+	    return null;
+	  }
+
+	  // BUG-18：镜头体积遮挡（heightAboveGround 为相机相对地面高度）
+	  cameraBlockedAt(x, z, pad = 0, heightAboveGround = 0) {
+	    for (const it of this.items) {
+	      const def = it.def || BUILDINGS[it.type] || {};
+	      if (def.solid === false) continue;
+	      const top = def.topY || def.size[1] || 2;
+	      if (heightAboveGround > top + 0.3) continue;
+	      const r = (def.colliderR || def.size[0] * 0.5) * 0.9;
+	      const dx = it.pos.x - x, dz = it.pos.z - z;
+	      if (dx * dx + dz * dz < (r + pad) * (r + pad)) return it;
+	    }
+	    return null;
+	  }
+
+	  // BUG-27：先按各自交互半径筛选，再独立比较距离选最近项
+	  nearest(pos) {
+	    let best = null, bd = Infinity;
+	    for (const it of this.items) {
+	      const def = it.def || BUILDINGS[it.type] || {};
+	      const reach = 3.4 + Math.max(0, (def.colliderR || def.size[0] * 0.5) - 1.0);
+	      const d = it.pos.distanceTo(pos);
+	      if (d <= reach && d < bd) { bd = d; best = it; }
+	    }
+	    return best;
+	  }
+
 	  serialize() {
-	    return this.items.map((it) => ({ type: it.type, x: it.pos.x, z: it.pos.z, rot: it.mesh.rotation.y }));
+	    return this.items.map((it) => ({
+	      type: it.type, x: it.pos.x, z: it.pos.z, rot: it.mesh.rotation.y,
+	      built: it.built, produceTimer: it.produceTimer || 0,
+	    }));
 	  }
 
 	  restore(list) {
 	    for (const b of list) {
+	      if (!b || !BUILDINGS[b.type]) continue;
 	      const y = this.game.terrain.height(b.x, b.z);
 	      const mesh = this.makeGeometryFor(b.type, false);
+	      // BUG-22：根节点始终等于地面坐标，模型原点修正已在 pivot 子节点里
 	      mesh.position.set(b.x, y, b.z);
 	      mesh.rotation.y = b.rot || 0;
 	      this.group.add(mesh);
-	      this.items.push({ type: b.type, def: BUILDINGS[b.type], mesh, pos: new Vector3(b.x, y, b.z), built: 1, power: 0 });
+	      this.items.push({
+	        type: b.type, def: BUILDINGS[b.type], mesh, pos: new Vector3(b.x, y, b.z),
+	        rot: b.rot || 0, built: b.built ?? 1, power: 0, active: true,
+	        produceTimer: b.produceTimer || 0,
+	      });
 	    }
 	  }
 
+	  // BUG-28：切星球时保存并恢复每座矿机的生产进度（由 game 记录 planetStates）
+	  snapshotProduction() {
+	    const out = [];
+	    for (const it of this.items) out.push({ type: it.type, x: it.pos.x, z: it.pos.z, produceTimer: it.produceTimer || 0 });
+	    return out;
+	  }
+
+	  applyProduction(snapshot) {
+	    if (!Array.isArray(snapshot)) return;
+	    for (const s of snapshot) {
+	      for (const it of this.items) {
+	        if (it.pos.x === s.x && it.pos.z === s.z) { it.produceTimer = s.produceTimer || 0; break; }
+	      }
+	    }
+	  }
+
+	  // BUG-43：完整释放几何、材质与纹理
 	  clear() {
-	    for (const it of this.items) this.group.remove(it.mesh);
+	    for (const it of this.items) {
+	      this.group.remove(it.mesh);
+	      disposeObject(it.mesh);
+	    }
 	    this.items = [];
+	    this.miners = [];
+	    this.habitatInRange = null;
+	    this.gen = 0; this.use = 0; this.power = 0;
+	    this.miningTimer = 0;
+	  }
+	}
+
+	// BUG-43：按所有权释放几何 / 材质 / 纹理（共享材质通过 Set 去重）
+	function disposeObject(root) {
+	  const mats = new Set();
+	  root.traverse((o) => {
+	    if (o.geometry) o.geometry.dispose();
+	    if (o.material) {
+	      if (Array.isArray(o.material)) o.material.forEach((m) => mats.add(m));
+	      else mats.add(o.material);
+	    }
+	  });
+	  for (const m of mats) {
+	    for (const key of Object.keys(m)) {
+	      const v = m[key];
+	      if (v && v.isTexture) v.dispose();
+	    }
+	    m.dispose();
 	  }
 	}
 
 	// UI 控制器：HUD 更新、小地图、建造条、飞行阶段提示、任务与对话
 
 	const $ = (id) => document.getElementById(id);
+
+	// BUG-10：未扫描时仍然显示的小地图标记半径（米）
+	const SCAN_NEAR_RADIUS = 28;
 
 	class UI {
 	  constructor(game) {
@@ -46049,7 +46952,18 @@ void main() {
 	    $('btn-controls').onclick = () => this.el.controls.classList.remove('hidden');
 	    $('btn-close-controls').onclick = () => this.el.controls.classList.add('hidden');
 	    $('btn-resume').onclick = () => g.resume();
-	    $('btn-save').onclick = () => { g.save(); this.toast('进度已保存', 'ok'); };
+	    // BUG-01：只有真正写入成功才提示已保存；失败时保留当前状态并给出重试指引
+	    // BUG-01：失败时提供重试与导出出口，且绝不谎报成功
+	    $('btn-save').onclick = () => {
+	      const res = g.save();
+	      if (res && res.ok) { this.toast('进度已保存', 'ok'); return; }
+	      this.toast('保存失败：浏览器存储不可用或已满', 'warn');
+	      this.game.audio?.play('uiError');
+	      // 本次进度仍保留在内存中，可以直接导出为文件
+	      const name = g.exportSave ? g.exportSave(res && res.data) : null;
+	      if (name) this.toast('已导出存档文件：' + name, 'info');
+	      else this.toast('导出也失败，请清理浏览器存储后重试', 'warn');
+	    };
 	    $('btn-menu').onclick = () => g.toMenu();
 	    $('set-quality').onchange = (e) => g.setQuality(e.target.value);
 	    const m1 = $('set-music'), s1 = $('set-sfx'), m2 = $('set-music2'), s2 = $('set-sfx2');
@@ -46061,50 +46975,101 @@ void main() {
 	    m1.oninput = m2.oninput = (e) => setVol('music', +e.target.value);
 	    s1.oninput = s2.oninput = (e) => setVol('sfx', +e.target.value);
 	    // 移动端按钮
+	    // BUG-11：统一处理 end / cancel / 失焦，任何中断都要释放持续按压状态；
+	    // 同时使用 Pointer Events 并用 pointer capture 兜住滑出按钮的情形。
 	    const touch = g.input.touch;
-	    const bindTouch = (id, fn) => {
+	    const bindHold = (id, onStart, onEnd) => {
 	      const el = $(id);
-	      el.addEventListener('touchstart', (e) => { e.preventDefault(); fn(true); }, { passive: false });
-	      el.addEventListener('touchend', (e) => { e.preventDefault(); fn(false); }, { passive: false });
+	      if (!el) return;
+	      let active = false;
+	      const start = (e) => {
+	        e.preventDefault();
+	        if (active) return;
+	        active = true;
+	        el.classList.add('pressed');
+	        onStart && onStart();
+	      };
+	      const end = (e) => {
+	        if (e) e.preventDefault();
+	        if (!active) return;
+	        active = false;
+	        el.classList.remove('pressed');
+	        onEnd && onEnd();
+	      };
+	      el.addEventListener('touchstart', start, { passive: false });
+	      el.addEventListener('touchend', end, { passive: false });
+	      el.addEventListener('touchcancel', end, { passive: false });
+	      el.addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse') { e.preventDefault(); start(e); } });
+	      el.addEventListener('pointerup', (e) => { if (e.pointerType === 'mouse') end(e); });
+	      el.addEventListener('pointercancel', end);
+	      el.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && e.buttons === 0) end(null); });
+	      // 统一的复位钩子：失焦/暂停/模式切换时清掉按压视觉
+	      g.input.resetHooks.push(() => { active = false; el.classList.remove('pressed'); });
 	    };
-	    bindTouch('t-jump', (d) => { if (d) touch.jump = true; });
-	    bindTouch('t-fire', (d) => { touch.fire = d; });
-	    bindTouch('t-interact', (d) => { if (d) g.input.justPressed.add('KeyE'); });
-	    bindTouch('t-build', (d) => { if (d) g.input.justPressed.add('KeyB'); });
-	    // 摇杆
+	    const bindTap = (id, fn) => bindHold(id, fn, null);
+	    bindTap('t-jump', () => { touch.jump = true; });
+	    bindHold('t-fire', () => { touch.fire = true; }, () => { touch.fire = false; });
+	    bindTap('t-interact', () => { g.input.justPressed.add('KeyE'); });
+	    bindTap('t-build', () => { g.input.justPressed.add('KeyB'); });
+	    // BUG-09：补齐扫描、切枪、旋转预览与暂停入口
+	    bindTap('t-scan', () => { g.input.justPressed.add('KeyV'); });
+	    bindTap('t-mode', () => { g.input.justPressed.add('KeyQ'); });
+	    bindTap('t-rotate', () => { g.input.justPressed.add('KeyR'); });
+	    // BUG-09：暂停按钮直接切换（暂停中游戏循环不消费输入，不能只写 justPressed）
+	    bindTap('t-pause', () => {
+	      if (g.paused) g.resume();
+	      else if (g.mode !== 'menu' && g.mode !== 'intro') g.pause();
+	    });
+	    bindHold('t-thrust', () => { touch.throttle = 1; }, () => { if (touch.throttle > 0) touch.throttle = 0; });
+	    bindHold('t-brake', () => { touch.throttle = -1; }, () => { if (touch.throttle < 0) touch.throttle = 0; });
+	    bindHold('t-warp', () => { touch.warp = true; }, () => { touch.warp = false; });
+	    bindTap('t-land', () => { touch.land = true; });
+	    // 摇杆（BUG-08：摇杆值写进统一输入层，地面/太空/驾驶舱都读同一份）
 	    const base = $('joy-base'), knob = $('joy-knob');
 	    let jid = null;
 	    const rect = () => base.getBoundingClientRect();
+	    const setStick = (cx, cy) => {
+	      const r = rect();
+	      let dx = (cx - (r.left + r.width / 2)) / (r.width / 2);
+	      let dy = (cy - (r.top + r.height / 2)) / (r.height / 2);
+	      const len = Math.hypot(dx, dy);
+	      if (len > 1) { dx /= len; dy /= len; }
+	      touch.move.x = dx; touch.move.y = dy;
+	      knob.style.transform = `translate(${dx * 36}px, ${dy * 36}px)`;
+	    };
+	    const releaseStick = () => {
+	      jid = null; touch.move.x = touch.move.y = 0; knob.style.transform = '';
+	    };
 	    base.addEventListener('touchstart', (e) => {
-	      e.preventDefault(); const t = e.changedTouches[0]; jid = t.identifier;
+	      e.preventDefault();
+	      const t = e.changedTouches[0];
+	      jid = t.identifier;
+	      setStick(t.clientX, t.clientY);
 	    }, { passive: false });
 	    window.addEventListener('touchmove', (e) => {
 	      for (const t of e.changedTouches) {
 	        if (t.identifier !== jid) continue;
-	        const r = rect();
-	        let dx = (t.clientX - (r.left + r.width / 2)) / (r.width / 2);
-	        let dy = (t.clientY - (r.top + r.height / 2)) / (r.height / 2);
-	        const len = Math.hypot(dx, dy);
-	        if (len > 1) { dx /= len; dy /= len; }
-	        touch.move.x = dx; touch.move.y = dy;
-	        knob.style.transform = `translate(${dx * 36}px, ${dy * 36}px)`;
+	        setStick(t.clientX, t.clientY);
 	      }
 	    }, { passive: true });
+	    // BUG-11：触摸中断同样要松杆
 	    const endJoy = (e) => {
-	      for (const t of e.changedTouches) {
-	        if (t.identifier === jid) { jid = null; touch.move.x = touch.move.y = 0; knob.style.transform = ''; }
-	      }
+	      for (const t of e.changedTouches) if (t.identifier === jid) releaseStick();
+	      if (e.type === 'touchcancel') releaseStick();
 	    };
 	    window.addEventListener('touchend', endJoy);
 	    window.addEventListener('touchcancel', endJoy);
+	    g.input.resetHooks.push(() => { releaseStick(); });
 	    // 触屏设备：显示虚拟摇杆与按钮（必须在绑定之后切换，否则拿不到元素）
 	    const enableTouchUI = () => {
 	      const coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
 	      const small = Math.min(window.innerWidth, window.innerHeight) < 820;
 	      const hasTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+	      // BUG-10：与输入层一致——用实际指针类型判断，不再把“有触屏”当成“只用触屏”
 	      const on = hasTouch && (coarse || small);
 	      this.el.touchUi.classList.toggle('hidden', !on);
 	      document.body.classList.toggle('is-touch', on);
+	      this.touchEnabled = on;
 	      return on;
 	    };
 	    this.touchEnabled = enableTouchUI();
@@ -46179,13 +47144,23 @@ void main() {
 	    this.game.dialogueBusy = true;
 	  }
 
+	  // BUG-48：无目标时清空/隐藏进度区；设新目标时统一初始化文本与进度
 	  setObjective(obj) {
 	    this.objective = obj;
-	    if (!obj) { this.el.objText.textContent = '自由探索'; this.level = null; }
-	    else {
-	      this.el.objText.textContent = obj.text;
-	      this.level = { done: 0, need: obj.need };
+	    const prog = this.el.objBar?.parentElement?.parentElement;
+	    if (!obj) {
+	      this.el.objText.textContent = '自由探索';
+	      this.level = null;
+	      if (this.el.objBar) this.el.objBar.style.width = '0%';
+	      if (this.el.objCount) this.el.objCount.textContent = '';
+	      if (prog) prog.style.display = 'none';
+	      return;
 	    }
+	    this.el.objText.textContent = obj.text;
+	    this.level = { done: 0, need: obj.need };
+	    if (prog) prog.style.display = '';
+	    if (this.el.objBar) this.el.objBar.style.width = '0%';
+	    if (this.el.objCount) this.el.objCount.textContent = `0 / ${obj.need}`;
 	  }
 
 	  updateObjectiveProgress(done, need) {
@@ -46215,6 +47190,11 @@ void main() {
 	        n.classList.toggle('active', n.dataset.type === type);
 	        n.classList.toggle('disabled', !this.game.building.canAfford(n.dataset.type));
 	      });
+	      // BUG-07：建造模式下选中项自动滚入可视区
+	      const active = this.el.buildBar.querySelector('.bb-item.active');
+	      if (active && active.scrollIntoView) {
+	        try { active.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch {}
+	      }
 	    } else {
 	      this.el.buildBar.classList.add('hidden');
 	    }
@@ -46236,6 +47216,11 @@ void main() {
 	  setSpaceHud(on) {
 	    this.el.spaceHud.classList.toggle('hidden', !on);
 	    document.body.classList.toggle('in-space', on);
+	    // BUG-08 / BUG-09：太空与地表的触屏按钮互斥显示
+	    document.querySelectorAll('#touch-ui .space-only').forEach((n) => n.classList.toggle('hidden', !on));
+	    ['t-jump', 't-fire', 't-interact', 't-build', 't-scan', 't-mode', 't-rotate'].forEach((id) => {
+	      const n = $(id); if (n) n.classList.toggle('hidden', !!on);
+	    });
 	    if (on) {
 	      this.el.navList.classList.remove('hidden');
 	      this.el.navList.innerHTML = ['verdant', 'emer', 'lumina'].map((id) => {
@@ -46316,18 +47301,27 @@ void main() {
 	    const scale = (N / 2) / 110; // 显示半径 110m
 	    const px = game.player.pos.x, pz = game.player.pos.z;
 	    const ox = this.mmExt;
-	    const sx = (this.mmBase.width) / (2 * ox);
+	    // BUG-06：mmBase 是 128px 画布，覆盖 ±ox 米。sx 是"米 → 画布像素"的换算，
+	    // 只能用于源矩形；目标矩形必须用世界尺度（米 × scale），否则底图会缩成
+	    // 128 * (128/520) ≈ 31.5px，而正确尺寸是 2*ox*scale = 520px。
 	    const yaw = game.player.camYaw;
 	    ctx.translate(N / 2, N / 2);
 	    ctx.rotate(yaw);
-	    ctx.drawImage(this.mmBase, -(px + ox) * sx * scale, -(pz + ox) * sx * scale, this.mmBase.width * sx * scale, this.mmBase.height * sx * scale);
+	    ctx.drawImage(this.mmBase, -(px + ox) * scale, -(pz + ox) * scale, 2 * ox * scale, 2 * ox * scale);
+	    // BUG-10：扫描（V）真正控制标记可见性。
+	    // 扫描前只显示近距离资源；扫描后在限定时间/半径内显示全部节点与生物。
+	    const scanT = game.scanActiveT || 0;
+	    const scanning = scanT > 0 && game.scanOrigin;
+	    const insideScan = (x, z) => scanning && Math.hypot(x - game.scanOrigin.x, z - game.scanOrigin.z) <= (game.scanRadius || 0);
 	    // 资源点
 	    for (const nd of game.resources.nodes) {
 	      if (nd.harvested) continue;
 	      const rx = (nd.pos.x - px) * scale, rz = (nd.pos.z - pz) * scale;
 	      if (Math.hypot(rx, rz) > N / 2 - 6) continue;
+	      const dist = Math.hypot(nd.pos.x - px, nd.pos.z - pz);
+	      if (!insideScan(nd.pos.x, nd.pos.z) && dist > SCAN_NEAR_RADIUS) continue;
 	      ctx.fillStyle = nd.type === 'ferrite' ? '#ffb27a' : nd.type === 'silica' ? '#f2e08a' : nd.type === 'lumen' ? '#8fe6ff' : '#9dffcc';
-	      ctx.globalAlpha = 0.85;
+	      ctx.globalAlpha = insideScan(nd.pos.x, nd.pos.z) ? 0.95 : 0.5;
 	      ctx.beginPath(); ctx.arc(rx, rz, 1.8, 0, Math.PI * 2); ctx.fill();
 	    }
 	    ctx.globalAlpha = 1;
@@ -46343,12 +47337,24 @@ void main() {
 	    const rx = (rp.x - px) * scale, rz = (rp.z - pz) * scale;
 	    ctx.fillStyle = '#ffffff';
 	    ctx.beginPath(); ctx.moveTo(rx, rz - 5); ctx.lineTo(rx + 3.5, rz + 3); ctx.lineTo(rx, rz + 1.5); ctx.lineTo(rx - 3.5, rz + 3); ctx.closePath(); ctx.fill();
-	    // 生物
+	    // 生物（同样受扫描范围限制）
 	    for (const c of game.ecosystem.list) {
 	      if (c.dead) continue;
+	      const inScan = insideScan(c.pos.x, c.pos.z);
+	      const dist = Math.hypot(c.pos.x - px, c.pos.z - pz);
+	      if (!inScan && dist > SCAN_NEAR_RADIUS) continue;
 	      const cx = (c.pos.x - px) * scale, cz = (c.pos.z - pz) * scale;
 	      ctx.fillStyle = c.def.hostile ? 'rgba(255,110,90,0.9)' : 'rgba(200,255,240,0.55)';
 	      ctx.beginPath(); ctx.arc(cx, cz, c.def.hostile ? 2.2 : 1.4, 0, Math.PI * 2); ctx.fill();
+	    }
+	    // 扫描波纹
+	    if (scanning) {
+	      const r = (game.scanRadius || 0) * scale;
+	      ctx.strokeStyle = game.palette.accent;
+	      ctx.globalAlpha = 0.25 + 0.35 * Math.min(1, scanT / 4);
+	      ctx.lineWidth = 1.5;
+	      ctx.beginPath(); ctx.arc((game.scanOrigin.x - px) * scale, (game.scanOrigin.z - pz) * scale, r, 0, Math.PI * 2); ctx.stroke();
+	      ctx.globalAlpha = 1;
 	    }
 	    ctx.restore();
 	    // 玩家箭头
@@ -46388,6 +47394,19 @@ void main() {
 	// 《微光星球》LITTLE COSMOS — 游戏总控与启动流程
 
 	const SAVE_KEY = 'little-cosmos-save-v1';
+	const SAVE_VERSION = 3;
+	// BUG-02：每颗星球的固定种子与关卡参数，地形/资源/生物都从这里派生，保证可复现
+	const PLANET_SEEDS = { verdant: 11, emer: 23, lumina: 37 };
+	const PLANET_DEFS = {
+	  verdant: { waterLevel: -3.4, slopeRock: 0.36 },
+	  emer: { waterLevel: -12, slopeRock: 0.5 },
+	  lumina: { waterLevel: -3.0, slopeRock: 0.4 },
+	};
+	const VALID_PLANETS = ['verdant', 'emer', 'lumina'];
+	// BUG-10：环境扫描的有效半径、持续时间与冷却（秒）
+	const SCAN_RADIUS = 120;
+	const SCAN_DURATION = 20;
+	const SCAN_COOLDOWN = 8;
 	const EMPTY_INV = () => ({ ferrite: 0, silica: 0, bio: 0, lumen: 0, sample: 0 });
 	// 新开局的初始补给：刚好够理解资源与建造流程，但不足以跳过采集
 	const START_INV = () => ({ ferrite: 3, silica: 1, bio: 0, lumen: 0, sample: 0 });
@@ -46421,6 +47440,12 @@ void main() {
 	    this.fovCurrent = 55;
 	    this.cameraLookTarget = new Vector3();
 	    this._tmpV = new Vector3();
+	  }
+
+	  // 昼夜状态：lumina 是永夜星球，其余为白昼。
+	  // 注意：原代码 creatures.js 读取 game.isNight 但从未赋值，导致夜间感知永远失效。
+	  get isNight() {
+	    return this.currentPlanetId === 'lumina';
 	  }
 
 	  async boot() {
@@ -46502,50 +47527,88 @@ void main() {
 	  bindGlobalEvents() {
 	    window.addEventListener('keydown', (e) => {
 	      if (this.mode === 'menu') return;
+	      // BUG-11：长按 Escape 会由系统重复触发，必须过滤，否则暂停/恢复会来回抖动
+	      if (e.repeat) return;
 	      if (e.code === 'Escape') {
+	        e.preventDefault();
 	        if (this.paused) this.resume(); else this.pause();
 	      }
 	    });
 	    this.canvas.addEventListener('mousedown', () => {
-	      if (this.mode === 'surface' && !this.ui.building) this.input.requestLock();
+	      if (!this.paused && ((this.mode === 'surface' && !this.ui.building) || this.mode === 'space')) this.input.requestLock();
 	    });
 	    document.addEventListener('pointerlockchange', () => {
 	      if (!document.pointerLockElement && this.mode === 'surface' && !this.paused && !this.flight.launching) ;
 	    });
 	    window.addEventListener('resize', () => this.ui && this.ui.buildMiniTerrain());
+	    // BUG-12：页面隐藏/失焦时统一复位输入，防止回来后持续开火或残留位移
+	    document.addEventListener('visibilitychange', () => {
+	      if (document.hidden) this.input.reset();
+	    });
+	    window.addEventListener('blur', () => this.input.reset());
 	  }
 
 	  // ================= 星球加载 =================
+	  // BUG-02：离开星球前把该星球的动态状态写回 planetStates
+	  captureplanetState(id) {
+	    if (!id) return;
+	    const st = (this.planetStates[id] = this.planetStates[id] || {});
+	    if (this.resources) st.resources = this.resources.serialize();
+	    if (this.ecosystem) st.creatures = this.ecosystem.serialize();
+	    if (this.building && id === this.currentPlanetId) {
+	      st.bases = this.building.serialize();
+	      this.planetBases[id] = st.bases;
+	    }
+	  }
+
+	  // BUG-02：加载后按稳定 ID 恢复采集冷却、生物死亡与基地生产进度
+	  restoreplanetState(id) {
+	    const st = this.planetStates?.[id];
+	    if (!st) return;
+	    if (this.resources) this.resources.restore(st.resources);
+	    if (this.ecosystem) this.ecosystem.restore(st.creatures);
+	    if (this.building) this.building.applyProduction(st.bases);
+	  }
+
+	  // BUG-43：完整释放 GPU 资源（几何 / 材质 / 纹理 / 阴影目标）
 	  clearPlanet() {
-	    if (this.terrain) {
-	      this.scene.remove(this.terrain.group);
-	      this.terrain.group.traverse((o) => { if (o.geometry) o.geometry.dispose(); });
-	      this.terrain = null;
-	    }
-	    if (this.skyMesh) { this.scene.remove(this.skyMesh); this.skyMesh = null; }
-	    if (this.vegetation) {
-	      this.scene.remove(this.vegetation.group);
-	      this.vegetation.group.traverse((o) => { if (o.geometry) o.geometry.dispose(); });
-	      this.vegetation = null;
-	    }
-	    if (this.water) { this.scene.remove(this.water); this.water = null; }
-	    if (this.motes) { this.scene.remove(this.motes); this.motes = null; }
+	    if (this.currentPlanetId) this.captureplanetState(this.currentPlanetId);
+	    const kill = (obj) => {
+	      if (!obj) return;
+	      this.scene.remove(obj);
+	      disposeObject(obj);
+	    };
+	    if (this.terrain) { kill(this.terrain.group); this.terrain = null; }
+	    if (this.skyMesh) { kill(this.skyMesh); this.skyMesh = null; }
+	    if (this.vegetation) { kill(this.vegetation.group); this.vegetation = null; }
+	    if (this.water) { kill(this.water); this.water = null; }
+	    if (this.motes) { kill(this.motes); this.motes = null; }
 	    if (this.ecosystem) this.ecosystem.clear();
-	    if (this.resources) { this.scene.remove(this.resources.group); this.resources = null; }
-	    if (this.sun) { this.scene.remove(this.sun); this.scene.remove(this.sun.target); this.sun = null; }
+	    if (this.resources) { this.resources.dispose(); kill(this.resources.group); this.resources = null; }
+	    if (this.sun) {
+	      if (this.sun.shadow?.map) { this.sun.shadow.map.dispose(); this.sun.shadow.map = null; }
+	      this.scene.remove(this.sun);
+	      this.scene.remove(this.sun.target);
+	      this.sun = null;
+	    }
 	    if (this.hemi) { this.scene.remove(this.hemi); this.hemi = null; }
 	    if (this.building) this.building.clear();
+	    // BUG-33：离开地表时清掉残留的弹道与枪口闪光
+	    if (this.weapon) this.weapon.clearEffects();
 	    this.ui.mmTerrain = null;
 	    this.ui.mmHeights = null;
+	    this.ui.mmBase = null;
 	  }
 
 	  loadPlanetSync(id) {
+	    if (!PALETTES[id]) id = 'verdant';
 	    const prevMode = this.mode;
 	    this.clearPlanet();
 	    this.currentPlanetId = id;
 	    const pal = PALETTES[id];
 	    this.palette = pal;
-	    const def = { biome: pal.biome, seed: { verdant: 11, emer: 23, lumina: 37 }[id], extent: 300, waterLevel: { verdant: -3.4, emer: -12, lumina: -3 }[id], slopeRock: { verdant: 0.36, emer: 0.5, lumina: 0.4 }[id] };
+	    const pdef = PLANET_DEFS[id] || PLANET_DEFS.verdant;
+	    const def = { biome: pal.biome, seed: PLANET_SEEDS[id] ?? 11, extent: 300, waterLevel: pdef.waterLevel, slopeRock: pdef.slopeRock };
 	    // 天空
 	    this.skyMesh = createSky(pal);
 	    this.scene.add(this.skyMesh);
@@ -46563,7 +47626,7 @@ void main() {
 	    this.sun.shadow.camera.bottom = -46;
 	    this.sun.shadow.camera.near = 1;
 	    this.sun.shadow.camera.far = 260;
-	    this.sun.shadow.bias = -6e-4;
+	    this.sun.shadow.bias = -0.0006;
 	    this.sun.shadow.normalBias = 0.045;
 	    this.sun.shadow.radius = 3;
 	    this.sun.target.position.set(0, 0, 0);
@@ -46602,15 +47665,18 @@ void main() {
 	      fall: id === 'emer' ? 0.1 : 0.3,
 	    });
 	    this.scene.add(this.motes);
-	    // 资源
-	    this.resources = new ResourceField(this.terrain, pal);
+	    // 资源（BUG-02：用星球种子生成固定布局）
+	    this.resources = new ResourceField(this.terrain, pal, Math.random, { planetId: id, seed: PLANET_SEEDS[id] ?? 11 });
 	    this.scene.add(this.resources.group);
-	    // 生态
+	    // 生态（BUG-02：同样按星球种子生成稳定布局）
 	    this.ecosystem.clear();
+	    this.ecosystem.setSeed(PLANET_SEEDS[id] ?? 11);
 	    this.spawnCreatures(id);
 	    // 基地（若已有存档）
 	    const bases = this.planetBases[id];
 	    if (bases && bases.length) this.building.restore(bases);
+	    // BUG-02：恢复该星球的采集冷却、生物死亡与矿机进度
+	    this.restoreplanetState(id);
 	    // 火箭位置
 	    const spawn = this.spawnPoints(id);
 	    this.rocket.group.position.set(spawn.rocket.x, this.terrain.height(spawn.rocket.x, spawn.rocket.z), spawn.rocket.z);
@@ -46715,65 +47781,186 @@ void main() {
 	    this.ui.showPrompt('');
 	    this.ui.setBuildingMode(false);
 	    this.building.cancelPlacing();
+	    // BUG-41：返回菜单必须把火箭复位到当前星球的地表落点，
+	    // 否则它会停在星系坐标里，菜单背景里看不到飞船。
+	    if (this.rocket && this.terrain) {
+	      const sp = this.spawnPoints(this.currentPlanetId || 'verdant');
+	      const ry = this.terrain.height(sp.rocket.x, sp.rocket.z);
+	      this.rocket.group.position.set(sp.rocket.x, ry, sp.rocket.z);
+	      this.rocket.group.rotation.set(0, sp.rocket.yaw, 0);
+	      this.rocket.group.quaternion.setFromEuler(this.rocket.group.rotation);
+	      this.rocket.group.scale.setScalar(1);
+	      this.rocket.group.userData.groundY = ry;
+	      if (this.rocket.legs) this.rocket.legs.forEach((l) => { l.visible = true; });
+	    }
+	    // BUG-45：菜单不应残留引擎嗡鸣
+	    this.audio?.setEngine(0, 0);
+	    // BUG-33：清掉上一局残留的弹道/枪口闪光
+	    this.weapon?.clearEffects();
+	    this.tryBoard = false;
 	    document.getElementById('crosshair')?.classList.remove('hidden');
 	    document.getElementById('pause')?.classList.add('hidden');
+	    document.body.classList.remove('flying', 'aiming', 'cinematic');
+	  }
+
+	  // BUG-03：读档前先做版本与结构校验。只有全部通过才替换场景；
+	  // 失败时清理 starting 并回到菜单，绝不能留下半初始化状态卡死继续游戏。
+	  validateSave(data) {
+	    if (!data || typeof data !== 'object') return { ok: false, reason: '存档格式错误' };
+	    if (!Number.isFinite(data.version)) return { ok: false, reason: '存档缺少版本号' };
+	    if (data.version > SAVE_VERSION) return { ok: false, reason: '存档来自更新的版本' };
+	    if (data.planet !== undefined && !VALID_PLANETS.includes(data.planet)) {
+	      return { ok: false, reason: `未知星球 ${data.planet}` };
+	    }
+	    // 数值校验：避免 NaN 污染 HUD 与物理
+	    const inv = data.inventory;
+	    if (inv !== undefined) {
+	      if (typeof inv !== 'object' || inv === null) return { ok: false, reason: '资源字段损坏' };
+	      for (const k of Object.keys(inv)) {
+	        if (!Number.isFinite(inv[k]) || inv[k] < 0) return { ok: false, reason: `资源 ${k} 数值非法` };
+	      }
+	    }
+	    // bases：必须是以合法星球为键的数组，元素类型必须在 BUILDINGS 中
+	    if (data.bases !== undefined) {
+	      if (typeof data.bases !== 'object' || data.bases === null) return { ok: false, reason: '基地字段损坏' };
+	      for (const [pid, list] of Object.entries(data.bases)) {
+	        if (!VALID_PLANETS.includes(pid)) return { ok: false, reason: `基地星球非法: ${pid}` };
+	        if (!Array.isArray(list)) return { ok: false, reason: '基地列表损坏' };
+	        for (const b of list) {
+	          if (!b || !BUILDINGS[b.type]) return { ok: false, reason: `建筑类型非法: ${b && b.type}` };
+	          if (!Number.isFinite(b.x) || !Number.isFinite(b.z)) return { ok: false, reason: '建筑坐标非法' };
+	        }
+	      }
+	    }
+	    if (data.planetStates !== undefined && (typeof data.planetStates !== 'object' || data.planetStates === null)) {
+	      return { ok: false, reason: '星球状态损坏' };
+	    }
+	    const fl = data.flight;
+	    if (fl !== undefined && fl !== null) {
+	      if (typeof fl !== 'object') return { ok: false, reason: '飞行检查点损坏' };
+	      if (fl.kind && !['surface', 'space', 'landingCheckpoint'].includes(fl.kind)) {
+	        return { ok: false, reason: `飞行检查点类型非法: ${fl.kind}` };
+	      }
+	      if (fl.kind === 'space') {
+	        if (!Array.isArray(fl.pos) || fl.pos.length !== 3 || !fl.pos.every(Number.isFinite)) {
+	          return { ok: false, reason: '飞行坐标非法' };
+	        }
+	        if (!VALID_PLANETS.includes(fl.planet)) return { ok: false, reason: '飞行检查点星球非法' };
+	      }
+	    }
+	    const pl = data.player;
+	    if (pl !== undefined && pl !== null) {
+	      if (typeof pl !== 'object') return { ok: false, reason: '玩家字段损坏' };
+	      for (const k of ['x', 'z', 'yaw', 'camYaw', 'camPitch', 'health', 'shield']) {
+	        if (pl[k] !== undefined && !Number.isFinite(pl[k])) return { ok: false, reason: `玩家字段 ${k} 非法` };
+	      }
+	    }
+	    return { ok: true };
 	  }
 
 	  async startGame(continueSave) {
 	    if (this.starting) return;
 	    this.starting = true;
-	    await this.audio.init();
-	    const menu = document.getElementById('menu');
-	    menu.style.transition = 'opacity .9s cubic-bezier(.2,.8,.2,1)';
-	    menu.style.opacity = '0';
-	    setTimeout(() => { menu.classList.add('hidden'); menu.style.opacity = ''; }, 900);
-	    document.getElementById('hud').classList.remove('hidden');
-	    document.body.classList.add('cinematic');
-	    this.mode = 'intro';
-	    this.ui.fadeTo(1, 600);
-	    await new Promise((r) => setTimeout(r, 700));
-	    // 读取存档
-	    let restored = false;
-	    if (continueSave) {
-	      try {
-	        const raw = localStorage.getItem(SAVE_KEY);
-	        if (raw) {
-	          const data = JSON.parse(raw);
+	    try {
+	      await this.audio.init();
+	      const menu = document.getElementById('menu');
+	      menu.style.transition = 'opacity .9s cubic-bezier(.2,.8,.2,1)';
+	      menu.style.opacity = '0';
+	      setTimeout(() => { menu.classList.add('hidden'); menu.style.opacity = ''; }, 900);
+	      document.getElementById('hud').classList.remove('hidden');
+	      document.body.classList.add('cinematic');
+	      this.mode = 'intro';
+	      this.ui.fadeTo(1, 600);
+	      await new Promise((r) => setTimeout(r, 700));
+	      // 读取并校验存档（BUG-03）
+	      let restored = false;
+	      let savedPlayer = null;
+	      if (continueSave) {
+	        let data = null;
+	        try {
+	          const raw = localStorage.getItem(SAVE_KEY);
+	          if (raw) data = JSON.parse(raw);
+	        } catch (e) {
+	          console.warn('存档解析失败', e);
+	        }
+	        const check = data ? this.validateSave(data) : { ok: false, reason: '没有可用的存档' };
+	        if (check.ok) {
+	          // BUG-08：先彻底清空上一局的运行态，再套用存档，避免残留值混入
+	          this.resetRunState();
 	          Object.assign(this.inventory, data.inventory || {});
 	          this.planetBases = data.bases || {};
+	          this.planetStates = data.planetStates || {};
 	          this.objectiveState = data.objective || { step: 0, done: 0 };
-	          this.unlocked = data.unlocked || { weapon: 1 };
+	          this.unlocked = Object.assign({ weapon: 1, shield: 0 }, data.unlocked || {});
 	          this.savedPlanet = data.planet || 'verdant';
+	          savedPlayer = data.player || null;
+	          this.pendingFlight = data.flight || null;
 	          restored = true;
+	        } else {
+	          // 校验失败：不要动当前场景，回到菜单并说明原因
+	          console.warn('存档校验失败：' + check.reason);
+	          this.ui.fadeTo(0, 400);
+	          this.showMenu();
+	          this.ui.toast('存档损坏或版本不兼容：' + check.reason + '，可开始新游戏', 'warn');
+	          this.starting = false;
+	          return;
 	        }
-	      } catch (e) { console.warn('存档读取失败', e); }
+	      }
+	      if (!restored) {
+	        this.resetRunState();
+	        Object.assign(this.inventory, START_INV());
+	      }
+	      const startPlanet = restored && VALID_PLANETS.includes(this.savedPlanet) ? this.savedPlanet : 'verdant';
+	      // 菜单到游戏：用淡入淡出遮罩切换（仅在开局一次）
+	      this.loadPlanetSync(startPlanet);
+	      if (restored && savedPlayer) {
+	        // BUG-12：从离开时的位置继续，而不是回到出生点
+	        this.applyPlayerState(savedPlayer);
+	      } else {
+	        this.teleportPlayerTo(startPlanet);
+	      }
+	      // BUG-04：读档后把解锁状态换算成实际数值（伤害 / 护盾上限 / HUD 标识）
+	      this.applyUnlocks();
+	      // BUG-04：飞行中保存的存档恢复到当时的太空检查点
+	      if (restored && this.restoreFlightState(this.pendingFlight)) {
+	        this.pendingFlight = null;
+	        this.starting = false;
+	        return;
+	      }
+	      this.pendingFlight = null;
+	      // BUG-05：只有没有存档镜头时才用默认的“角色身后”朝向
+	      if (!this.savedCamera) this.player.camYaw = this.player.yaw + Math.PI;
+	      this.camIntroStart = new Vector3(this.player.pos.x + 4, this.player.pos.y + 2.5, this.player.pos.z + 6);
+	      this.camera.position.copy(this.camIntroStart);
+	      this.mode = 'intro';
+	      this.ui.fadeTo(0, 1800);
+	      setTimeout(() => this.beginExplore(), 1200);
+	    } catch (e) {
+	      // BUG-03：任何异常都要解除 starting，避免“继续游戏”按钮永久失效
+	      console.error(e);
+	      this.starting = false;
+	      this.mode = 'menu';
+	      this.showMenu();
+	      this.ui.toast('加载失败：' + (e && e.message), 'warn');
+	      return;
 	    }
-	    if (!restored) {
-	      Object.assign(this.inventory, START_INV());
-	      this.planetBases = {};
-	      this.objectiveState = { step: 0, done: 0 };
-	    }
-	    const startPlanet = restored ? this.savedPlanet : 'verdant';
-	    // 菜单到游戏：用淡入淡出遮罩切换（仅在开局一次）
-	    this.loadPlanetSync(startPlanet);
-	    this.teleportPlayerTo(startPlanet);
-	    this.player.camYaw = this.player.yaw + Math.PI;
-	    this.camIntroStart = new Vector3(this.player.pos.x + 4, this.player.pos.y + 2.5, this.player.pos.z + 6);
-	    this.camera.position.copy(this.camIntroStart);
-	    this.mode = 'intro';
-	    this.ui.fadeTo(0, 1800);
-	    setTimeout(() => this.beginExplore(), 1200);
 	    this.starting = false;
 	  }
 
 	  beginExplore() {
 	    this.mode = 'surface';
-	    this.player.camYaw = this.player.yaw + Math.PI;
-	    this.player.camPitch = -0.1;
+	    // BUG-05：读档时保留存档中的镜头朝向；仅新游戏使用默认“角色身后”视角
+	    if (this.savedCamera) {
+	      this.player.camYaw = this.savedCamera.camYaw;
+	      this.player.camPitch = this.savedCamera.camPitch;
+	      this.savedCamera = null;
+	    } else {
+	      this.player.camYaw = this.player.yaw + Math.PI;
+	      this.player.camPitch = 0.28;
+	    }
 	    this.player.camTarget.copy(this.player.pos).add(new Vector3(0, 0.5, 0));
-	    const cd = 4.6;
-	    this.camera.position.copy(this.player.camTarget).add(new Vector3(Math.sin(this.player.camYaw) * Math.cos(0.1) * cd, Math.sin(0.1) * cd, Math.cos(this.player.camYaw) * Math.cos(0.1) * cd));
-	    this.camera.lookAt(this.player.camTarget);
+	    this.player.camSnapPending = true;
+	    this.player.updateCamera(0, this.camera, {}, true);
 	    this.player.object.visible = true;
 	    this.player.inRocket = false;
 	    this.setObjective();
@@ -46784,41 +47971,251 @@ void main() {
 	    this.ui.toast('按 E 采集 · B 建造 · V 扫描', 'info');
 	  }
 
+	  // BUG-11：暂停不再只限地表，驾驶舱/太空/降落阶段都应能暂停
 	  pause() {
-	    if (this.mode !== 'surface') return;
+	    if (this.mode === 'menu' || this.mode === 'intro') return;
+	    if (this.paused) return;
 	    this.paused = true;
 	    document.getElementById('pause').classList.remove('hidden');
 	    this.input.releaseLock();
+	    // BUG-13：进入暂停时清空瞬时输入与持续按压，恢复后不会补执行暂停期间的按键
+	    this.input.enabled = false;
+	    this.input.reset();
+	    this.audio.setEngine(0, 0);
 	  }
 
 	  resume() {
 	    this.paused = false;
 	    document.getElementById('pause').classList.add('hidden');
+	    // BUG-13：恢复时重新采集持续键状态，并丢弃暂停期间的瞬时输入
+	    this.input.enabled = true;
+	    this.input.reset();
 	    this.input.requestLock();
+	    this.audio.updateMusic(0, this.mode === 'surface' ? 0.2 : 0.6);
 	  }
 
-	  save() {
+	  // BUG-12：存档补全玩家动态状态（位置/生命/护盾/能量/射击模式）
+	  // BUG-01：返回 { ok, error } —— 只有真正写入成功才允许 UI 提示“已保存”
+	  // 组装完整存档对象（save 与 exportSave 共用）
+	  buildSaveData() {
 	    const bases = {};
-	    if (this.planetBases[this.currentPlanetId]) bases[this.currentPlanetId] = this.building.serialize();
-	    else bases[this.currentPlanetId] = this.building.serialize();
 	    for (const id of PLANET_ORDER) {
-	      if (id !== this.currentPlanetId && this.planetBases[id]) bases[id] = this.planetBases[id];
+	      if (id === this.currentPlanetId) bases[id] = this.building.serialize();
+	      else if (this.planetBases[id]) bases[id] = this.planetBases[id];
 	    }
-	    const data = {
+	    // BUG-02：保存前先把当前星球动态状态写入 planetStates
+	    if (this.currentPlanetId) {
+	      const st = (this.planetStates[this.currentPlanetId] = this.planetStates[this.currentPlanetId] || {});
+	      if (this.resources) st.resources = this.resources.serialize();
+	      if (this.ecosystem) st.creatures = this.ecosystem.serialize();
+	      st.bases = bases[this.currentPlanetId] || [];
+	    }
+	    return {
+	      version: SAVE_VERSION,
 	      inventory: this.inventory,
 	      bases,
 	      objective: this.objectiveState,
 	      unlocked: this.unlocked,
 	      planet: this.currentPlanetId,
+	      // 动态状态
+	      player: this.capturePlayerState(),
+	      planetStates: this.planetStates || {},
+	      // BUG-04：飞行检查点（太空阶段可完整恢复；其余飞行阶段保存为落地检查点）
+	      flight: this.captureFlightState(),
+	      savedAt: Date.now(),
 	    };
-	    try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch (e) {}
-	    this.planetBases = bases;
+	  }
+
+	  // BUG-04：把飞行状态序列化。只有 'space' 能完整恢复，
+	  // 过渡阶段（起飞/再入/着陆/出舱）记录为“落地检查点”，读档后回到地表。
+	  captureFlightState() {
+	    const f = this.flight;
+	    if (!f || f.phase === 'ground' || this.mode === 'menu') return { kind: 'surface' };
+	    if (f.phase !== 'space') {
+	      return { kind: 'landingCheckpoint', planet: this.currentPlanetId, reason: f.phase };
+	    }
+	    const s = f.shipState;
+	    return {
+	      kind: 'space',
+	      planet: this.currentPlanetId,
+	      pos: [s.pos.x, s.pos.y, s.pos.z],
+	      yaw: s.yaw, pitch: s.pitch, roll: s.roll,
+	      throttle: s.throttle, speed: s.speed,
+	      target: f.targetPlanet || null,
+	    };
+	  }
+
+	  // BUG-04：恢复飞行检查点。返回 true 表示已进入太空，无需再走地表出生流程。
+	  restoreFlightState(cp) {
+	    if (!cp || cp.kind !== 'space') return false;
+	    const f = this.flight;
+	    if (!Array.isArray(cp.pos) || cp.pos.length !== 3 || !cp.pos.every(Number.isFinite)) return false;
+	    if (!VALID_PLANETS.includes(cp.planet)) return false;
+	    this.currentPlanetId = cp.planet;
+	    this.mode = 'space';
+	    this.player.inRocket = true;
+	    this.player.object.visible = false;
+	    this.exitPlanetToSpace();
+	    const s = f.shipState;
+	    s.pos.set(cp.pos[0], cp.pos[1], cp.pos[2]);
+	    s.yaw = Number.isFinite(cp.yaw) ? cp.yaw : 0;
+	    s.pitch = Number.isFinite(cp.pitch) ? cp.pitch : 0;
+	    s.roll = Number.isFinite(cp.roll) ? cp.roll : 0;
+	    s.throttle = clamp(Number.isFinite(cp.throttle) ? cp.throttle : 0, 0, 1);
+	    s.speed = Number.isFinite(cp.speed) ? cp.speed : 0;
+	    s.warp = 0;
+	    f.targetPlanet = VALID_PLANETS.includes(cp.target) ? cp.target : null;
+	    // 网格与镜头同步落位，避免读到旧地表坐标
+	    f.ship.group.position.copy(s.pos);
+	    f.setPhase('space');
+	    f.cameraShipPos = s.pos.clone();
+	    this.ui.fadeTo(0, 800);
+	    document.body.classList.remove('cinematic');
+	    this.ui.toast('已在太空检查点继续航行', 'ok');
+	    return true;
+	  }
+
+	  save() {
+	    const data = this.buildSaveData();
+	    try {
+	      localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+	    } catch (e) {
+	      // BUG-01：不再吞掉异常；保留当前运行状态，让玩家可以重试或导出
+	      console.warn('存档写入失败', e);
+	      return { ok: false, error: e, data };
+	    }
+	    this.planetBases = data.bases;
+	    return { ok: true };
+	  }
+
+	  // 导出存档文件（保存失败时的兜底出口）——导出的是“当前内存态”，不是旧存档
+	  exportSave(data) {
+	    try {
+	      const payload = data || this.buildSaveData();
+	      const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+	      const a = document.createElement('a');
+	      a.href = URL.createObjectURL(blob);
+	      a.download = `little-cosmos-${Date.now()}.json`;
+	      a.click();
+	      setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+	      return a.download;
+	    } catch (e) { return null; }
+	  }
+
+	  // 采集当前玩家的可持久化状态
+	  // BUG-05：保存真实的镜头朝向（camYaw / camPitch），而不是控制逻辑里不存在的 p.pitch
+	  capturePlayerState() {
+	    const p = this.player;
+	    return {
+	      health: this.playerHealth,
+	      maxHealth: this.playerMaxHealth,
+	      shield: this.playerShield,
+	      maxShield: this.playerMaxShield,
+	      x: p.pos.x,
+	      z: p.pos.z,
+	      y: p.pos.y,
+	      yaw: p.yaw,
+	      camYaw: p.camYaw,
+	      camPitch: p.camPitch,
+	      energy: this.weapon ? this.weapon.energy : 100,
+	      weaponMode: this.weapon ? this.weapon.mode : 0,
+	      unlocked: this.unlocked,
+	      inRocket: !!p.inRocket,
+	    };
+	  }
+
+	  // 把存档中的玩家状态写回实例（读档与新游戏都会走这里）
+	  applyPlayerState(ps) {
+	    if (!ps) return;
+	    const num = (v, d) => (Number.isFinite(v) ? v : d);
+	    this.playerMaxHealth = num(ps.maxHealth, 100);
+	    this.playerMaxShield = num(ps.maxShield, 100);
+	    this.playerHealth = clamp(num(ps.health, this.playerMaxHealth), 0, this.playerMaxHealth);
+	    this.playerShield = clamp(num(ps.shield, this.playerMaxShield), 0, this.playerMaxShield);
+	    if (this.weapon) {
+	      this.weapon.maxEnergy = 100;
+	      this.weapon.energy = clamp(num(ps.energy, 100), 0, 100);
+	      this.weapon.mode = [0, 1, 2].includes(ps.weaponMode) ? ps.weaponMode : 0;
+	      this.weapon.cooldown = 0;
+	      this.weapon.burstCount = 0;
+	    }
+	    this.player.inRocket = false;
+	    if (Number.isFinite(ps.x) && Number.isFinite(ps.z)) {
+	      // BUG-05：镜头朝向由存档恢复，不再被 beginExplore 覆盖
+	      this.player.teleport(ps.x, ps.z, num(ps.yaw, 0));
+	      if (Number.isFinite(ps.camYaw)) this.player.camYaw = ps.camYaw;
+	      if (Number.isFinite(ps.camPitch)) this.player.camPitch = clamp(ps.camPitch, -1.15, 0.85);
+	      this.savedCamera = { camYaw: this.player.camYaw, camPitch: this.player.camPitch };
+	    }
+	  }
+
+	  // 解锁状态 → 实际数值（BUG-04：读档后必须恢复伤害与 HUD 标识）
+	  applyUnlocks() {
+	    const u = this.unlocked || {};
+	    if (this.weapon) this.weapon.damage = (u.weapon || 1) >= 2 ? 26 : 18;
+	    const lv = document.querySelector('.wp-lv');
+	    if (lv) lv.textContent = (u.weapon || 1) >= 2 ? 'MK.II' : 'MK.I';
+	    this.playerMaxShield = (u.shield || 0) >= 1 ? 140 : 100;
+	    this.playerShield = Math.min(this.playerShield, this.playerMaxShield);
+	  }
+
+	  // BUG-08：开新档必须把上一局的运行态全部清空
+	  resetRunState() {
+	    this.inventory = EMPTY_INV();
+	    this.planetBases = {};
+	    this.planetStates = {};
+	    this.objectiveState = { step: 0, done: 0 };
+	    this.unlocked = { weapon: 1, shield: 0 };
+	    this.playerMaxHealth = 100;
+	    this.playerHealth = 100;
+	    this.playerMaxShield = 100;
+	    this.playerShield = 100;
+	    this.damageFlash = 0;
+	    this.cameraShake = 0;
+	    this.scanActiveT = 0;
+	    this.scanCooldown = 0;
+	    this.scanPulse = 0;
+	    if (this.weapon) {
+	      this.weapon.damage = 18;
+	      this.weapon.energy = 100;
+	      this.weapon.maxEnergy = 100;
+	      this.weapon.mode = 0;
+	      this.weapon.cooldown = 0;
+	      this.weapon.heat = 0;
+	      this.weapon.burstCount = 0;
+	      this.weapon.burstTimer = 0;
+	      this.weapon.recoil = 0;
+	    }
+	    if (this.building) {
+	      this.building.clear();
+	      this.building.cancelPlacing();
+	      this.building.power = 0;
+	      this.building.gen = 0;
+	      this.building.use = 0;
+	      this.building.produceTimer = 0;
+	    }
+	    // BUG-33 / BUG-45：新一局不能残留上一局的弹道、枪口闪光与引擎声
+	    if (this.weapon) this.weapon.clearEffects();
+	    this.audio?.setEngine(0, 0);
+	    this.input?.reset();
+	    this.landingOnPad = false;
+	    this.landingPadTop = 0;
+	    this.savedCamera = null;
+	    this.objectiveState.fromPlanet = null;
+	    document.body.classList.remove('flying');
+	    this.ui.setBuildingMode(false);
+	    this.ui.showPrompt('');
+	    this.ui.setObjective(null);
+	    this.applyUnlocks();
 	  }
 
 	  toMenu() {
-	    this.save();
+	    const res = this.save();
 	    document.getElementById('pause').classList.add('hidden');
 	    this.paused = false;
+	    if (!res.ok) this.ui.toast('离开前保存失败，本次进度可能丢失', 'warn');
+	    this.input.enabled = true;
+	    this.input.reset();
 	    this.input.releaseLock();
 	    this.showMenu();
 	  }
@@ -46842,7 +48239,9 @@ void main() {
 	      }
 	    }
 	    if (st.step === 2) {
-	      this.ui.setObjective({ text: '登上火箭（靠近舱门按 E），飞往另一颗星球', need: 1 });
+	      const dest = st.fromPlanet || this.currentPlanetId;
+	      const others = PLANET_ORDER.filter((x) => x !== dest).map((x) => PALETTES[x].name).join(' / ');
+	      this.ui.setObjective({ text: `登上火箭（靠近舱门按 E），飞往 ${others}`, need: 1 });
 	      this.ui.updateObjectiveProgress(0, 1);
 	    }
 	    if (st.step >= 3) this.ui.setObjective(null);
@@ -46886,6 +48285,20 @@ void main() {
 	    this.audio.play('hit', { vol: 0.5 });
 	  }
 
+	  // BUG-03：击杀生物掉落样本/生物质，让科研站与护盾升级可以真正达成
+	  onCreatureKilled(c) {
+	    const def = c.def || {};
+	    const hostile = !!def.hostile;
+	    const sample = hostile ? 1 : 2;
+	    const bio = hostile ? 1 : 1;
+	    this.inventory.sample = (this.inventory.sample || 0) + sample;
+	    this.inventory.bio = (this.inventory.bio || 0) + bio;
+	    this.ui?.toast(`+${sample} 样本 · +${bio} 生物质 · ${def.name || '生物'}`, 'ok');
+	    this.audio.play('pickup');
+	    // 战利品自死亡位置向上飘散，给出可见反馈
+	    this.spawnPickupFx(c.pos ? c.pos.clone().add(new Vector3(0, 0.6, 0)) : new Vector3());
+	  }
+
 	  onCreatureAttack(creature, dmg) {
 	    this.damagePlayer(dmg);
 	    this.audio.play('hurt');
@@ -46910,11 +48323,34 @@ void main() {
 	  respawn() {
 	    this.playerHealth = this.playerMaxHealth;
 	    this.playerShield = this.playerMaxShield;
-	    const spawn = this.spawnPoints(this.currentPlanetId).player;
+	    // BUG-49：优先在已建成的居住舱旁重生；没有居住舱才回到登陆点
+	    const hab = this.building?.respawnHabitat(this.player.pos);
+	    let spawn;
+	    if (hab) {
+	      // 在居住舱外侧找一个不被阻挡的落点
+	      let best = null;
+	      for (let i = 0; i < 8; i++) {
+	        const a = (i / 8) * Math.PI * 2;
+	        const r = (hab.def.colliderR || 1.4) + 1.0;
+	        const x = hab.pos.x + Math.cos(a) * r;
+	        const z = hab.pos.z + Math.sin(a) * r;
+	        if (!this.player._solidCircle(x, z)) { best = { x, z, yaw: a }; break; }
+	      }
+	      spawn = best || (() => {
+	        const s = this.spawnPoints(this.currentPlanetId).player;
+	        return { x: s.x, z: s.z, yaw: s.yaw };
+	      })();
+	    } else {
+	      spawn = this.spawnPoints(this.currentPlanetId).player;
+	    }
 	    this.player.teleport(spawn.x, spawn.z, spawn.yaw);
+	    // BUG-20：瞬移后镜头同步归位，不再从旧位置横穿场景追过来
+	    this.player.snapCamera(this.camera);
 	    this.ui.fadeTo(1, 400);
 	    setTimeout(() => this.ui.fadeTo(0, 1200), 500);
-	    this.ui.dialogue('紧急复苏协议', '生命维持系统已重启。你在登陆点附近醒来。', 5);
+	    this.ui.dialogue('紧急复苏协议', hab
+	      ? '生命维持系统已重启。你在最近的居住舱旁醒来。'
+	      : '生命维持系统已重启。你在登陆点附近醒来。', 5);
 	  }
 
 	  onBuild(item) {
@@ -46984,16 +48420,71 @@ void main() {
 	    this.ui.planetMarker(false);
 	  }
 
+	  // 场景可见性切换（对尚未初始化的子系统保持容错）
 	  planetSceneVisible(v) {
-	    this.terrain.group.visible = v;
-	    this.skyMesh.visible = v;
+	    if (this.terrain) this.terrain.group.visible = v;
+	    if (this.skyMesh) this.skyMesh.visible = v;
 	    if (this.vegetation) this.vegetation.group.visible = v;
 	    if (this.water) this.water.visible = v;
 	    if (this.motes) this.motes.visible = v;
 	    if (this.resources) this.resources.group.visible = v;
-	    this.ecosystem.group.visible = v;
-	    this.building.group.visible = v;
-	    this.dustPlume.visible = v && this.dustPlume.visible;
+	    if (this.ecosystem) this.ecosystem.group.visible = v;
+	    if (this.building) this.building.group.visible = v;
+	    if (this.dustPlume) this.dustPlume.visible = v && this.dustPlume.visible;
+	  }
+
+	  // BUG-40 / BUG-51：在恢复基地之后挑选落点——
+	  // 优先合法停机坪；否则搜索一块既满足飞船占地、又不压住基地建筑/植被的平坦地面；
+	  // 全部失败时回退到默认宜居点并给出提示（而不是直接砸进居住舱）。
+	  findLandingSpot(id) {
+	    const t = this.terrain;
+	    const sp = this.spawnPoints(id);
+	    const ROCKET_R = 2.6;      // 飞船占地半径
+	    const SAFE_R = 4.2;        // 出舱安全区
+	    const pad = this.building?.landingPadNear(sp.player.x, sp.player.z, 60);
+	    if (pad) {
+	      return { x: pad.pos.x, z: pad.pos.z, y: t.height(pad.pos.x, pad.pos.z), pad: true };
+	    }
+	    const clearAt = (x, z) => {
+	      // 与已有建筑的飞船占地 + 安全区都要空出来
+	      for (const it of this.building.items) {
+	        const def = it.def || BUILDINGS[it.type] || {};
+	        const r = (def.colliderR || def.size[0] * 0.5) + ROCKET_R;
+	        if (Math.hypot(it.pos.x - x, it.pos.z - z) < r) return false;
+	      }
+	      // 植被与树木
+	      if (this.vegetation?.blocked(x, z, ROCKET_R)) return false;
+	      if (this.vegetation?.blocked(x, z, SAFE_R * 0.5)) return false;
+	      // 地形条件
+	      if (t.slopeAt(x, z) > 0.16) return false;
+	      if (t.height(x, z) < t.waterLevel + 1.6) return false;
+	      return true;
+	    };
+	    // 从宜居点向外按同心环搜索
+	    let best = null;
+	    if (clearAt(sp.player.x, sp.player.z)) best = { x: sp.player.x, z: sp.player.z };
+	    const baseAng = Math.atan2(sp.player.x, sp.player.z);
+	    for (let ring = 1; ring <= 8 && !best; ring++) {
+	      const rad = ring * 7;
+	      for (let i = 0; i < 16 && !best; i++) {
+	        const ang = baseAng + (i / 16) * Math.PI * 2;
+	        const x = sp.player.x + Math.cos(ang) * rad;
+	        const z = sp.player.z + Math.sin(ang) * rad;
+	        if (Math.hypot(x, z) > 250) continue;
+	        if (clearAt(x, z)) best = { x, z };
+	      }
+	    }
+	    if (!best) {
+	      // 回退：沿用原来的坡度/水位搜索，但至少保证不与建筑同心
+	      let px = sp.player.x, pz = sp.player.z, guard = 0;
+	      while ((t.slopeAt(px, pz) > 0.16 || t.height(px, pz) < t.waterLevel + 1.6 ||
+	        this.building.items.some((it) => Math.hypot(it.pos.x - px, it.pos.z - pz) < 5)) && guard++ < 80) {
+	        px *= 1.06; pz *= 1.06;
+	      }
+	      best = { x: px, z: pz };
+	    }
+	    best.y = t.height(best.x, best.z);
+	    return best;
 	  }
 
 	  startLandingScene(id) {
@@ -47002,15 +48493,11 @@ void main() {
 	    this.planetSceneVisible(false);
 	    this.spaceSystem.setVisible(false);
 	    this.loadPlanetSync(id);
-	    // 降落在该星球的宜居点前方，确保在水面之上、坡度平缓
+	    // BUG-40：基地此时已恢复，落点搜索必须避开它们
 	    const t = this.terrain;
-	    const sp = this.spawnPoints(id);
-	    let px = sp.player.x, pz = sp.player.z;
-	    let guard = 0;
-	    while ((t.slopeAt(px, pz) > 0.16 || t.height(px, pz) < t.waterLevel + 1.6) && guard++ < 60) {
-	      px *= 1.06; pz *= 1.06;
-	    }
-	    const gy = t.height(px, pz);
+	    const spot = this.findLandingSpot(id);
+	    const px = spot.x, pz = spot.z;
+	    const gy = spot.y;
 	    const s = this.rocket.group;
 	    s.position.set(px, gy + 40, pz);
 	    s.quaternion.identity();
@@ -47027,6 +48514,17 @@ void main() {
 	    document.getElementById('hud').classList.remove('hidden');
 	    this.ui.setSpaceHud(false);
 	    this.audio.play('heavyLand', { vol: 0.4 });
+	    // BUG-51：停机坪着陆时船体高度抬到平台面，并播放补给反馈
+	    this.landingOnPad = !!spot.pad;
+	    if (spot.pad) {
+	      const padItem = this.building.landingPadNear(px, pz, 60);
+	      this.landingPadTop = padItem ? padItem.def.size[1] : 0.5;
+	      this.rocket.group.position.y = gy + 40 + this.landingPadTop;
+	      this.landingStartY = gy + 40 + this.landingPadTop;
+	      this.ui.toast('已锁定停机坪航线', 'ok');
+	    } else {
+	      this.landingPadTop = 0;
+	    }
 	  }
 
 	  finishLanding() {
@@ -47034,26 +48532,33 @@ void main() {
 	    this.player.inRocket = false;
 	    this.player.object.position.copy(this.player.pos);
 	    document.body.classList.remove('cinematic');
-	    // 落地后镜头位于角色身后，朝向开阔方向
-	    this.player.camYaw = this.player.yaw + Math.PI;
-	    this.player.camPitch = -0.12;
-	    this.player.camTarget.copy(this.player.pos).add(new Vector3(0, 0.5, 0));
-	    const cd = 4.8;
-	    this.camera.position.copy(this.player.camTarget).add(new Vector3(
-	      Math.sin(this.player.camYaw) * Math.cos(0.12) * cd,
-	      Math.sin(0.12) * cd,
-	      Math.cos(this.player.camYaw) * Math.cos(0.12) * cd
-	    ));
-	    this.camera.lookAt(this.player.camTarget);
+	    // BUG-45：着陆完成后引擎声必须归零（此时阶段已回到 ground）
+	    this.audio.setEngine(0, 0);
+	    if (this.landingOnPad) {
+	      // BUG-51：停机坪补给
+	      this.playerHealth = this.playerMaxHealth;
+	      this.playerShield = this.playerMaxShield;
+	      if (this.weapon) this.weapon.energy = this.weapon.maxEnergy;
+	      this.ui.toast('停机坪补给完成：生命 / 护盾 / 能量已充满', 'ok');
+	      this.audio.play('chime');
+	    }
+	    // 出舱最后一帧已使用地表控制器，保留镜头与跟随状态，避免交接时二次跳位。
+	    this.player.object.visible = true;
+	    this.cameraShake = 0;
 	    this.fovCurrent = 55;
-	    this.flight.setPhase('ground');
 	    this.setObjective();
 	    const info = PLANET_INFO[this.currentPlanetId];
 	    this.ui.dialogue('航行日志', `${info.desc}`, 9);
 	    this.audio.setPlanet(this.currentPlanetId);
 	    this.planetBases[this.currentPlanetId] = this.planetBases[this.currentPlanetId] || [];
-	    if (this.objectiveState.step === 2) {
+	    // BUG-42：任务只应在“抵达另一颗星球”时完成，飞回原星球不算
+	    const from = this.objectiveState.fromPlanet;
+	    const arrivedOther = !from || from !== this.currentPlanetId;
+	    if (this.objectiveState.step === 2 && arrivedOther) {
 	      this.objectiveState.step = 3;
+	      setTimeout(() => this.setObjective(), 600);
+	    } else if (this.objectiveState.step === 2) {
+	      this.objectiveState.fromPlanet = this.currentPlanetId;
 	      setTimeout(() => this.setObjective(), 600);
 	    }
 	    this.ui.toast('抵达 · ' + this.palette.name, 'ok');
@@ -47090,9 +48595,19 @@ void main() {
 
 	  update(dt) {
 	    const t = this.time;
+	    // 暂停中不会走到这里（loop 提前返回），所以 input.pause 只用于“进入暂停”方向，
+	    // 避免与 bindGlobalEvents 的 Escape 处理重复触发形成来回抖动。
 	    const input = this.input.consume();
+	    if (input.pause && !this.paused && this.mode !== 'menu' && this.mode !== 'intro') {
+	      this.pause();
+	      return;
+	    }
+	    this.updateScan(dt);
 	    this.updateSkyAndLights(dt);
 
+	    // BUG-33：短生命周期特效与武器状态在任何阶段都推进，
+	    // 飞行/太空中弹道不会再冻结在原地等回到地面才消失。
+	    if (this.weapon && this.mode !== 'menu') this.weapon.update(dt);
 	    if (this.mode === 'menu') {
 	      this.updateMenuScene(dt, t);
 	    } else if (this.mode === 'surface') {
@@ -47195,7 +48710,8 @@ void main() {
 	    // 舱内视角：坐在驾驶座上，视线穿过舱盖朝机头方向看
 	    const ship = this.rocket.group;
 	    const yaw = ship.rotation.y;
-	    const eyeOff = new Vector3(0, 2.35, -0.12).applyAxisAngle(new Vector3(0, 1, 0), yaw);
+	    // 舷窗外缘前方：机身是不透明闭合网格，眼点留在机身内部会看到被近裁面切开的腰环。
+	    const eyeOff = new Vector3(0, 2.35, 0.85).applyAxisAngle(new Vector3(0, 1, 0), yaw);
 	    const eye = ship.position.clone().add(eyeOff);
 	    // 看向船头前方（局部 -Z 为舱门，+Z 为机头方向）
 	    const lookOff = new Vector3(0, 2.1, 6.5).applyAxisAngle(new Vector3(0, 1, 0), yaw);
@@ -47207,9 +48723,13 @@ void main() {
 	    this.rocket.update(dt, t);
 	    this.ecosystem.update(dt, this.player);
 	    document.getElementById('cp-thrust').textContent = '待机 · 确认发射';
+	    // BUG-38：发射同样使用独立确认（E/Enter 保持为“交互”，F 为“降落/出发”）
 	    if (input.interact || input.keys.has('Enter')) {
 	      // 选择下一颗星球
 	      const others = PLANET_ORDER.filter((x) => x !== this.currentPlanetId);
+	      if (this.objectiveState.step === 2 && !this.objectiveState.fromPlanet) {
+	        this.objectiveState.fromPlanet = this.currentPlanetId;
+	      }
 	      this.flight.beginLaunch(others[0]);
 	      this.mode = 'launch';
 	      this.ui.setCockpit(false);
@@ -47222,12 +48742,8 @@ void main() {
 	    const cam = this.camera;
 	    // 镜头旋转
 	    if (input.mouseDX || input.mouseDY) P.look(input.mouseDX, input.mouseDY);
-	    // 移动端摇杆
-	    if (this.input.touch.move.x || this.input.touch.move.y) {
-	      input.forward = -this.input.touch.move.y;
-	      input.strafe = this.input.touch.move.x;
-	      input.sprint = Math.abs(this.input.touch.move.y) > 0.85;
-	    }
+	    // BUG-08：摇杆已在统一输入层折算进 forward/strafe（地面与太空共用），这里只补冲刺
+	    if (input.touchActive && Math.abs(this.input.touch.move.y) > 0.85) input.sprint = true;
 	    this.weaponJitter = 0;
 	    if (input.mode) this.weapon.switchMode();
 
@@ -47250,6 +48766,7 @@ void main() {
 	          this.ui.setBuildingMode(true, type);
 	        }
 	      });
+	      // BUG-09：R 键与触屏“旋”按钮都能旋转预览
 	      if (input.reload) this.building.rotate(1);
 	      if (input.mouseDX) this.building.rotate(0);
 	    }
@@ -47307,8 +48824,7 @@ void main() {
 	      } else this.tryBoard = false;
 	    }
 
-	    // 子对象更新
-	    this.weapon.update(dt);
+	    // 子对象更新（weapon.update 已移到通用循环，见 update()）
 	    this.rocket.update(dt, t);
 	    this.ecosystem.update(dt, P);
 	    this.resources.update(dt);
@@ -47329,7 +48845,18 @@ void main() {
 	    const rp = this.rocket.group.position;
 	    const dRocket = Math.hypot(rp.x - P.pos.x, rp.z - P.pos.z);
 	    if (dRocket < 5.2 && this.flight.phase === 'ground' && !P.inRocket) {
-	      list.push({ d: dRocket - 10, label: '登上火箭 · 前往太空', key: 'E', action: () => { P.inRocket = true; this.mode = 'board'; this.flight.beginBoard(); } });
+	      list.push({
+	        d: dRocket - 10, label: '登上火箭 · 前往太空', key: 'E',
+	        action: () => {
+	          // BUG-42：记录任务出发星球，用于判断“是否真的抵达了另一颗星球”
+	          if (this.objectiveState.step === 2 && !this.objectiveState.fromPlanet) {
+	            this.objectiveState.fromPlanet = this.currentPlanetId;
+	          }
+	          P.inRocket = true;
+	          this.mode = 'board';
+	          this.flight.beginBoard();
+	        },
+	      });
 	    }
 	    // 2. 采集资源
 	    const node = this.resources.nearest(P.pos, null, 2.8);
@@ -47337,13 +48864,47 @@ void main() {
 	      const def = RESOURCE_DEFS[node.type];
 	      list.push({ d: Math.hypot(node.pos.x - P.pos.x, node.pos.z - P.pos.z), label: `采集 ${def.name}`, key: 'E', action: () => this.harvest(node) });
 	    }
-	    // 3. 建筑
+	    // 3. 建筑（BUG-25：交互入口先检查建成与供电状态）
 	    const b = this.building.nearest(P.pos);
 	    if (b) {
-	      const act = b.type === 'lab'
-	        ? () => this.research()
-	        : () => this.ui.toast(BUILDINGS[b.type].desc, 'info');
-	      list.push({ d: b.pos.distanceTo(P.pos), label: b.type === 'lab' ? '科研站 · 分析样本' : BUILDINGS[b.type].name + ' · ' + BUILDINGS[b.type].desc, key: 'E', action: act });
+	      const def = BUILDINGS[b.type];
+	      const operational = this.building.isOperational(b);
+	      let label;
+	      let act;
+	      if (!operational && b.built < 1) {
+	        label = def.name + ' · 建造中…';
+	        act = () => this.ui.toast('还在建造中，请稍候', 'info');
+	      } else if (!operational) {
+	        label = def.name + ' · 电力不足';
+	        act = () => this.ui.toast('电力不足：先建造太阳能阵列', 'warn');
+	      } else if (b.type === 'lab') {
+	        label = '科研站 · 分析样本';
+	        act = () => this.research();
+	      } else if (b.type === 'habitat') {
+	        label = def.name + ' · ' + def.desc;
+	        act = () => {
+	          this.playerHealth = this.playerMaxHealth;
+	          this.playerShield = this.playerMaxShield;
+	          this.ui.toast('在居住舱内完成整备：生命与护盾已恢复', 'ok');
+	          this.audio.play('chime');
+	        };
+	      } else if (b.type === 'storage') {
+	        label = def.name + ` · 容量 ${this.building.totalCapacity()}`;
+	        act = () => this.ui.toast(`存储容量 ${this.building.totalCapacity()} · 资源已自动入库`, 'info');
+	      } else if (b.type === 'pad') {
+	        label = def.name + ' · 补给与起降';
+	        act = () => {
+	          this.playerHealth = this.playerMaxHealth;
+	          this.playerShield = this.playerMaxShield;
+	          this.weapon.energy = this.weapon.maxEnergy;
+	          this.ui.toast('停机坪补给完成：生命 / 护盾 / 能量已充满', 'ok');
+	          this.audio.play('chime');
+	        };
+	      } else {
+	        label = def.name + ' · ' + def.desc;
+	        act = () => this.ui.toast(def.desc, 'info');
+	      }
+	      list.push({ d: b.pos.distanceTo(P.pos), label, key: 'E', action: act });
 	    }
 	    list.sort((a, b2) => a.d - b2.d);
 	    return list[0] || null;
@@ -47363,8 +48924,12 @@ void main() {
 	  }
 
 	  harvest(node) {
-	    const res = this.resources.harvest(node);
-	    if (!res) return;
+	    // BUG-37：执行采集时再校验一次三维距离/遮挡，避免“隔墙采集”
+	    const res = this.resources.harvest(node, this.player.pos);
+	    if (!res) {
+	      this.ui.toast('目标不可达', 'warn');
+	      return;
+	    }
 	    this.inventory[res.type] = (this.inventory[res.type] || 0) + res.amount;
 	    const def = RESOURCE_DEFS[res.type];
 	    this.audio.play('pickup');
@@ -47397,32 +48962,83 @@ void main() {
 	    requestAnimationFrame(tick);
 	  }
 
+	  // BUG-07：武器与护盾是两条独立升级线，互不阻塞、不可重复消耗
 	  research() {
-	    if (this.unlocked.weapon >= 2) { this.ui.toast('当前已有全部已解锁模块', 'info'); return; }
-	    if (this.inventory.sample >= 2) {
-	      this.inventory.sample -= 2;
-	      this.unlocked.weapon = 2;
-	      this.weapon.damage = 26;
-	      document.querySelector('.wp-lv').textContent = 'MK.II';
-	      this.ui.toast('武器升级：MK.II · 脉冲模式伤害提升', 'ok');
-	      this.audio.play('chime');
-	    } else if ((this.inventory.bio || 0) >= 3) {
-	      this.inventory.bio -= 3;
-	      this.unlocked.shield = 1;
-	      this.playerMaxShield = 140;
-	      this.playerShield = 140;
-	      this.ui.toast('护盾扩容完成 · 护盾上限 +40', 'ok');
-	      this.audio.play('chime');
-	    } else {
-	      this.ui.toast('样本不足：击杀掠食者获得样本，或采集生物质', 'warn');
-	      this.audio.play('uiError');
+	    // BUG-25：科研交互必须确认科研站已建成且供电，而不是只看耗电账面
+	    const lab = this.building.items.find((it) => it.type === 'lab' &&
+	      Math.hypot(it.pos.x - this.player.pos.x, it.pos.z - this.player.pos.z) <= 4.5);
+	    if (lab) {
+	      if (lab.built < 1) { this.ui.toast('科研站还在建造中', 'info'); return; }
+	      if (!this.building.isOperational(lab)) { this.ui.toast('科研站电力不足，无法分析样本', 'warn'); this.audio.play('uiError'); return; }
 	    }
+	    const weaponDone = (this.unlocked.weapon || 1) >= 2;
+	    const shieldDone = (this.unlocked.shield || 0) >= 1;
+	    const canWeapon = !weaponDone && (this.inventory.sample || 0) >= 2;
+	    const canShield = !shieldDone && (this.inventory.bio || 0) >= 3;
+	    if (canWeapon) {
+	      this.inventory.sample -= 2;
+	      this.applyWeaponUpgrade();
+	      this.audio.play('chime');
+	      return;
+	    }
+	    if (canShield) {
+	      this.inventory.bio -= 3;
+	      this.applyShieldUpgrade();
+	      this.audio.play('chime');
+	      return;
+	    }
+	    if (weaponDone && shieldDone) {
+	      this.ui.toast('当前已有全部已解锁模块', 'info');
+	      return;
+	    }
+	    // 仍有可升级项但材料不足：给出明确指引
+	    const need = [];
+	    if (!weaponDone) need.push(`样本 2（现有 ${this.inventory.sample || 0}）`);
+	    if (!shieldDone) need.push(`生物质 3（现有 ${this.inventory.bio || 0}）`);
+	    this.ui.toast(`材料不足：还需 ${need.join(' 或 ')}`, 'warn');
+	    this.audio.play('uiError');
 	  }
 
+	  // 武器 MK.II：实例伤害与 HUD 标识一起改，供读档复用（BUG-04 配套）
+	  applyWeaponUpgrade() {
+	    this.unlocked.weapon = 2;
+	    if (this.weapon) this.weapon.damage = 26;
+	    const lv = document.querySelector('.wp-lv');
+	    if (lv) lv.textContent = 'MK.II';
+	    this.ui.toast('武器升级：MK.II · 伤害 18 → 26', 'ok');
+	  }
+
+	  // 护盾扩容：上限与当前值同步，且只生效一次
+	  applyShieldUpgrade() {
+	    this.unlocked.shield = 1;
+	    this.playerMaxShield = 140;
+	    this.playerShield = 140;
+	    this.ui.toast('护盾扩容完成 · 护盾上限 +40', 'ok');
+	  }
+
+	  // BUG-10：扫描不再是纯提示音，而是限时/限半径的真实探测
 	  scan() {
+	    if ((this.scanCooldown || 0) > 0) {
+	      this.ui.toast(`扫描仪冷却中 ${Math.ceil(this.scanCooldown)}s`, 'warn');
+	      return;
+	    }
 	    this.audio.play('scan');
 	    this.scanPulse = 1;
-	    this.ui.toast('环境扫描完成 · 资源与生物已标记在小地图', 'info');
+	    this.scanActiveT = SCAN_DURATION;
+	    this.scanCooldown = SCAN_COOLDOWN;
+	    this.scanRadius = SCAN_RADIUS;
+	    this.scanOrigin = this.player.pos.clone();
+	    const n = this.resources.nodes.filter((nd) => !nd.harvested &&
+	      Math.hypot(nd.pos.x - this.scanOrigin.x, nd.pos.z - this.scanOrigin.z) <= SCAN_RADIUS).length;
+	    const c = this.ecosystem.list.filter((cr) => !cr.dead &&
+	      Math.hypot(cr.pos.x - this.scanOrigin.x, cr.pos.z - this.scanOrigin.z) <= SCAN_RADIUS).length;
+	    this.ui.toast(`环境扫描完成 · 标记 ${n} 处资源 / ${c} 个生物（${SCAN_DURATION}s）`, 'ok');
+	  }
+
+	  updateScan(dt) {
+	    if (this.scanActiveT > 0) this.scanActiveT = Math.max(0, this.scanActiveT - dt);
+	    if (this.scanCooldown > 0) this.scanCooldown = Math.max(0, this.scanCooldown - dt);
+	    if (this.scanPulse > 0) this.scanPulse = Math.max(0, this.scanPulse - dt * 0.8);
 	  }
 
 	  updateFade() {
@@ -47431,17 +49047,24 @@ void main() {
 	}
 
 	// ================= 启动 =================
-	window.addEventListener('error', (e) => {
-	  const box = document.getElementById('error-box');
-	  if (!box) return;
-	  box.classList.remove('hidden');
-	  box.textContent = '错误：' + e.message + '\n' + (e.error && e.error.stack || '');
-	});
+	if (typeof window !== 'undefined') {
+	  window.addEventListener('error', (e) => {
+	    const box = document.getElementById('error-box');
+	    if (!box) return;
+	    box.classList.remove('hidden');
+	    box.textContent = '错误：' + e.message + '\n' + (e.error && e.error.stack || '');
+	  });
+	}
 
-	const canvas = document.getElementById('scene');
-	const game = new Game(canvas);
-	window.__LC__ = game;
-	game.boot();
+	// 浏览器环境才自动启动；Node 下可安全 import 本模块做单元验证。
+	if (typeof document !== 'undefined' && typeof HTMLCanvasElement !== 'undefined') {
+	  const canvas = document.getElementById('scene');
+	  if (canvas && canvas.getContext) {
+	    const game = new Game(canvas);
+	    window.__LC__ = game;
+	    game.boot();
+	  }
+	}
 
 	exports.Game = Game;
 

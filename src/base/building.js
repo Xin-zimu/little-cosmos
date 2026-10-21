@@ -3,30 +3,41 @@ import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { clamp, damp } from '../core/noise.js';
 
+// 每个建筑都声明：
+//   size      占地 [宽, 高, 深]
+//   solid     是否阻挡角色（可进入的居住舱留出登舱通道）
+//   colliderR 角色/镜头阻挡半径（米）
+//   topY      相对地面的遮挡高度，供镜头体积判定使用
 export const BUILDINGS = {
   habitat: {
     name: '居住舱', en: 'HABITAT', desc: '可进入的小型生活舱，恢复护盾并作为重生点。',
     cost: { ferrite: 9, silica: 3 }, power: 0, produce: { energyUse: 2 }, size: [3.2, 2.4, 3.2], icon: '⌂',
+    solid: true, colliderR: 1.45, topY: 2.7, respawn: true,
   },
   solar: {
     name: '太阳能阵列', en: 'SOLAR ARRAY', desc: '白天持续供电，夜晚依靠储能。',
     cost: { ferrite: 5, silica: 6 }, power: 6, size: [4.2, 2.2, 4.2], icon: '☀',
+    solid: true, colliderR: 1.5, topY: 2.4,
   },
   miner: {
     name: '采矿无人机', en: 'MINER DRONE', desc: '缓慢自动开采附近的矿脉。',
     cost: { ferrite: 8, silica: 2 }, power: 0, produce: { ferrite: 1 }, energyUse: 3, size: [2.6, 2.2, 2.6], icon: '⛏',
+    solid: true, colliderR: 0.9, topY: 1.8,
   },
   storage: {
     name: '资源存储', en: 'STORAGE', desc: '提升资源上限并自动整理入库。',
     cost: { ferrite: 8 }, power: 0, size: [2.4, 1.8, 2.4], icon: '▤',
+    solid: true, colliderR: 1.0, topY: 1.7, capacity: 60,
   },
   lab: {
     name: '科研站', en: 'RESEARCH NODE', desc: '分析生物样本，解锁装备升级。',
     cost: { ferrite: 10, silica: 10, bio: 6 }, power: 0, energyUse: 4, size: [3.0, 3.6, 3.0], icon: '◉',
+    solid: true, colliderR: 1.1, topY: 3.4,
   },
   pad: {
     name: '停机坪', en: 'LANDING PAD', desc: '为飞船提供起降平台与补给。',
     cost: { ferrite: 16, silica: 6 }, power: 0, size: [5.0, 0.5, 5.0], icon: '◎',
+    solid: false, colliderR: 0, topY: 0.3, landing: true,
   },
 };
 export const BUILD_ORDER = ['habitat', 'solar', 'miner', 'storage', 'lab', 'pad'];
@@ -72,6 +83,10 @@ export class BuildingSystem {
     this.buildHologram();
     this.power = 0;
     this.capacity = 0;
+    // 供电基线（非矿机负载），供 isOperational 在首帧 update 之前查询
+    this.gen = 0;
+    this.baseUse = 0;
+    this.use = 0;
   }
 
   makeRing() {
@@ -167,7 +182,10 @@ export class BuildingSystem {
           const foot = add(new THREE.CylinderGeometry(0.11, 0.15, 0.2, 8), mats?.metal);
           foot.position.set(Math.cos(a) * 1.3, -1.14, Math.sin(a) * 1.3);
         }
-        g.position.y = 1.24;
+        // BUG-22：原点修正放进独立子节点 pivot，而不是整个组的 position.y。
+        // 这样 confirm/restore 覆盖根位置时不会把模型整体沉进地面。
+        // （由 makeGeometryFor 末尾统一处理，这里只记录偏移）
+        g.userData.groundOffset = 1.24;
         // 入户光带（交互点）
         const entry = add(new THREE.TorusGeometry(0.62, 0.026, 6, 28), mats?.glow);
         entry.rotation.x = Math.PI / 2; entry.position.y = -0.96; entry.position.z = 1.15;
@@ -246,7 +264,22 @@ export class BuildingSystem {
       }
     }
     if (ghost) {
-      g.traverse((o) => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
+      g.traverse((o) => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; o.userData.noBlock = true; } });
+    } else {
+      // BUG-29：实心建筑是弹道遮挡体（停机坪是地面平台，不挡枪线）
+      if (BUILDINGS[type]?.solid !== false) {
+        g.traverse((o) => { if (o.isMesh) o.userData.occluder = true; });
+      }
+    }
+    // BUG-22：把模型原点修正封进子节点。根节点的位置始终等于“地面坐标”，
+    // 预览、落成、读档三条路径因此共用同一套变换。
+    const offset = g.userData.groundOffset || 0;
+    if (offset) {
+      const pivot = new THREE.Group();
+      pivot.name = 'pivot';
+      pivot.position.y = offset;
+      while (g.children.length) pivot.add(g.children[0]);
+      g.add(pivot);
     }
     return g;
   }
@@ -255,6 +288,12 @@ export class BuildingSystem {
     if (this.ghostType === type) { this.cancelPlacing(); return; }
     this.ghostType = type;
     this.rot = 0;
+    // BUG-21：切换类型立即失效上一次的预览结果，
+    // 避免“先预览可负担的建筑、再切类型、抢在重算前确认”绕过校验。
+    this.valid = false;
+    this.blockReason = '正在校验…';
+    this.ghostPos = null;
+    this.validatedType = null;
     this.holo.children.forEach((h) => { h.visible = h.userData.type === type; });
     this.ringGhost.visible = true;
     this.game.audio?.play('uiTick');
@@ -262,6 +301,9 @@ export class BuildingSystem {
 
   cancelPlacing() {
     this.ghostType = null;
+    this.valid = false;
+    this.ghostPos = null;
+    this.validatedType = null;
     this.holo && this.holo.children.forEach((h) => (h.visible = false));
     this.ringGhost.visible = false;
   }
@@ -278,18 +320,55 @@ export class BuildingSystem {
     return true;
   }
 
-  // 判断某个位置是否可以放置（不含"是否买得起"）
-  _spotOk(x, z, def) {
+  // BUG-26：统一的放置校验。预览与确认共用同一函数，且按旋转后的占地轮廓采样：
+  // 地形高差、水位、植被碰撞体、已有建筑、火箭都要在整块占地内检查，而不是只看中心点。
+  // 返回值: { ok, reason, y }
+  validate(x, z, type, rot) {
     const t = this.game.terrain;
+    const def = BUILDINGS[type];
+    if (!def) return { ok: false, reason: '未知建筑' };
     const y = t.height(x, z);
-    if (t.slopeAt(x, z) >= 0.45) return false;
-    if (t.waterLevel !== undefined && y < t.waterLevel + 0.6) return false;
+    if (t.slopeAt(x, z) >= 0.45) return { ok: false, reason: '地面太陡', y };
+    if (t.waterLevel !== undefined && y < t.waterLevel + 0.6) return { ok: false, reason: '不能建在水面上', y };
     const rk = this.game.rocket.group.position;
-    if (Math.hypot(rk.x - x, rk.z - z) < 3.2) return false;
-    for (const it of this.items) {
-      if (Math.hypot(it.pos.x - x, it.pos.z - z) < (it.def.size[0] + def.size[0]) * 0.5) return false;
+    if (Math.hypot(rk.x - x, rk.z - z) < 3.2) return { ok: false, reason: '离火箭太近', y };
+    // 占地轮廓采样：旋转后的矩形
+    const halfW = def.size[0] * 0.5, halfD = def.size[2] * 0.5;
+    const cos = Math.cos(rot || 0), sin = Math.sin(rot || 0);
+    const samplePts = [];
+    const N = 3;
+    for (let i = 0; i < N; i++) {
+      for (let j = 0; j < N; j++) {
+        const lx = (i / (N - 1) - 0.5) * 2 * halfW;
+        const lz = (j / (N - 1) - 0.5) * 2 * halfD;
+        samplePts.push({ x: x + lx * cos + lz * sin, z: z - lx * sin + lz * cos });
+      }
     }
-    return true;
+    // 采样点上的坡度与水位（大型建筑跨过陡坡/水面时不应显示可建）
+    for (const p of samplePts) {
+      const py = t.height(p.x, p.z);
+      if (Math.abs(py - y) > Math.max(0.9, def.size[1] * 0.5)) return { ok: false, reason: '地面起伏太大', y };
+      if (t.slopeAt(p.x, p.z) >= 0.55) return { ok: false, reason: '地面太陡', y };
+      if (t.waterLevel !== undefined && py < t.waterLevel + 0.35) return { ok: false, reason: '不能建在水面上', y };
+      const veg = this.game.vegetation?.blocked(p.x, p.z, 0);
+      if (veg) return { ok: false, reason: '有树木或岩石阻挡', y };
+    }
+    // 停机坪不阻挡角色，其余建筑按圆形占地判定重叠
+    for (const it of this.items) {
+      const otherDef = it.def || BUILDINGS[it.type];
+      const rSelf = (def.colliderR || def.size[0] * 0.5) + 0.35;
+      const rOther = (otherDef.colliderR || otherDef.size[0] * 0.5) + 0.35;
+      if (Math.hypot(it.pos.x - x, it.pos.z - z) < Math.max(rSelf + rOther, (otherDef.size[0] + def.size[0]) * 0.5)) {
+        return { ok: false, reason: '与已有建筑重叠', y };
+      }
+    }
+    return { ok: true, reason: '', y };
+  }
+
+  _spotOk(x, z, def) {
+    const type = this.ghostType || Object.keys(BUILDINGS).find((k) => BUILDINGS[k] === def);
+    if (!type) return false;
+    return this.validate(x, z, type, this.rot).ok;
   }
 
   updateGhost(camera, player, dt) {
@@ -329,38 +408,57 @@ export class BuildingSystem {
     this.holo.rotation.y = this.rot;
     this.ringGhost.position.set(px, y + 0.05, pz);
     this.ringGhost.material.color.set(this.game.palette.accent);
-    // 有效性
-    const slope = this.game.terrain.slopeAt(px, pz);
-    const blocked = this.items.some((it) => Math.hypot(it.pos.x - px, it.pos.z - pz) < (it.def.size[0] + def.size[0]) * 0.5);
-    const rocketPos = this.game.rocket.group.position;
-    const nearRocket = Math.hypot(rocketPos.x - px, rocketPos.z - pz) < 3.2;
-    const wet = this.game.terrain.waterLevel !== undefined && y < this.game.terrain.waterLevel + 0.4;
+    // BUG-21 / BUG-26：预览与确认共用同一个校验函数
+    const spot = this.validate(px, pz, this.ghostType, this.rot);
     const affordable = this.canAfford(this.ghostType);
-    this.blockReason = !affordable ? '资源不足' : nearRocket ? '离火箭太近' : slope >= 0.45 ? '地面太陡' : wet ? '不能建在水面上' : blocked ? '与已有建筑重叠' : '';
+    this.blockReason = !affordable ? '资源不足' : (spot.ok ? '' : spot.reason);
     this.valid = !this.blockReason;
+    this.validatedType = this.ghostType;
+    this.validatedRot = this.rot;
+    this.validatedPos = new THREE.Vector3(px, y, pz);
     this.holoMat.uniforms.uOk.value = this.valid ? 1 : 0;
     this.holoMat.uniforms.uTime.value += dt;
     this.holoMat.uniforms.uColor.value.set(this.game.palette.accent);
     this.ghostPos = new THREE.Vector3(px, y, pz);
   }
 
+  // BUG-21：确认时用“当前类型 + 当前位置 + 当前资源”重新做原子校验，
+  // 全部通过后才扣费建造。缓存的预览结果不再被信任。
   confirm() {
     if (!this.ghostType) return null;
-    if (!this.valid) {
-      this.game.ui?.toast(this.canAfford(this.ghostType) ? '此处无法建造' : '资源不足', 'warn');
+    const type = this.ghostType;
+    const def = BUILDINGS[type];
+    const pos = this.ghostPos;
+    if (!pos) {
+      this.game.ui?.toast('请先选择放置位置', 'warn');
       this.game.audio?.play('uiError');
       return null;
     }
-    const type = this.ghostType;
-    const def = BUILDINGS[type];
+    // 原子校验：类型、旋转、位置、资源全部按当前值重算
+    const spot = this.validate(pos.x, pos.z, type, this.rot);
+    if (!spot.ok) {
+      this.valid = false;
+      this.blockReason = spot.reason;
+      this.game.ui?.toast(spot.reason || '此处无法建造', 'warn');
+      this.game.audio?.play('uiError');
+      return null;
+    }
+    if (!this.canAfford(type)) {
+      this.valid = false;
+      this.blockReason = '资源不足';
+      this.game.ui?.toast('资源不足', 'warn');
+      this.game.audio?.play('uiError');
+      return null;
+    }
+    const y = this.game.terrain.height(pos.x, pos.z);
     for (const k in def.cost) this.game.inventory[k] -= def.cost[k];
     const mesh = this.makeGeometryFor(type, false);
-    mesh.position.copy(this.ghostPos);
+    mesh.position.set(pos.x, y, pos.z);
     mesh.rotation.y = this.rot;
     this.group.add(mesh);
     // 建造动画：从下方升起 + 透明度
     mesh.scale.set(1, 0.01, 1);
-    const item = { type, def, mesh, pos: this.ghostPos.clone(), built: 0, power: 0 };
+    const item = { type, def, mesh, pos: new THREE.Vector3(pos.x, y, pos.z), rot: this.rot, built: 0, power: 0, active: false, produceTimer: 0 };
     this.items.push(item);
     this.game.audio?.play('build');
     this.game.ui?.toast(`${def.name} 建造完成`, 'ok');
@@ -393,6 +491,16 @@ export class BuildingSystem {
     return best;
   }
 
+  // 太阳能朝向系数：由太阳方向与面板法线的夹角决定，夜间降至微光底值
+  solarEfficiency() {
+    const pal = this.game.palette;
+    const sd = this.game.sunDirVec || (pal && pal.sunDir ? new THREE.Vector3(...pal.sunDir).normalize() : new THREE.Vector3(0.5, 0.5, 0));
+    const elev = clamp(sd.y, 0, 1);
+    const base = 0.35 + clamp(sd.y, -1, 1) * 0.45 + elev * 0.2;
+    const night = this.game.isNight ? 0.25 : 1;
+    return clamp(base * night, 0, 1);
+  }
+
   update(dt, player) {
     // 建造升起动画
     for (const it of this.items) {
@@ -403,56 +511,224 @@ export class BuildingSystem {
       }
       if (it.mesh.userData.spinner) it.mesh.userData.spinner.rotation.z += dt * 1.5;
     }
-    // 能量：太阳能阵列 + 科研/采集消耗
-    let gen = 0, use = 0;
-    const solarFacing = this.solarFactor;
+    // ---- 电力（BUG-23）：先算总发电与非矿机用电，再把剩下的配额分给矿机 ----
+    const solarFacing = this.solarEfficiency();
+    let gen = 0, baseUse = 0;
     for (const it of this.items) {
-      if (it.type === 'solar') gen += 4 * (0.4 + solarFacing * 0.6) * it.built;
-      if (it.type === 'habitat' || it.type === 'lab') use += 2;
+      const def = it.def || BUILDINGS[it.type] || {};
+      if (it.type === 'solar') {
+        // 面板在建造动画期间逐步并网
+        gen += 4 * (0.4 + solarFacing * 0.6) * clamp(it.built, 0, 1);
+      } else if (it.type !== 'miner') {
+        baseUse += def.energyUse ?? def.produce?.energyUse ?? 0;
+      }
     }
+    if (!Number.isFinite(gen)) gen = 0;
+    if (!Number.isFinite(baseUse)) baseUse = 0;
     this.gen = gen;
-    this.use = use;
-    this.power = clamp(gen - use, -20, 60);
-    // 有电时工作
-    if (this.power > 0) {
-      this.produceTimer = (this.produceTimer || 0) + dt;
-      if (this.produceTimer > 6) {
-        this.produceTimer = 0;
-        for (const it of this.items) {
-          if (it.type === 'miner' && it.built >= 1) {
-            this.game.inventory.ferrite += 1;
-            this.game.ui?.floatingGain('ferrite', 1);
-          }
+    this.miners = this.items.filter((it) => it.type === 'miner' && it.built >= 1);
+    const minerUnit = BUILDINGS.miner.energyUse || 3;
+    const minersDemand = this.miners.length * minerUnit;
+    // 矿机可用配额 = 发电 - 其他用电，不再重复扣一次矿机需求
+    const powerForMiners = Math.max(0, gen - baseUse);
+    const minersActive = minersDemand > 0 ? clamp(powerForMiners / minersDemand, 0, 1) : 0;
+    this.baseUse = baseUse;
+    this.use = baseUse + minersDemand * minersActive;
+    this.power = clamp(gen - this.use, -20, 60);
+    // BUG-25：每个建筑的运行状态（建成 / 供电）统一在这里维护，交互入口直接查询。
+    // 供电优先级：先用发电满足非矿机负载，剩下的才分给矿机（与上面配额分配一致）。
+    const baseSupplied = gen + 1e-6 >= baseUse;
+    for (const it of this.items) {
+      const def = it.def || BUILDINGS[it.type] || {};
+      const need = def.energyUse ?? def.produce?.energyUse ?? 0;
+      it.ready = it.built >= 1;
+      if (need <= 0) it.powered = it.ready;
+      else if (it.type === 'miner') it.powered = it.ready && minersActive > 0;
+      else it.powered = it.ready && baseSupplied;
+      it.active = it.ready && it.powered;
+    }
+    // BUG-28：生产进度归属到每台矿机，而不是一个全局计时器
+    if (minersActive > 0) {
+      for (const it of this.miners) {
+        it.produceTimer = (it.produceTimer || 0) + dt * minersActive;
+        if (it.produceTimer > 6) {
+          it.produceTimer = 0;
+          const amount = it.def.produce?.ferrite ?? 1;
+          this.game.inventory.ferrite = (this.game.inventory.ferrite || 0) + amount;
+          this.game.ui?.toast(`+${amount} 铁素矿 · 无人机自动开采`, 'ok');
         }
       }
     }
-    // 居住舱恢复
+    // 兼容旧字段：总进度仅供 HUD/调试参考，不再参与结算
+    this.produceTimer = this.miners.reduce((m, it) => Math.max(m, it.produceTimer || 0), 0);
+    // ---- 居住舱（BUG-24 / BUG-25 / BUG-49）：范围内最近的、已建成的、有电的居住舱 ----
+    this.habitatInRange = null;
     if (player && player.inRocket === false) {
-      const h = this.items.find((it) => it.type === 'habitat' && it.built >= 1);
-      if (h && Math.hypot(h.pos.x - player.pos.x, h.pos.z - player.pos.z) < 3.2) {
+      let best = null, bd = Infinity;
+      for (const it of this.items) {
+        if (it.type !== 'habitat' || it.built < 1 || !it.active) continue;
+        const d = Math.hypot(it.pos.x - player.pos.x, it.pos.z - player.pos.z);
+        if (d < 3.6 + (it.def.colliderR || 1.4) && d < bd) { bd = d; best = it; }
+      }
+      this.habitatInRange = best;
+      if (best) {
         this.game.playerShield = Math.min(this.game.playerMaxShield, this.game.playerShield + dt * 9);
         this.game.playerHealth = Math.min(this.game.playerMaxHealth, this.game.playerHealth + dt * 3);
       }
     }
   }
 
+  // BUG-25：交互入口统一查询建筑是否可用
+  isOperational(item) {
+    if (!item) return false;
+    if (item.built < 1) return false;
+    const def = item.def || BUILDINGS[item.type] || {};
+    const need = def.energyUse ?? def.produce?.energyUse ?? 0;
+    if (need <= 0) return true;
+    // 与 update() 中的供电判定保持一致
+    return item.powered !== false && this.gen + 1e-6 >= this.baseUse;
+  }
+
+  // BUG-49：可作为重生点的居住舱（已建成），优先最近玩家的一座。
+  // 居住舱不做供电硬门槛：否则断电时玩家没有可用的重生点。
+  respawnHabitat(pos) {
+    let best = null, bd = Infinity;
+    for (const it of this.items) {
+      if (it.type !== 'habitat' || !(it.built >= 1)) continue;
+      const d = pos ? Math.hypot(it.pos.x - pos.x, it.pos.z - pos.z) : 0;
+      if (d < bd) { bd = d; best = it; }
+    }
+    return best;
+  }
+
+  // BUG-50：存储容量总和
+  totalCapacity() {
+    let cap = 0;
+    for (const it of this.items) {
+      const def = it.def || BUILDINGS[it.type] || {};
+      if (it.type === 'storage' && it.built >= 1 && this.isOperational(it)) cap += def.capacity || 0;
+    }
+    return cap;
+  }
+
+  // BUG-51：可作为着陆平台的停机坪
+  landingPadNear(x, z, maxDist = 40) {
+    let best = null, bd = maxDist;
+    for (const it of this.items) {
+      if (it.type !== 'pad' || it.built < 1 || !this.isOperational(it)) continue;
+      const d = Math.hypot(it.pos.x - x, it.pos.z - z);
+      if (d < bd) { bd = d; best = it; }
+    }
+    return best;
+  }
+
+  // BUG-17：角色的水平阻挡（圆形碰撞体）
+  blockedAt(x, z, pad = 0) {
+    for (const it of this.items) {
+      const def = it.def || BUILDINGS[it.type] || {};
+      if (def.solid === false) continue;
+      const r = def.colliderR || def.size[0] * 0.5;
+      const dx = it.pos.x - x, dz = it.pos.z - z;
+      if (dx * dx + dz * dz < (r + pad) * (r + pad)) return it;
+    }
+    return null;
+  }
+
+  // BUG-18：镜头体积遮挡（heightAboveGround 为相机相对地面高度）
+  cameraBlockedAt(x, z, pad = 0, heightAboveGround = 0) {
+    for (const it of this.items) {
+      const def = it.def || BUILDINGS[it.type] || {};
+      if (def.solid === false) continue;
+      const top = def.topY || def.size[1] || 2;
+      if (heightAboveGround > top + 0.3) continue;
+      const r = (def.colliderR || def.size[0] * 0.5) * 0.9;
+      const dx = it.pos.x - x, dz = it.pos.z - z;
+      if (dx * dx + dz * dz < (r + pad) * (r + pad)) return it;
+    }
+    return null;
+  }
+
+  // BUG-27：先按各自交互半径筛选，再独立比较距离选最近项
+  nearest(pos) {
+    let best = null, bd = Infinity;
+    for (const it of this.items) {
+      const def = it.def || BUILDINGS[it.type] || {};
+      const reach = 3.4 + Math.max(0, (def.colliderR || def.size[0] * 0.5) - 1.0);
+      const d = it.pos.distanceTo(pos);
+      if (d <= reach && d < bd) { bd = d; best = it; }
+    }
+    return best;
+  }
+
   serialize() {
-    return this.items.map((it) => ({ type: it.type, x: it.pos.x, z: it.pos.z, rot: it.mesh.rotation.y }));
+    return this.items.map((it) => ({
+      type: it.type, x: it.pos.x, z: it.pos.z, rot: it.mesh.rotation.y,
+      built: it.built, produceTimer: it.produceTimer || 0,
+    }));
   }
 
   restore(list) {
     for (const b of list) {
+      if (!b || !BUILDINGS[b.type]) continue;
       const y = this.game.terrain.height(b.x, b.z);
       const mesh = this.makeGeometryFor(b.type, false);
+      // BUG-22：根节点始终等于地面坐标，模型原点修正已在 pivot 子节点里
       mesh.position.set(b.x, y, b.z);
       mesh.rotation.y = b.rot || 0;
       this.group.add(mesh);
-      this.items.push({ type: b.type, def: BUILDINGS[b.type], mesh, pos: new THREE.Vector3(b.x, y, b.z), built: 1, power: 0 });
+      this.items.push({
+        type: b.type, def: BUILDINGS[b.type], mesh, pos: new THREE.Vector3(b.x, y, b.z),
+        rot: b.rot || 0, built: b.built ?? 1, power: 0, active: true,
+        produceTimer: b.produceTimer || 0,
+      });
     }
   }
 
+  // BUG-28：切星球时保存并恢复每座矿机的生产进度（由 game 记录 planetStates）
+  snapshotProduction() {
+    const out = [];
+    for (const it of this.items) out.push({ type: it.type, x: it.pos.x, z: it.pos.z, produceTimer: it.produceTimer || 0 });
+    return out;
+  }
+
+  applyProduction(snapshot) {
+    if (!Array.isArray(snapshot)) return;
+    for (const s of snapshot) {
+      for (const it of this.items) {
+        if (it.pos.x === s.x && it.pos.z === s.z) { it.produceTimer = s.produceTimer || 0; break; }
+      }
+    }
+  }
+
+  // BUG-43：完整释放几何、材质与纹理
   clear() {
-    for (const it of this.items) this.group.remove(it.mesh);
+    for (const it of this.items) {
+      this.group.remove(it.mesh);
+      disposeObject(it.mesh);
+    }
     this.items = [];
+    this.miners = [];
+    this.habitatInRange = null;
+    this.gen = 0; this.use = 0; this.power = 0;
+    this.miningTimer = 0;
+  }
+}
+
+// BUG-43：按所有权释放几何 / 材质 / 纹理（共享材质通过 Set 去重）
+export function disposeObject(root) {
+  const mats = new Set();
+  root.traverse((o) => {
+    if (o.geometry) o.geometry.dispose();
+    if (o.material) {
+      if (Array.isArray(o.material)) o.material.forEach((m) => mats.add(m));
+      else mats.add(o.material);
+    }
+  });
+  for (const m of mats) {
+    for (const key of Object.keys(m)) {
+      const v = m[key];
+      if (v && v.isTexture) v.dispose();
+    }
+    m.dispose();
   }
 }

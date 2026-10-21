@@ -1,6 +1,6 @@
 // 外星生物：程序化造型 + 骨骼式步态 + 分层 AI（游荡/进食/好奇/警戒/追击/攻击/受击/死亡）
 import * as THREE from 'three';
-import { createNoise, clamp, damp } from '../core/noise.js';
+import { createNoise, clamp, damp, mulberry32 } from '../core/noise.js';
 
 const TENTACLE_VERT = /* glsl */ `
 uniform float uTime, uLen;
@@ -197,6 +197,19 @@ function buildQuadruped(def) {
     const sp = new THREE.Mesh(new THREE.ConeGeometry(0.035 * def.body[0] + 0.012, 0.16 * (1 - Math.abs(t - 0.5)), 5), accentMat);
     sp.position.set(0, def.body[1] * (0.85 + Math.sin(t * Math.PI) * 0.15), (t - 0.5) * def.body[2] * 1.55);
     body.add(sp);
+    // BUG-30：背脊同样是弱点（设计文案：“弱点：背脊棘刺”）
+    if (i >= 2 && i <= 4) {
+      const weak = new THREE.Mesh(
+        new THREE.SphereGeometry(1, 8, 6),
+        new THREE.MeshBasicMaterial({ visible: false, transparent: true, opacity: 0 })
+      );
+      weak.scale.set(def.body[0] * 0.45, 0.14, def.body[2] * 0.16);
+      weak.position.copy(sp.position);
+      weak.position.y += 0.05;
+      weak.userData.weak = true;
+      weak.userData.weakPart = 'spine';
+      body.add(weak);
+    }
   }
 
   // 颈与头
@@ -221,6 +234,16 @@ function buildQuadruped(def) {
     eye.position.set(sgn * def.head[0] * 0.62, def.head[1] * 0.35, def.head[2] * 0.60);
     head.add(eye);
   }
+  // BUG-30：头部命中体显式标记为弱点（暴击区）。它是一个略大于颅骨的不可见球体，
+  // 射线命中它即判定为弱点命中，不再依赖从未被赋值的 userData.weakY。
+  const headWeak = new THREE.Mesh(
+    new THREE.SphereGeometry(1, 12, 10),
+    new THREE.MeshBasicMaterial({ visible: false, transparent: true, opacity: 0 })
+  );
+  headWeak.scale.set(def.head[0] * 1.15, def.head[1] * 1.15, def.head[2] * 1.2);
+  headWeak.userData.weak = true;
+  headWeak.userData.weakPart = 'head';
+  head.add(headWeak);
   // 吻部
   const snout = new THREE.Mesh(new THREE.SphereGeometry(1, 12, 10), bellyMat);
   snout.scale.set(def.head[0] * 0.55, def.head[1] * 0.45, def.head[2] * 0.5);
@@ -272,7 +295,19 @@ function buildQuadruped(def) {
     legs.push({ hip, knee, sx, sz });
   }
 
-  g.userData.rig = { body, neck, head, tail, legs, bodyY, accentMat, eyeMat, mat };
+  // 核心命中体：躯干用的是低多边形球，射线正好穿过球体极轴时（three 的退化三角形）
+  // 可能漏检。这里用一个不可见的包围盒保证任意角度都能命中。
+  // 注意：物体本身必须 visible=true（射线集合会沿父链检查 visible），
+  // 只把材质设为不可见，这样它不参与渲染但始终能被射线命中。
+  const core = new THREE.Mesh(
+    new THREE.BoxGeometry(1.6, 1.3, def.body[2] * 2.1),
+    new THREE.MeshBasicMaterial({ visible: false })
+  );
+  core.position.y = bodyY;
+  core.userData.hitCore = true;
+  g.add(core);
+
+  g.userData.rig = { body, neck, head, tail, legs, bodyY, accentMat, eyeMat, mat, core };
   return g;
 }
 
@@ -346,7 +381,9 @@ export class Creature {
       if (o.isMesh) {
         o.userData.hittable = true;
         o.userData.creature = this;
-        o.castShadow = true;
+        // 命中核心本身不投影，也不参与可见性剔除（visible=false 时射线仍然有效，
+        // 因为 isVisibleInScene 只沿父链检查）
+        if (!o.userData.hitCore) o.castShadow = true;
       }
     });
     this.pos = position.clone();
@@ -395,6 +432,8 @@ export class Creature {
       this.dead = true;
       this.deathT = 0;
       this.game.audio?.play('creatureDie', { pos: this.pos });
+      // BUG-03：击杀才产出战利品，否则科研升级永远缺样本
+      this.game.onCreatureKilled?.(this);
       return true;
     }
     if (this.def.hostile) {
@@ -431,24 +470,40 @@ export class Creature {
 
     // ---------- 决策 ----------
     if (this.def.hostile) {
+      const range = this.def.attackRange;
+      // BUG-34：攻击/追击用同一套范围 + 小幅迟滞，不再出现“攻击状态但够不着、又不追”的死区。
+      // 进入攻击：dist <= range + 0.4；退出攻击：dist > range + 0.9。
+      const attackEnter = range + 0.4;
+      const attackExit = range + 0.9;
       const detect = this.def.aggroRange * (night ? 1.2 : 1.0);
       if (playerDist < detect && !player.inRocket) {
-        // 只在"刚发现玩家"时进入 alert，之后由计时结束转入 chase/attack
-        if (this.state !== 'chase' && this.state !== 'attack' && this.state !== 'alert') {
+        if (this.state === 'alert') {
+          if (this.stateT <= 0) this.state = playerDist <= attackEnter ? 'attack' : 'chase';
+        } else if (this.state === 'attack') {
+          if (playerDist > attackExit) this.state = 'chase';
+        } else if (this.state === 'chase') {
+          if (playerDist <= attackEnter) this.state = 'attack';
+        } else {
+          // 刚发现玩家
           this.state = 'alert';
           this.stateT = 0.75;
           this.game.audio?.play('creatureAlert', { pos: this.pos });
-        } else if (this.state === 'alert' && this.stateT <= 0) {
-          this.state = playerDist < this.def.attackRange ? 'attack' : 'chase';
-        } else if (this.state === 'chase' && playerDist < this.def.attackRange * 1.15) {
-          // 追到身边就进入攻击循环
-          this.state = 'attack';
-        } else if (this.state === 'attack' && playerDist > this.def.attackRange * 2.2) {
-          this.state = 'chase';
         }
       } else if (this.state === 'chase' || this.state === 'attack' || this.state === 'alert') {
         this.state = 'wander';
+        this.stateT = 0;
         this.pickWander();
+      }
+      // BUG-35：敌对生物在未发现玩家时也要正常巡游（与温和生物共用同一套游荡计时）
+      if (this.state === 'wander' || this.state === 'graze') {
+        if (this.stateT <= 0) {
+          this.state = Math.random() < 0.2 ? 'graze' : 'wander';
+          this.stateT = 4 + Math.random() * 6;
+          this.pickWander();
+        } else if (this.wanderTarget && this.pos.distanceTo(this.wanderTarget) < 1.2) {
+          this.pickWander();
+          this.stateT = 4 + Math.random() * 6;
+        }
       }
     } else {
       if (this.state === 'flee') {
@@ -517,14 +572,27 @@ export class Creature {
         if (this.attackCd <= 0) {
           this.attackCd = 1.5;
           this.attackLunge = 1;
-          if (dp < this.def.attackRange + 0.4) {
+          // BUG-36：攻击不再只看水平距离，还要通过高度与遮挡校验
+          if (dp < this.def.attackRange + 0.4 && this._canReach(player)) {
             this.game.onCreatureAttack(this, this.def.damage);
           }
         }
       }
       if (speed > 0) {
-        const tx = this.pos.x + desired.x * speed * dt;
-        const tz = this.pos.z + desired.z * speed * dt;
+        let tx = this.pos.x + desired.x * speed * dt;
+        let tz = this.pos.z + desired.z * speed * dt;
+        // BUG-36：生物移动接入同一套静态碰撞，不能穿过基地墙体与大型障碍追击
+        if (this._blocked(tx, tz)) {
+          // 沿障碍切向滑动：先试左右偏转，再退回原地
+          const px = -desired.z, pz = desired.x;
+          let moved = false;
+          for (const sgn of [1, -1]) {
+            const sx = this.pos.x + (desired.x * 0.4 + px * sgn * 0.9) * speed * dt;
+            const sz = this.pos.z + (desired.z * 0.4 + pz * sgn * 0.9) * speed * dt;
+            if (!this._blocked(sx, sz)) { tx = sx; tz = sz; moved = true; break; }
+          }
+          if (!moved) { tx = this.pos.x; tz = this.pos.z; }
+        }
         const gh = this.game.terrain.height(tx, tz);
         this.pos.x = tx;
         this.pos.z = tz;
@@ -551,6 +619,28 @@ export class Creature {
     this.root.position.copy(this.pos);
     this.root.rotation.y = this.yaw;
     this.root.rotation.z = 0;
+  }
+
+  // BUG-36：生物的静态碰撞查询（植被 + 基地建筑）
+  _blocked(x, z) {
+    const g = this.game;
+    const r = 0.35 * (this.def.scale || 1);
+    if (g.vegetation?.blocked(x, z, r)) return true;
+    if (g.building?.blockedAt && g.building.blockedAt(x, z, r)) return true;
+    return false;
+  }
+
+  // BUG-36：近战判定加入高度与遮挡校验
+  _canReach(player) {
+    if (Math.abs(player.pos.y - this.pos.y) > 1.6) return false;
+    const steps = 4;
+    for (let i = 1; i < steps; i++) {
+      const t = i / steps;
+      const x = this.pos.x + (player.pos.x - this.pos.x) * t;
+      const z = this.pos.z + (player.pos.z - this.pos.z) * t;
+      if (this._blocked(x, z)) return false;
+    }
+    return true;
   }
 
   animate(dt, t, speed, dp) {
@@ -622,17 +712,28 @@ export class Ecosystem {
     this.list = [];
     this.group = new THREE.Group();
     this.group.name = 'creatures';
+    // BUG-02：生物用星球种子生成稳定布局，并带稳定 ID
+    this.rnd = Math.random;
+    this.spawnIndex = 0;
+  }
+
+  setSeed(seed) {
+    this.rnd = mulberry32((seed || 1) * 104729 + 7);
+    this.spawnIndex = 0;
   }
 
   spawn(key, count, pos) {
     for (let i = 0; i < count; i++) {
-      const a = Math.random() * Math.PI * 2;
-      const r = 6 + Math.random() * 22;
+      const a = this.rnd() * Math.PI * 2;
+      const r = 6 + this.rnd() * 22;
       const p = pos.clone();
       p.x += Math.cos(a) * r;
       p.z += Math.sin(a) * r;
       p.y = this.game.terrain.height(p.x, p.z);
-      this.add(new Creature(CREATURE_DEFS[key], p, this.game));
+      const c = new Creature(CREATURE_DEFS[key], p, this.game);
+      c.id = `${key}-${this.spawnIndex++}`;
+      c.homeId = key;
+      this.add(c);
     }
   }
 
@@ -647,10 +748,39 @@ export class Ecosystem {
       this.group.remove(c.root);
       c.root.traverse((o) => {
         if (o.geometry) o.geometry.dispose();
-        if (o.material) o.material.dispose();
+        if (o.material) {
+          if (Array.isArray(o.material)) o.material.forEach((m) => m.dispose());
+          else o.material.dispose();
+        }
       });
     }
     this.list = [];
+  }
+
+  // BUG-02：持久化死亡/血量状态
+  serialize() {
+    const out = {};
+    for (const c of this.list) {
+      if (!c.id) continue;
+      if (c.dead) out[c.id] = { dead: 1 };
+      else if (c.hp < c.maxHp) out[c.id] = { hp: c.hp };
+    }
+    return out;
+  }
+
+  restore(state) {
+    if (!state || typeof state !== 'object') return;
+    for (const c of this.list) {
+      const s = state[c.id];
+      if (!s) continue;
+      if (s.dead) {
+        c.dead = true;
+        c.deathT = 3;
+        c.root.visible = false;
+      } else if (Number.isFinite(s.hp)) {
+        c.hp = clamp(s.hp, 1, c.maxHp);
+      }
+    }
   }
 
   update(dt, player) {

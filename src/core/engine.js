@@ -137,7 +137,6 @@ export class Engine {
 
   setQuality(q) {
     this.quality = q;
-    this.applyPixelRatio();
     if (q === 'low') {
       this.bloom.strength = 0.45;
     } else {
@@ -146,14 +145,20 @@ export class Engine {
     this.resize();
   }
 
+  // BUG-44：渲染器、后期链与泛光的尺寸/像素比必须一起更新。
+  // EffectComposer 会缓存构造时的 pixelRatio，只改 renderer 会让后期按高像素比渲染，
+  // 低画质的性能收益被完全抵消。
   resize() {
     const w = window.innerWidth, h = window.innerHeight;
     this.applyPixelRatio();
     this.renderer.setSize(w, h, false);
+    const size = this.renderer.getDrawingBufferSize(new THREE.Vector2());
+    const pr = this.renderer.getPixelRatio();
+    // 让 composer 的目标与渲染器的物理像素一致（逻辑尺寸 × 像素比只乘一次）
+    this.composer.setPixelRatio(pr);
     this.composer.setSize(w, h);
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
-    const size = this.renderer.getDrawingBufferSize(new THREE.Vector2());
     this.grade.uniforms.uResolution.value.set(size.x, size.y);
     this.bloom.setSize(size.x, size.y);
   }
